@@ -1,0 +1,125 @@
+{
+  "schema_version": "3.2.0",
+  "tower_name": "Mama Wonder Tower",
+  "hardware_profile": "RTX_5060_16GB_RAM",
+  "evon_hub_permission_granted": true,
+  "current_era_index": 5,
+  "universe": "Mama's Wonder World // Purple City Universe (Wonder Command v3.2)",
+  "protagonist": {
+    "name": "Darrell X-Gen",
+    "blueprint": "BP_DarrellXGen",
+    "skeleton": "SK_DarrellXGen",
+    "signature_hat": "Black Velvet Top Hat with 5-Stop Rainbow LED Equalizer Band (Blue->Green->Yellow->Orange->Red)",
+    "wardrobe": "Charcoal Pinstripe Suit Vest & Trousers over Slate-Grey Collared Dress Shirt",
+    "weapon": "Cyan & Gold Cybernetic God Hand Sonic Gauntlet"
+  },
+  "dual_currency_hud": {
+    "municipal_dollars_usd": 91782.82,
+    "wonder_super_currency_w": 105.70,
+    "bond_yield_rate_annual": 0.12,
+    "bond_yield_converted_usd": 1800.00
+  },
+  "cinema_portal_state": {
+    "nearest_active_top_hatter": "Darrell X-Gen",
+    "marquee_headline": "🎬 WONDER CINEMA MARQUEE: [DARRELL X-GEN] — \"85 BPM GOD-HAND SONIC ODYSSEY\" (8.5m)",
+    "portal_destination_stage": "UE5.8 Stage 2: Twin Tower Skybridge & 85 BPM Harmonic Arena"
+  },
+  "hover_drive_vehicle_state": {
+    "toggle_key": "V",
+    "hover_flight_active": true,
+    "target_hover_altitude_meters": 18.5,
+    "thrust_multiplier": 1.80,
+    "attached_modular_parts": [
+      "MOD_CHASSIS_PURPLE_MK5",
+      "MOD_THRUST_85BPM_SUB",
+      "MOD_GRILLE_GODHAND_CYAN",
+      "MOD_WING_5STOP_LED"
+    ]
+  },
+  "ledger_columns": {
+    "column_1_gross_revenue": {
+      "cna_and_wetvac_minigames": 8500.00,
+      "arcade_brawler_payouts": 20820.71,
+      "commercial_lease_income": 45805.55,
+      "cities_skylines_tourism_bonus": 16656.56
+    },
+    "column_2_operating_expenses": {
+      "structural_maintenance": 0.00,
+      "security_and_brawler_staff": 0.00,
+      "utility_grid_load_cost": 0.00
+    },
+    "column_3_net_reserve_and_upgrades": {
+      "liquid_reserve": 52535.00,
+      "vitality_credits_tier1": 12400,
+      "industrial_bonds_tier2_3": 85,
+      "staked_industrial_bonds": 15000.00,
+      "wonder_super_currency_w": 105.70,
+      "bond_yield_converted_usd": 1800.00,
+      "unlocked_tier": 5,
+      "cities_skylines_lot_size": "8m x 8m",
+      "emissive_signage_active": true
+    }
+  },
+  "three_column_financial_ledger": {
+    "column_1_grind_income": {
+      "label": "Column 1: Workforce & Street Grind Income",
+      "active_hourly_rate_usd": 38.5,
+      "shift_multiplier": 1.5,
+      "workforce_rates_per_sec": {
+        "CNA_Caregiver": 35.0,
+        "Industrial_Builder": 40.0,
+        "Sound_Phaser_DJ": 45.0,
+        "Speedster_Hero": 50.0
+      },
+      "door_b_reporting_bonus_usd": 25.0,
+      "total_grind_earned_usd": 91782.82
+    },
+    "column_2_overhead_expenses": {
+      "label": "Column 2: Municipal & Twin Tower Overhead",
+      "baseline_maintenance_per_sec_usd": 0.0,
+      "tower_utility_burn_usd": 0.0,
+      "overhead_debt_titan_active": false,
+      "total_overhead_paid_usd": 24700.00
+    },
+    "column_3_foundation_capital": {
+      "label": "Column 3: Wonder Foundation Reserve (Spendable Capital)",
+      "liquid_reserve_usd": 52535.00,
+      "wonder_super_currency_w": 105.70,
+      "hat_launch_cost_usd": 5.0,
+      "custom_hat_shop_upgrades": {
+        "magnetic_homing_hat": { "cost_usd": 150.0, "unlocked": true },
+        "golden_2x_multiplier_hat": { "cost_usd": 300.0, "unlocked": true },
+        "triple_crown_spread_hat": { "cost_usd": 500.0, "unlocked": true }
+      }
+    }
+  },
+  "twin_towers_state": {
+    "mama_tower": {
+      "stories": 150,
+      "unlocked_tiers": 6,
+      "theme": "Glass Bio-Domes & Neon Cyan/Magenta Equalizer Rings",
+      "ai_governor": "Mama AI"
+    },
+    "papa_tower": {
+      "stories": 150,
+      "unlocked_tiers": 6,
+      "theme": "Obsidian-and-Gold Financial Ledger Rings & Apex Beacon",
+      "ai_governor": "Papa AI"
+    },
+    "skybridge_linked": true
+  },
+  "mini_me_referee_state": {
+    "companion_name": "Mini-Me Tophatter",
+    "hits_gained": 42,
+    "shots_missed": 6,
+    "accuracy_rate_percent": 87.5,
+    "hits_per_reward_chest": 6,
+    "reward_chest_bonus_usd": 250.0,
+    "stage_2_sky_deck_warp_ready": true
+  },
+  "companion_server": {
+    "host": "127.0.0.1",
+    "port": 8000,
+    "privacy_guardrail": "[REDACTED-SSN]"
+  }
+}
