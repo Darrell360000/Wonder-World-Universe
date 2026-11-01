@@ -87,6 +87,10 @@
       <HintPath>$(ManagedDir)\Colossal.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Colossal.UI.Binding">
+      <HintPath>$(ManagedDir)\Colossal.UI.Binding.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="cohtml.Net">
       <HintPath>$(ManagedDir)\cohtml.Net.dll</HintPath>
       <Private>false</Private>

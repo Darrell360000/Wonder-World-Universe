@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Text;
+using Colossal.UI.Binding;
 using cohtml.Net;
 using Game.SceneFlow;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace WonderWorldCS2.UI
         private int _lastTickedFrame = -1;
         private float _cohtmlSyncTimer = 0f;
         private View _boundView = null;
-        private BoundEventHandle _boundCallHandle;
+        private IBindingRegistry _boundRegistry = null;
         private BoundEventHandle _boundEventHandle;
         private Rect _fallbackWindowRect = new Rect(24f, 52f, 740f, 760f);
 
@@ -256,22 +257,41 @@ namespace WonderWorldCS2.UI
             try
             {
                 var gm = GameManager.instance;
-                var uiView = gm?.userInterface?.view;
+                var ui = gm?.userInterface;
+                var uiView = ui?.view;
                 View cohtmlView = uiView?.View;
                 if (cohtmlView == null) return;
+
+                if (ui.bindings != null && !ReferenceEquals(_boundRegistry, ui.bindings))
+                {
+                    _boundRegistry = ui.bindings;
+                    try
+                    {
+                        _boundRegistry.AddBinding(new TriggerBinding<string>("wonderworld", "cmd", ExecuteWonderAction));
+                        _boundRegistry.AddBinding(new CallBinding<string, bool>("wonderworld", "call_cmd", cmd =>
+                        {
+                            ExecuteWonderAction(cmd);
+                            return true;
+                        }));
+                        WonderWorldCS2Plugin.ModLogger?.LogInfo("[UIOverhaul] Registered native Colossal.UI.Binding callbacks (wonderworld.cmd).");
+                    }
+                    catch (Exception regEx)
+                    {
+                        WonderWorldCS2Plugin.ModLogger?.LogWarning($"[UIOverhaul] Colossal.UI.Binding notice: {regEx.Message}");
+                    }
+                }
 
                 if (!ReferenceEquals(_boundView, cohtmlView))
                 {
                     _boundView = cohtmlView;
                     try
                     {
-                        _boundCallHandle = _boundView.BindCall("wonder_cmd", new Action<string>(ExecuteWonderAction));
                         _boundEventHandle = _boundView.RegisterForEvent("wonder_cmd", new Action<string>(ExecuteWonderAction));
-                        WonderWorldCS2Plugin.ModLogger?.LogInfo("[UIOverhaul] Bound native Cohtml HTML5 UI callbacks (wonder_cmd).");
+                        WonderWorldCS2Plugin.ModLogger?.LogInfo("[UIOverhaul] Bound native Cohtml HTML5 UI event callback (wonder_cmd).");
                     }
-                    catch (Exception bindEx)
+                    catch
                     {
-                        WonderWorldCS2Plugin.ModLogger?.LogWarning($"[UIOverhaul] Cohtml bind notice: {bindEx.Message}");
+                        // Handled cleanly by Colossal.UI.Binding TriggerBinding above
                     }
                 }
 
@@ -387,7 +407,7 @@ namespace WonderWorldCS2.UI
             var sb = new StringBuilder(10240);
             sb.Append("(function(){");
             sb.Append("if(!document.body)return;");
-            sb.Append("window.wwSend=function(c){try{if(window.engine&&engine.call)engine.call('wonder_cmd',c);else if(window.engine&&engine.trigger)engine.trigger('wonder_cmd',c);}catch(e){}};");
+            sb.Append("window.wwSend=function(c){try{if(window.engine&&engine.trigger){engine.trigger('wonderworld.cmd',c);engine.trigger('wonder_cmd',c);}else if(window.engine&&engine.call){engine.call('wonderworld.call_cmd',c);}}catch(e){}};");
             sb.Append("var root=document.getElementById('ww-cs2-hud-root');");
             sb.Append("if(!root){");
             sb.Append("root=document.createElement('div');root.id='ww-cs2-hud-root';");
