@@ -13,6 +13,7 @@ using UnityEngine;
 using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
 using WonderWorld.Cities2Mod.Vehicles;
+using WonderWorldCS2.Portals;
 using WonderWorldCS2.UI;
 using WonderWorldCS2.Systems;
 
@@ -131,6 +132,7 @@ namespace WonderWorld.Cities2Mod
                 updateSystem.UpdateAt<EconomyOverhaul>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<MamaCityControlSystem>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<WonderUniverseIntegrationSystem>(SystemUpdatePhase.GameSimulation);
+                updateSystem.UpdateAt<CinemaPortalMissionSystem>(SystemUpdatePhase.GameSimulation);
             }
         }
 

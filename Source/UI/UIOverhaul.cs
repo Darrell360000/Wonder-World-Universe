@@ -8,6 +8,7 @@ using WonderWorld.Cities2Mod;
 using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
 using WonderWorld.Cities2Mod.Vehicles;
+using WonderWorldCS2.Portals;
 using WonderWorldCS2.Systems;
 
 namespace WonderWorldCS2.UI
@@ -18,8 +19,8 @@ namespace WonderWorldCS2.UI
     /// skinned with native CS2 vector glyphs (StarFilled.svg, Money.svg, Warning.svg, HeartFilled.svg),
     /// Signature Building thumbnails (EU_CommercialHighSignature01.png, IndustrialManufacturingSignature01.png),
     /// Drome Cinema audio stings, 85 BPM Radio Presets (The Smooth Beat / The Second Moon),
-    /// Multi-Game Wonder Universe Integration (Big Ambitions, Movies Tycoon, Fatal Fury / Marvel Tokon, Pragmata),
-    /// Modular Hover-Drive [V] Flight Cockpit, and Cinema Portal Marquee.
+    /// Multi-Game Wonder Universe Integration, Modular Hover-Drive [V] Flight Cockpit,
+    /// and the 5 Top Hatter CINEMA STORY MISSIONS (CinemaPortalMissionSystem).
     /// </summary>
     public sealed class UIOverhaul : MonoBehaviour
     {
@@ -31,7 +32,7 @@ namespace WonderWorldCS2.UI
         private View _boundView = null;
         private BoundEventHandle _boundCallHandle;
         private BoundEventHandle _boundEventHandle;
-        private Rect _fallbackWindowRect = new Rect(24f, 52f, 700f, 700f);
+        private Rect _fallbackWindowRect = new Rect(24f, 52f, 740f, 760f);
 
         private void Awake()
         {
@@ -60,6 +61,7 @@ namespace WonderWorldCS2.UI
 
             MamaCityControlSystem.EnsureRegisteredInWorld();
             WonderUniverseIntegrationSystem.EnsureRegisteredInWorld();
+            CinemaPortalMissionSystem.EnsureRegisteredInWorld();
             WonderWorldOptionsSetting.EnsureRegisteredInOptionsUI();
 
             // [F8] Toggles the full Wonder Command Interactive Panel
@@ -160,6 +162,27 @@ namespace WonderWorldCS2.UI
                     break;
                 case "cycle_radio_preset":
                     WonderUniverseIntegrationSystem.CycleWonderRadioPresetStatic();
+                    break;
+                case "enter_cinema_portal":
+                    CinemaPortalMissionSystem.TriggerNextOrCompletePortalFlashbackStatic();
+                    break;
+                case "complete_cinema_portal":
+                    CinemaPortalMissionSystem.CompleteActiveMissionStatic();
+                    break;
+                case "portal_01":
+                    CinemaPortalMissionSystem.EnterCinemaPortalStatic("PORTAL_01");
+                    break;
+                case "portal_02":
+                    CinemaPortalMissionSystem.EnterCinemaPortalStatic("PORTAL_02");
+                    break;
+                case "portal_03":
+                    CinemaPortalMissionSystem.EnterCinemaPortalStatic("PORTAL_03");
+                    break;
+                case "portal_04":
+                    CinemaPortalMissionSystem.EnterCinemaPortalStatic("PORTAL_04");
+                    break;
+                case "portal_05":
+                    CinemaPortalMissionSystem.EnterCinemaPortalStatic("PORTAL_05");
                     break;
                 case "toggle_hover":
                     vehicle?.ToggleHoverFlight();
@@ -341,18 +364,22 @@ namespace WonderWorldCS2.UI
             string deckDisplay = showDeck ? "block" : "none";
             string tensionColor = tensionIndex > 15.0f ? "#ff5577" : "#00ffb4";
 
-            var sb = new StringBuilder(8192);
+            var activeMission = CinemaPortalMissionSystem.StaticActiveMission;
+            bool inPortal = CinemaPortalMissionSystem.StaticInMissionPortal;
+            var missions = CinemaPortalMissionSystem.StaticMissions;
+
+            var sb = new StringBuilder(10240);
             sb.Append("(function(){");
             sb.Append("if(!document.body)return;");
             sb.Append("window.wwSend=function(c){try{if(window.engine&&engine.call)engine.call('wonder_cmd',c);else if(window.engine&&engine.trigger)engine.trigger('wonder_cmd',c);}catch(e){}};");
             sb.Append("var root=document.getElementById('ww-cs2-hud-root');");
             sb.Append("if(!root){");
             sb.Append("root=document.createElement('div');root.id='ww-cs2-hud-root';");
-            sb.Append("root.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;font-family:sans-serif;color:#fff;pointer-events:auto;width:960px;';");
+            sb.Append("root.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;font-family:sans-serif;color:#fff;pointer-events:auto;width:980px;';");
             sb.Append("document.body.appendChild(root);");
             sb.Append("}");
 
-            // Build clean innerHTML using native CS2 SVG/PNG assets (Money.svg, StarFilled.svg, Warning.svg, HeartFilled.svg, SignatureBuildings)
+            // Build clean innerHTML using native CS2 SVG/PNG assets
             sb.Append("root.innerHTML='");
             // Top Dual-Currency Bar with Native CS2 Vector Glyphs
             sb.Append("<div style=\"background:rgba(22,6,38,0.94);border:2px solid #b84dff;border-radius:8px;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 18px rgba(0,0,0,0.75);font-size:13px;font-weight:bold;\">");
@@ -431,17 +458,42 @@ namespace WonderWorldCS2.UI
             sb.Append("<div onclick=\"window.wwSend(\\x27part_4\\x27)\" style=\"background:#3c1361;border:1px solid #b84dff;padding:5px 8px;border-radius:5px;cursor:pointer;\">🔧 [Alt+4] Top-Hat Turret</div>");
             sb.Append("</div>");
 
-            // Section 4: Cinema Portal Marquee (5 Top Hatters)
-            sb.Append("<div style=\"color:#ff77ff;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">4. WONDER CINEMA PORTAL MARQUEE (NEAREST ACTIVE TOP HATTER HERO)</div>");
-            sb.AppendFormat("<div style=\"margin-bottom:4px;color:#fff;font-weight:bold;\">{0}</div>", marquee);
-            sb.AppendFormat("<div style=\"margin-bottom:6px;color:#aaddff;font-size:11px;\">🌀 Portal Destination: {0}</div>", portalStage);
+            // Section 4: CINEMA STORY MISSIONS (5 Top Hatter Narrative Portals)
+            sb.Append("<div style=\"color:#ff77ff;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">4. CINEMA STORY MISSIONS (REEL MEMORY PORTALS & TOP HATTER BACKSTORIES)</div>");
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:4px;color:#fff;font-weight:bold;\">Current Cinema Marquee: <span style=\"color:#ffd700;\">\"{0}\"</span> — Featured Top Hatter: <span style=\"color:#00ffcc;\">{1}</span> ({2})</div>",
+                EscapeJs(activeMission.MovieTitle), EscapeJs(activeMission.HeroName), EscapeJs(activeMission.District));
+            sb.AppendFormat("<div style=\"margin-bottom:6px;color:#aaddff;font-size:11px;\">{0} &nbsp;|&nbsp; 🌀 Portal Stage: {1}</div>",
+                marquee, portalStage);
 
+            // Mission Status List (Completed or Ready to Enter)
             sb.Append("<div style=\"display:flex;flex-wrap:wrap;margin-bottom:8px;\">");
-            sb.Append("<div onclick=\"window.wwSend(\\x27hero_0\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:6px;cursor:pointer;\">🎩 [Shift+1] Darrell X-Gen</div>");
-            sb.Append("<div onclick=\"window.wwSend(\\x27hero_1\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:6px;cursor:pointer;\">🕷️ [Shift+2] Spider-Pulse</div>");
-            sb.Append("<div onclick=\"window.wwSend(\\x27hero_2\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:6px;cursor:pointer;\">✨ [Shift+3] Divine Hands</div>");
-            sb.Append("<div onclick=\"window.wwSend(\\x27hero_3\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:6px;cursor:pointer;\">🎸 [Shift+4] Jaxson Thorne</div>");
-            sb.Append("<div onclick=\"window.wwSend(\\x27hero_4\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;cursor:pointer;\">🌌 [Shift+5] Vesper Vance</div>");
+            for (int i = 0; i < missions.Length; i++)
+            {
+                var m = missions[i];
+                string statusLabel = m.IsCompleted ? "✅ Completed" : "🟢 Ready to Enter";
+                string bg = m.IsCompleted ? "#1b4332" : "#3c096c";
+                string border = (activeMission.MissionId == m.MissionId && inPortal) ? "2px solid #ffd700" : "1px solid #9d4edd";
+                string cmdId = string.Format(CultureInfo.InvariantCulture, "portal_0{0}", i + 1);
+                sb.AppendFormat(CultureInfo.InvariantCulture,
+                    "<div onclick=\"window.wwSend(\\x27{0}\\x27)\" style=\"background:{1};border:{2};padding:4px 8px;border-radius:4px;margin-right:6px;margin-bottom:4px;cursor:pointer;font-size:11px;\"><b>{3}</b>: {4} ({5}) — <span style=\"color:#ffd700;\">{6}</span></div>",
+                    cmdId, bg, border, EscapeJs(m.MissionId), EscapeJs(m.MovieTitle), EscapeJs(m.HeroName), statusLabel);
+            }
+            sb.Append("</div>");
+
+            // Interactive Cinema Portal Flashback [E] + Top Hatter Marquee Selector Buttons
+            sb.Append("<div style=\"display:flex;flex-wrap:wrap;align-items:center;margin-bottom:8px;\">");
+            string portalBtnText = inPortal
+                ? string.Format(CultureInfo.InvariantCulture, "⭐️ Complete Flashback: {0} (+{1} ⭐️W & +${2:N0}) [E]", EscapeJs(activeMission.MovieTitle), activeMission.WonderStarReward, activeMission.TreasuryBonus)
+                : "🎬 Enter Cinema Portal Flashback [E]";
+            string portalBtnBg = inPortal ? "#00b4d8" : "#e63946";
+            sb.AppendFormat("<div onclick=\"window.wwSend(\\x27enter_cinema_portal\\x27)\" style=\"background:{0};color:#fff;padding:6px 14px;border-radius:5px;margin-right:10px;cursor:pointer;font-weight:bold;\">{1}</div>",
+                portalBtnBg, portalBtnText);
+            sb.Append("<div onclick=\"window.wwSend(\\x27hero_0\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:5px;cursor:pointer;\">🎩 Darrell X-Gen</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27hero_1\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:5px;cursor:pointer;\">🕷️ Spider-Pulse</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27hero_2\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:5px;cursor:pointer;\">✨ Divine Hands</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27hero_3\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;margin-right:5px;cursor:pointer;\">🎸 Jaxson Thorne</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27hero_4\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;cursor:pointer;\">🌌 Vesper Vance</div>");
             sb.Append("</div>");
 
             // Voice Broadcast Footer
@@ -469,6 +521,7 @@ namespace WonderWorldCS2.UI
             int activeRetail = universe != null ? universe.ActiveRetailBusinesses : WonderUniverseIntegrationSystem.StaticActiveRetailBusinesses;
             int boxOfficeYield = universe != null ? universe.BoxOfficeWeeklyYield : WonderUniverseIntegrationSystem.StaticBoxOfficeWeeklyYield;
             float tensionIndex = universe != null ? universe.DistrictTensionIndex : WonderUniverseIntegrationSystem.StaticDistrictTensionIndex;
+            var activeMission = CinemaPortalMissionSystem.StaticActiveMission;
 
             GUILayout.BeginArea(_fallbackWindowRect, GUI.skin.box);
             GUILayout.Label("🎩 MAMA'S WONDER WORLD // F8 WONDER COMMAND HUD");
@@ -476,8 +529,6 @@ namespace WonderWorldCS2.UI
             GUILayout.Label($"Retail Businesses Active (Big Ambitions): {activeRetail}");
             GUILayout.Label($"Weekly Box Office Yield (Movies Tycoon): ${boxOfficeYield:N0}");
             GUILayout.Label($"District Tension Meter (Fighting Souls): {tensionIndex:F1}%");
-            GUILayout.Label($"85 BPM Radio Preset: {WonderUniverseIntegrationSystem.StaticActiveRadioStation}");
-            GUILayout.Label($"Last Audio Sting: {WonderUniverseIntegrationSystem.StaticLastAudioStingPlayed}");
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Host Tokon Showdown", GUILayout.Height(28f)))
             {
@@ -487,11 +538,20 @@ namespace WonderWorldCS2.UI
             {
                 ExecuteWonderAction("premiere_wonder_movie");
             }
-            if (GUILayout.Button("Switch 85 BPM Radio", GUILayout.Height(28f)))
-            {
-                ExecuteWonderAction("cycle_radio_preset");
-            }
             GUILayout.EndHorizontal();
+
+            GUILayout.Space(6f);
+            GUILayout.Label("🎬 CINEMA STORY MISSIONS");
+            GUILayout.Label($"Current Cinema Marquee: \"{activeMission.MovieTitle}\" — Featured Top Hatter: {activeMission.HeroName}");
+            foreach (var m in CinemaPortalMissionSystem.StaticMissions)
+            {
+                string status = m.IsCompleted ? "Completed" : "Ready to Enter";
+                GUILayout.Label($"• [{m.MissionId}] {m.MovieTitle} ({m.HeroName}) — {status}");
+            }
+            if (GUILayout.Button("Enter Cinema Portal Flashback [E]", GUILayout.Height(30f)))
+            {
+                ExecuteWonderAction("enter_cinema_portal");
+            }
             GUILayout.EndArea();
         }
     }
