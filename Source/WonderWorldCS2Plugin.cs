@@ -133,6 +133,7 @@ namespace WonderWorld.Cities2Mod
                 updateSystem.UpdateAt<MamaCityControlSystem>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<WonderUniverseIntegrationSystem>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<CinemaPortalMissionSystem>(SystemUpdatePhase.GameSimulation);
+                updateSystem.UpdateAt<WonderDeepSimulationSystem>(SystemUpdatePhase.GameSimulation);
             }
         }
 
@@ -222,6 +223,12 @@ namespace WonderWorld.Cities2Mod
                 int syncedStars = (int)ExtractJsonFloat(json, "wonderStars", WonderUniverseIntegrationSystem.StaticWonderStarsBanked);
                 WonderUniverseIntegrationSystem.ApplyExternalBridgeSync(syncedBusinesses, syncedTension, syncedStars);
 
+                int syncedCrates = (int)ExtractJsonFloat(json, "storefrontInventoryCrates", WonderDeepSimulationSystem.StorefrontInventoryCrates);
+                float syncedCoolant = ExtractJsonFloat(json, "purifiedBioCoolantGallons", WonderDeepSimulationSystem.PurifiedBioCoolantGallons);
+                float syncedHope = ExtractJsonFloat(json, "cityHopeIndex", WonderDeepSimulationSystem.CityHopeIndex);
+                int syncedSpecialists = (int)ExtractJsonFloat(json, "crownedSpecialistsActive", WonderDeepSimulationSystem.CrownedSpecialistsActive);
+                WonderDeepSimulationSystem.ApplyDeepSimulationJsonSync(syncedCrates, syncedCoolant, syncedHope, syncedSpecialists);
+
                 float brawler = ExtractJsonFloat(json, "arcade_brawler_payouts", 20820.71f);
                 float lease = ExtractJsonFloat(json, "commercial_lease_income", 45805.55f);
                 float tourism = ExtractJsonFloat(json, "cities_skylines_tourism_bonus", 16656.56f);
@@ -273,6 +280,12 @@ namespace WonderWorld.Cities2Mod
                         "  \"activeRadioStation\": \"{21}\",\n" +
                         "  \"lastSyncTimestamp\": {22},\n" +
                         "  \"completed_cinema_mission_ids\": {23},\n" +
+                        "  \"storefrontInventoryCrates\": {24},\n" +
+                        "  \"purifiedBioCoolantGallons\": {25:F1},\n" +
+                        "  \"cityHopeIndex\": {26:F1},\n" +
+                        "  \"crownedSpecialistsActive\": {27},\n" +
+                        "  \"grid85BpmSyncPercent\": {28:F1},\n" +
+                        "  \"named_vip_citizens\": {29},\n" +
                         "  \"tower_name\": \"Mama Wonder Tower\",\n" +
                         "  \"hardware_profile\": \"RTX_5060_16GB_RAM\",\n" +
                         "  \"evon_hub_permission_granted\": {0},\n" +
@@ -335,7 +348,13 @@ namespace WonderWorld.Cities2Mod
                         WonderUniverseIntegrationSystem.StaticDistrictTensionIndex,
                         WonderUniverseIntegrationSystem.StaticActiveRadioStation.Replace("\"", "\\\""),
                         DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                        CinemaPortalMissionSystem.SerializeCompletedMissionIds());
+                        CinemaPortalMissionSystem.SerializeCompletedMissionIds(),
+                        WonderDeepSimulationSystem.StorefrontInventoryCrates,
+                        WonderDeepSimulationSystem.PurifiedBioCoolantGallons,
+                        WonderDeepSimulationSystem.CityHopeIndex,
+                        WonderDeepSimulationSystem.CrownedSpecialistsActive,
+                        WonderDeepSimulationSystem.Grid85BpmSyncPercent,
+                        WonderDeepSimulationSystem.SerializeVipRosterJsonArray());
 
                     File.WriteAllText(path, json);
                 }

@@ -13,6 +13,11 @@ namespace WonderWorld.Bridge
         public float districtTension = 24.5f;
         public string activeRadioStation = "The Smooth Beat (85 BPM Harmonic)";
         public long lastSyncTimestamp;
+        public int storefrontInventoryCrates = 640;
+        public float purifiedBioCoolantGallons = 44750.0f;
+        public float cityHopeIndex = 92.5f;
+        public int crownedSpecialistsActive = 64;
+        public float grid85BpmSyncPercent = 100.0f;
     }
 
     public class WonderWorldLedgerBridge : MonoBehaviour
@@ -103,6 +108,35 @@ namespace WonderWorld.Bridge
             catch (Exception ex)
             {
                 Debug.LogError($"[LedgerBridge] Arena sync error: {ex.Message}");
+            }
+        }
+
+        public void SyncDeepSimulationPillars(
+            int addedCrates,
+            float bioCoolantGallons,
+            float newHopeIndex,
+            int addedSpecialists,
+            int bonusTreasury,
+            int bonusWonderStars)
+        {
+            try
+            {
+                LoadLedger();
+                CurrentLedger.storefrontInventoryCrates = Mathf.Max(0, CurrentLedger.storefrontInventoryCrates + addedCrates);
+                CurrentLedger.purifiedBioCoolantGallons = Mathf.Clamp(bioCoolantGallons, 0f, 59000f);
+                CurrentLedger.cityHopeIndex = Mathf.Clamp(newHopeIndex, 0f, 100f);
+                CurrentLedger.crownedSpecialistsActive = Mathf.Max(1, CurrentLedger.crownedSpecialistsActive + addedSpecialists);
+                CurrentLedger.municipalTreasury += bonusTreasury;
+                CurrentLedger.wonderStars += bonusWonderStars;
+                CurrentLedger.lastSyncTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+                string json = JsonUtility.ToJson(CurrentLedger, true);
+                File.WriteAllText(ledgerPath, json);
+                Debug.Log($"[LedgerBridge] Deep Simulation Pillars synced! Crates={CurrentLedger.storefrontInventoryCrates}, Bio-Dome={CurrentLedger.purifiedBioCoolantGallons:F0} gal, Hope={CurrentLedger.cityHopeIndex:F1}%, Specialists={CurrentLedger.crownedSpecialistsActive}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[LedgerBridge] Deep Simulation sync error: {ex.Message}");
             }
         }
     }

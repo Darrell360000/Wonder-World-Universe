@@ -222,7 +222,7 @@ namespace WonderWorldCS2.Systems
             PlayHarmonicAudioSting("Drome Cinema.ogg", new float[] { 293.66f, 369.99f, 440.0f, 587.33f, 659.25f }, 0.70f);
         }
 
-        private static void PlayHarmonicAudioSting(string label, float[] chordFrequencies, float durationSeconds)
+        public static void PlayHarmonicAudioSting(string label, float[] chordFrequencies, float durationSeconds)
         {
             try
             {

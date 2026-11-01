@@ -62,6 +62,7 @@ namespace WonderWorldCS2.UI
             MamaCityControlSystem.EnsureRegisteredInWorld();
             WonderUniverseIntegrationSystem.EnsureRegisteredInWorld();
             CinemaPortalMissionSystem.EnsureRegisteredInWorld();
+            WonderDeepSimulationSystem.EnsureRegisteredInWorld();
             WonderWorldOptionsSetting.EnsureRegisteredInOptionsUI();
 
             // [F8] Toggles the full Wonder Command Interactive Panel
@@ -229,6 +230,21 @@ namespace WonderWorldCS2.UI
                     MamaTowerCities2System.LastVoiceBroadcast =
                         "Mama AI: CNA Dignity Shift 100%! +$285 Grind & +$57 Col 3 Reserve!";
                     MamaTowerCities2System.SaveToSharedJson();
+                    break;
+                case "airlift_cargo":
+                    WonderDeepSimulationSystem.ExecuteHoverCargoAirliftStatic();
+                    break;
+                case "toggle_floodgates":
+                    WonderDeepSimulationSystem.ToggleBioDomeFloodgatesAndPurifyStatic();
+                    break;
+                case "enact_hope_decree":
+                    WonderDeepSimulationSystem.EnactHopeDecreeStatic();
+                    break;
+                case "sync_specialist_grid":
+                    WonderDeepSimulationSystem.DispatchSpecialistAndSyncGridStatic();
+                    break;
+                case "boost_vip_commutes":
+                    WonderDeepSimulationSystem.BoostVipCitizenCommutesStatic();
                     break;
             }
 
@@ -496,6 +512,49 @@ namespace WonderWorldCS2.UI
             sb.Append("<div onclick=\"window.wwSend(\\x27hero_4\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;cursor:pointer;\">🌌 Vesper Vance</div>");
             sb.Append("</div>");
 
+            // Section 5: 5 DEEP SIMULATION PILLARS (Supply Chains | 59,000-Gal Hydro Dome | Hope Decrees | Specialist Grid | Named VIP Citizens)
+            sb.Append("<div style=\"color:#00f5d4;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">5. DEEP SIMULATION PILLARS (SUPPLY CHAIN | 59K-GAL HYDRO DOME | HOPE DECREES | SPECIALIST GRID | NAMED VIPs)</div>");
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:4px;color:#e0d4ff;font-size:11px;\">📦 <b>4-Tier Supply Chain:</b> Alloy: <b>{0}t</b> &rarr; Spores: <b>{1}</b> &rarr; Sub-Bass Coils: <b>{2}</b> &rarr; Storefront Stock: <b style=\"color:#00ffb4;\">{3} Crates</b> ({4} Drones/Trucks)</div>",
+                WonderDeepSimulationSystem.RawAcousticAlloyTons,
+                WonderDeepSimulationSystem.BioLuminescentSporeCrates,
+                WonderDeepSimulationSystem.ForgedSubBassCoils,
+                WonderDeepSimulationSystem.StorefrontInventoryCrates,
+                WonderDeepSimulationSystem.ActiveCargoDronesAndTrucks);
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:4px;color:#e0d4ff;font-size:11px;\">🌊 <b>59,000-Gal Hydro Bio-Dome:</b> Purified Coolant: <b style=\"color:#00f0ff;\">{0:N0} / 59,000 gal</b> (Runoff: {1:N0} gal) &nbsp;|&nbsp; ⚡ Grid: <b style=\"color:#ffd700;\">{2:F0}% 85-BPM Sync ({3} MW)</b> &nbsp;|&nbsp; 🎩 Specialists: <b>{4} Crowned</b></div>",
+                WonderDeepSimulationSystem.PurifiedBioCoolantGallons,
+                WonderDeepSimulationSystem.CanalRunoffGallons,
+                WonderDeepSimulationSystem.Grid85BpmSyncPercent,
+                WonderDeepSimulationSystem.MegawattsGeneratedByBioCoolant,
+                WonderDeepSimulationSystem.CrownedSpecialistsActive);
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:6px;color:#e0d4ff;font-size:11px;\">📜 <b>Frostpunk Hope & Decrees:</b> City Hope: <b style=\"color:#00ffb4;\">{0:F1}%</b> &nbsp;|&nbsp; Status: <b style=\"color:#ffd700;\">{1}</b> &nbsp;|&nbsp; Active Decree: <i>{2}</i></div>",
+                WonderDeepSimulationSystem.CityHopeIndex,
+                EscapeJs(WonderDeepSimulationSystem.MoraleCrisisState),
+                EscapeJs(WonderDeepSimulationSystem.ActiveMayorDecree));
+
+            // Named VIP Citizens Strip
+            sb.Append("<div style=\"display:flex;flex-wrap:wrap;margin-bottom:6px;\">");
+            var vips = WonderDeepSimulationSystem.StaticVipRoster;
+            for (int i = 0; i < vips.Length; i++)
+            {
+                var v = vips[i];
+                sb.AppendFormat(CultureInfo.InvariantCulture,
+                    "<div style=\"background:rgba(255,255,255,0.06);border:1px solid #00f5d4;padding:3px 7px;border-radius:4px;margin-right:5px;margin-bottom:4px;font-size:10px;\">👑 <b>{0}</b> ({1}) &bull; <span style=\"color:#00ffcc;\">{2}</span> &bull; <span style=\"color:#ffd700;\">+{3:F0}%</span></div>",
+                    EscapeJs(v.FullName), EscapeJs(v.AssignedFacility), EscapeJs(v.CommuteStatus), v.ProductivityBonusPercent);
+            }
+            sb.Append("</div>");
+
+            // Interactive Deep Simulation Action Buttons
+            sb.Append("<div style=\"display:flex;flex-wrap:wrap;margin-bottom:8px;\">");
+            sb.Append("<div onclick=\"window.wwSend(\\x27airlift_cargo\\x27)\" style=\"background:#2a9d8f;color:#fff;padding:5px 9px;border-radius:5px;margin-right:6px;cursor:pointer;font-weight:bold;font-size:11px;\">📦 Hover-Cargo Airlift (+250 Crates & +75 ⭐️W)</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27toggle_floodgates\\x27)\" style=\"background:#0077b6;color:#fff;padding:5px 9px;border-radius:5px;margin-right:6px;cursor:pointer;font-weight:bold;font-size:11px;\">🌊 Purify 59k-Gal Bio-Dome (+60 ⭐️W)</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27enact_hope_decree\\x27)\" style=\"background:#e76f51;color:#fff;padding:5px 9px;border-radius:5px;margin-right:6px;cursor:pointer;font-weight:bold;font-size:11px;\">📜 Enact Mayor Hope Decree (+85 ⭐️W)</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27sync_specialist_grid\\x27)\" style=\"background:#8338ec;color:#fff;padding:5px 9px;border-radius:5px;margin-right:6px;cursor:pointer;font-weight:bold;font-size:11px;\">🎩 Awaken +8 Specialists & Sync Grid (+90 ⭐️W)</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27boost_vip_commutes\\x27)\" style=\"background:#fb8500;color:#111;padding:5px 9px;border-radius:5px;cursor:pointer;font-weight:bold;font-size:11px;\">🚆 Boost Named VIP Commutes (+100 ⭐️W)</div>");
+            sb.Append("</div>");
+
             // Voice Broadcast Footer
             sb.AppendFormat("<div style=\"background:rgba(0,0,0,0.55);padding:6px 10px;border-radius:5px;color:#ffd700;font-size:12px;\">🎙️ {0}</div>", voiceText);
 
@@ -552,6 +611,16 @@ namespace WonderWorldCS2.UI
             {
                 ExecuteWonderAction("enter_cinema_portal");
             }
+
+            GUILayout.Space(6f);
+            GUILayout.Label($"⚙️ 5-PILLAR DEEP SIM: Stock {WonderDeepSimulationSystem.StorefrontInventoryCrates} Crates | Bio-Dome {WonderDeepSimulationSystem.PurifiedBioCoolantGallons:N0}/59k gal | Hope {WonderDeepSimulationSystem.CityHopeIndex:F1}% | Specialists {WonderDeepSimulationSystem.CrownedSpecialistsActive}");
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Cargo Airlift", GUILayout.Height(26f))) ExecuteWonderAction("airlift_cargo");
+            if (GUILayout.Button("Purify 59k Bio-Dome", GUILayout.Height(26f))) ExecuteWonderAction("toggle_floodgates");
+            if (GUILayout.Button("Hope Decree", GUILayout.Height(26f))) ExecuteWonderAction("enact_hope_decree");
+            if (GUILayout.Button("Sync Grid", GUILayout.Height(26f))) ExecuteWonderAction("sync_specialist_grid");
+            if (GUILayout.Button("Boost VIPs", GUILayout.Height(26f))) ExecuteWonderAction("boost_vip_commutes");
+            GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
     }
