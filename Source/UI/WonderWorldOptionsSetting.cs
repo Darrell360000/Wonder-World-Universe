@@ -121,6 +121,66 @@ namespace WonderWorldCS2.UI
             }
         }
 
+        [SettingsUISection("HoverDriveAndCinema")]
+        [SettingsUIButton]
+        [SettingsUIDisplayName("WW_EnterCinemaPortalButton", "🌀 Enter / Complete Active Cinema Story Portal Flashback [E]")]
+        [SettingsUIDescription("WW_EnterCinemaPortalButton_Desc", "Enters or completes the active Top Hatter Cinema Story Portal mission (PORTAL_01 to PORTAL_05) for one-time Treasury & ⭐️W rewards.")]
+        public bool EnterCinemaPortalButton
+        {
+            set
+            {
+                if (value)
+                {
+                    UIOverhaul.Instance?.ExecuteWonderAction("enter_cinema_portal");
+                }
+            }
+        }
+
+        [SettingsUISection("DeepSimulationPillars")]
+        [SettingsUIButton]
+        [SettingsUIDisplayName("WW_AirliftCargoButton", "📦 Pillar 1: Hover-Cargo Airlift (+250 Storefront Crates & +75 ⭐️W) [Key 1]")]
+        [SettingsUIDescription("WW_AirliftCargoButton_Desc", "Airlifts emergency 4-tier supply chain crates to Big Ambitions storefronts and deposits +$45,000 Treasury & +75 ⭐️W.")]
+        public bool AirliftCargoButton
+        {
+            set { if (value) UIOverhaul.Instance?.ExecuteWonderAction("airlift_cargo"); }
+        }
+
+        [SettingsUISection("DeepSimulationPillars")]
+        [SettingsUIButton]
+        [SettingsUIDisplayName("WW_PurifyBioDomeButton", "🌊 Pillar 2: Purify 59,000-Gal Botanical Bio-Dome Floodgates (+60 ⭐️W) [Key 2]")]
+        [SettingsUIDescription("WW_PurifyBioDomeButton_Desc", "Flushes sub-basement canal runoff through Mama AI's Bio-Dome, fills 59,000-gal bio-coolant (1,000 MW), and zeroes Col 2 Debt.")]
+        public bool PurifyBioDomeButton
+        {
+            set { if (value) UIOverhaul.Instance?.ExecuteWonderAction("toggle_floodgates"); }
+        }
+
+        [SettingsUISection("DeepSimulationPillars")]
+        [SettingsUIButton]
+        [SettingsUIDisplayName("WW_EnactHopeDecreeButton", "📜 Pillar 3: Enact Mayor Hope Decree (CNA Dignity & Mama Rest, +85 ⭐️W) [Key 3]")]
+        [SettingsUIDescription("WW_EnactHopeDecreeButton_Desc", "Enacts Mayor Hope Decree, restoring City Hope to 100%, cooling Tokon District Tension by -15%, and banking +85 ⭐️W.")]
+        public bool EnactHopeDecreeButton
+        {
+            set { if (value) UIOverhaul.Instance?.ExecuteWonderAction("enact_hope_decree"); }
+        }
+
+        [SettingsUISection("DeepSimulationPillars")]
+        [SettingsUIButton]
+        [SettingsUIDisplayName("WW_SyncSpecialistGridButton", "🎩 Pillar 4: Awaken +8 Crowned Specialists & Sync 85 BPM Grid (+90 ⭐️W) [Key 4]")]
+        [SettingsUIDescription("WW_SyncSpecialistGridButton_Desc", "Awakens +8 Crowned Specialists (CNAs, Builders, DJs, Engineers) and synchronizes the 85 BPM utility relay to 100%.")]
+        public bool SyncSpecialistGridButton
+        {
+            set { if (value) UIOverhaul.Instance?.ExecuteWonderAction("sync_specialist_grid"); }
+        }
+
+        [SettingsUISection("DeepSimulationPillars")]
+        [SettingsUIButton]
+        [SettingsUIDisplayName("WW_BoostVipCommutesButton", "🚆 Pillar 5: Boost Named VIP Citizen Hyper-Lane Commutes (+100 ⭐️W) [Key 5]")]
+        [SettingsUIDescription("WW_BoostVipCommutesButton_Desc", "Upgrades all 5 persistent Named VIP Citizens onto the 85 BPM Hyper-Lane Express (+15% productivity, +$50,000 & +100 ⭐️W).")]
+        public bool BoostVipCommutesButton
+        {
+            set { if (value) UIOverhaul.Instance?.ExecuteWonderAction("boost_vip_commutes"); }
+        }
+
         public override void SetDefaults()
         {
         }
@@ -137,12 +197,16 @@ namespace WonderWorldCS2.UI
                 var optionsUISystem = world.GetExistingSystemManaged<OptionsUISystem>();
                 if (optionsUISystem == null) return;
 
-                var dict = GameManager.instance?.localizationManager?.activeDictionary;
+                var gm = GameManager.instance;
+                if (gm == null || gm.state < GameManager.State.UIReady) return;
+
+                var dict = gm.localizationManager?.activeDictionary;
                 if (dict != null)
                 {
                     AddLocaleEntry(dict, $"Options.SECTION[{SectionId}]", "🎩 MAMA'S WONDER WORLD");
                     AddLocaleEntry(dict, $"Options.GROUP[{SectionId}.DualCurrencyAndTreasury]", "DUAL-CURRENCY LEDGER ($ + ⭐️W) & CITY TREASURY");
                     AddLocaleEntry(dict, $"Options.GROUP[{SectionId}.HoverDriveAndCinema]", "MODULAR HOVER-DRIVE [V] & CINEMA PORTALS");
+                    AddLocaleEntry(dict, $"Options.GROUP[{SectionId}.DeepSimulationPillars]", "5 DEEP SIMULATION PILLARS (SUPPLY | HYDRO | HOPE | GRID | VIPs)");
                 }
 
                 if (_instance == null)

@@ -30,9 +30,6 @@ namespace WonderWorldCS2.UI
         public bool ShowHud = true;
         private int _lastTickedFrame = -1;
         private float _cohtmlSyncTimer = 0f;
-        private View _boundView = null;
-        private IBindingRegistry _boundRegistry = null;
-        private BoundEventHandle _boundEventHandle;
         private Rect _fallbackWindowRect = new Rect(24f, 52f, 740f, 760f);
 
         private void Awake()
@@ -93,6 +90,24 @@ namespace WonderWorldCS2.UI
             if (Input.GetKeyDown(KeyCode.F9))
             {
                 ExecuteWonderAction("mint_wonder_w");
+            }
+
+            // [E] Enter or Complete Active Cinema Story Portal Flashback
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                ExecuteWonderAction("enter_cinema_portal");
+            }
+
+            // [1..5] Trigger the 5 Deep Simulation Pillars directly (when Alt/Shift are not held)
+            bool modKey = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt) ||
+                          Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            if (!modKey)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1)) ExecuteWonderAction("airlift_cargo");
+                if (Input.GetKeyDown(KeyCode.Alpha2)) ExecuteWonderAction("toggle_floodgates");
+                if (Input.GetKeyDown(KeyCode.Alpha3)) ExecuteWonderAction("enact_hope_decree");
+                if (Input.GetKeyDown(KeyCode.Alpha4)) ExecuteWonderAction("sync_specialist_grid");
+                if (Input.GetKeyDown(KeyCode.Alpha5)) ExecuteWonderAction("boost_vip_commutes");
             }
 
             // Tick 12% Bond Yield Economy & Autonomous City Governor
@@ -257,43 +272,12 @@ namespace WonderWorldCS2.UI
             try
             {
                 var gm = GameManager.instance;
-                var ui = gm?.userInterface;
+                if (gm == null || gm.state < GameManager.State.UIReady) return;
+
+                var ui = gm.userInterface;
                 var uiView = ui?.view;
                 View cohtmlView = uiView?.View;
                 if (cohtmlView == null) return;
-
-                if (ui.bindings != null && !ReferenceEquals(_boundRegistry, ui.bindings))
-                {
-                    _boundRegistry = ui.bindings;
-                    try
-                    {
-                        _boundRegistry.AddBinding(new TriggerBinding<string>("wonderworld", "cmd", ExecuteWonderAction));
-                        _boundRegistry.AddBinding(new CallBinding<string, bool>("wonderworld", "call_cmd", cmd =>
-                        {
-                            ExecuteWonderAction(cmd);
-                            return true;
-                        }));
-                        WonderWorldCS2Plugin.ModLogger?.LogInfo("[UIOverhaul] Registered native Colossal.UI.Binding callbacks (wonderworld.cmd).");
-                    }
-                    catch (Exception regEx)
-                    {
-                        WonderWorldCS2Plugin.ModLogger?.LogWarning($"[UIOverhaul] Colossal.UI.Binding notice: {regEx.Message}");
-                    }
-                }
-
-                if (!ReferenceEquals(_boundView, cohtmlView))
-                {
-                    _boundView = cohtmlView;
-                    try
-                    {
-                        _boundEventHandle = _boundView.RegisterForEvent("wonder_cmd", new Action<string>(ExecuteWonderAction));
-                        WonderWorldCS2Plugin.ModLogger?.LogInfo("[UIOverhaul] Bound native Cohtml HTML5 UI event callback (wonder_cmd).");
-                    }
-                    catch
-                    {
-                        // Handled cleanly by Colossal.UI.Binding TriggerBinding above
-                    }
-                }
 
                 int cityTreasury = MamaCityControlSystem.ReadLiveCityTreasury();
                 var vehicle = HoverDriveVehicle.ActiveInstance;
@@ -407,7 +391,7 @@ namespace WonderWorldCS2.UI
             var sb = new StringBuilder(10240);
             sb.Append("(function(){");
             sb.Append("if(!document.body)return;");
-            sb.Append("window.wwSend=function(c){try{if(window.engine&&engine.trigger){engine.trigger('wonderworld.cmd',c);engine.trigger('wonder_cmd',c);}else if(window.engine&&engine.call){engine.call('wonderworld.call_cmd',c);}}catch(e){}};");
+            sb.Append("window.wwSend=function(c){try{var r=document.getElementById('ww-cs2-hud-root');if(r)r.style.borderColor='#ffd700';}catch(e){}};");
             sb.Append("var root=document.getElementById('ww-cs2-hud-root');");
             sb.Append("if(!root){");
             sb.Append("root=document.createElement('div');root.id='ww-cs2-hud-root';");
