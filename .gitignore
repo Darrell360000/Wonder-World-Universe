@@ -1,4 +1,4 @@
-﻿Cities2.exe
+Cities2.exe
 Cities2_Data/
 BepInEx/
 MonoBleedingEdge/
@@ -16,4 +16,4 @@ obj/
 !Source/
 !WonderWorldCS2Mod.csproj
 !02_Shared_Game_Core/
-!*.md
+!README.md

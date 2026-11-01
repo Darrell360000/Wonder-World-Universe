@@ -208,6 +208,7 @@ namespace WonderWorld.Cities2Mod
                 if (!File.Exists(path)) return;
 
                 string json = File.ReadAllText(path);
+                CinemaPortalMissionSystem.RestoreCompletedMissions(json);
                 Col3FoundationCapital = ExtractJsonFloat(json, "liquid_reserve", Col3FoundationCapital);
                 StakedIndustrialBonds = ExtractJsonFloat(json, "staked_industrial_bonds", StakedIndustrialBonds);
                 UnlockedTowerTier = (int)ExtractJsonFloat(json, "unlocked_tier", UnlockedTowerTier);
@@ -271,6 +272,7 @@ namespace WonderWorld.Cities2Mod
                         "  \"districtTension\": {20:F1},\n" +
                         "  \"activeRadioStation\": \"{21}\",\n" +
                         "  \"lastSyncTimestamp\": {22},\n" +
+                        "  \"completed_cinema_mission_ids\": {23},\n" +
                         "  \"tower_name\": \"Mama Wonder Tower\",\n" +
                         "  \"hardware_profile\": \"RTX_5060_16GB_RAM\",\n" +
                         "  \"evon_hub_permission_granted\": {0},\n" +
@@ -332,7 +334,8 @@ namespace WonderWorld.Cities2Mod
                         WonderUniverseIntegrationSystem.StaticActiveRetailBusinesses,
                         WonderUniverseIntegrationSystem.StaticDistrictTensionIndex,
                         WonderUniverseIntegrationSystem.StaticActiveRadioStation.Replace("\"", "\\\""),
-                        DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+                        DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        CinemaPortalMissionSystem.SerializeCompletedMissionIds());
 
                     File.WriteAllText(path, json);
                 }

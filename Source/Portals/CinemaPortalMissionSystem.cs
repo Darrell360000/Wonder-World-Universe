@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Unity.Entities;
 using Game;
@@ -134,9 +136,14 @@ namespace WonderWorldCS2.Portals
 
         public static bool EnterCinemaPortalStatic(string missionId)
         {
+            if (StaticMissions == null || StaticInMissionPortal)
+            {
+                return false;
+            }
+
             for (int i = 0; i < StaticMissions.Length; i++)
             {
-                if (StaticMissions[i].MissionId == missionId)
+                if (StaticMissions[i].MissionId == missionId && !StaticMissions[i].IsCompleted)
                 {
                     StaticActiveMission = StaticMissions[i];
                     StaticInMissionPortal = true;
@@ -169,9 +176,6 @@ namespace WonderWorldCS2.Portals
                     return;
                 }
             }
-
-            // If all 5 completed, replay Portal 01
-            EnterCinemaPortalStatic(StaticMissions[0].MissionId);
         }
 
         // Called when the story flashback objective is completed
@@ -179,18 +183,27 @@ namespace WonderWorldCS2.Portals
 
         public static void CompleteActiveMissionStatic()
         {
-            if (!StaticInMissionPortal) return;
+            if (!StaticInMissionPortal || StaticMissions == null) return;
 
-            // 1. Mark complete
+            // Mark the mission complete before granting anything so repeated calls cannot pay twice.
+            int activeMissionIndex = -1;
             for (int i = 0; i < StaticMissions.Length; i++)
             {
                 if (StaticMissions[i].MissionId == StaticActiveMission.MissionId)
                 {
-                    StaticMissions[i].IsCompleted = true;
-                    StaticActiveMission = StaticMissions[i];
+                    activeMissionIndex = i;
                     break;
                 }
             }
+            if (activeMissionIndex < 0 || StaticMissions[activeMissionIndex].IsCompleted)
+            {
+                StaticInMissionPortal = false;
+                return;
+            }
+
+            StaticMissions[activeMissionIndex].IsCompleted = true;
+            StaticActiveMission = StaticMissions[activeMissionIndex];
+            StaticInMissionPortal = false;
 
             // 2. Inject City Treasury & Wonder Stars
             MamaCityControlSystem.InjectCityMoneyStatic(StaticActiveMission.TreasuryBonus);
@@ -202,13 +215,64 @@ namespace WonderWorldCS2.Portals
 
             // 3. Play fanfare and exit portal
             WonderUniverseIntegrationSystem.PremiereBlockbusterMovieStatic();
-            StaticInMissionPortal = false;
 
             MamaTowerCities2System.LastVoiceBroadcast =
                 $"Mama AI: ⭐️ MISSION COMPLETE: \"{StaticActiveMission.MovieTitle}\"! +{StaticActiveMission.WonderStarReward} ⭐️W & +${StaticActiveMission.TreasuryBonus:N0} awarded!";
             MamaTowerCities2System.SaveToSharedJson();
 
             Debug.Log($"[CinemaPortals] ⭐️ MISSION COMPLETE: {StaticActiveMission.MovieTitle}! +{StaticActiveMission.WonderStarReward} ⭐️W and +${StaticActiveMission.TreasuryBonus:N0} awarded!");
+        }
+
+        public static string SerializeCompletedMissionIds()
+        {
+            var completedIds = new List<string>();
+            if (StaticMissions != null)
+            {
+                foreach (CinemaMissionData mission in StaticMissions)
+                {
+                    if (mission.IsCompleted && !string.IsNullOrEmpty(mission.MissionId))
+                    {
+                        completedIds.Add($"\"{mission.MissionId.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"");
+                    }
+                }
+            }
+
+            return $"[{string.Join(", ", completedIds)}]";
+        }
+
+        public static void RestoreCompletedMissions(string ledgerJson)
+        {
+            if (string.IsNullOrEmpty(ledgerJson) || StaticMissions == null)
+            {
+                return;
+            }
+
+            try
+            {
+                Match idsMatch = Regex.Match(
+                    ledgerJson,
+                    "\"completed_cinema_mission_ids\"\\s*:\\s*\\[(?<ids>[^\\]]*)\\]");
+                if (!idsMatch.Success)
+                {
+                    return;
+                }
+
+                var completedIds = new HashSet<string>();
+                foreach (Match idMatch in Regex.Matches(idsMatch.Groups["ids"].Value, "\"(?<id>[^\"\\\\]*)\""))
+                {
+                    completedIds.Add(idMatch.Groups["id"].Value);
+                }
+
+                for (int i = 0; i < StaticMissions.Length; i++)
+                {
+                    StaticMissions[i].IsCompleted = completedIds.Contains(StaticMissions[i].MissionId);
+                }
+            }
+            catch (Exception ex)
+            {
+                WonderWorldCS2Plugin.ModLogger?.LogWarning(
+                    $"[CinemaPortals] Failed restoring completed missions from shared ledger: {ex.Message}");
+            }
         }
     }
 }
