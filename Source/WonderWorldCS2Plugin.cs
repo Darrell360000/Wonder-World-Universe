@@ -214,6 +214,11 @@ namespace WonderWorld.Cities2Mod
                 WonderCurrencyConverter.LifetimeBondYieldConvertedUsd =
                     ExtractJsonFloat(json, "bond_yield_converted_usd", WonderCurrencyConverter.LifetimeBondYieldConvertedUsd);
 
+                int syncedBusinesses = (int)ExtractJsonFloat(json, "activeBusinesses", WonderUniverseIntegrationSystem.StaticActiveRetailBusinesses);
+                float syncedTension = ExtractJsonFloat(json, "districtTension", WonderUniverseIntegrationSystem.StaticDistrictTensionIndex);
+                int syncedStars = (int)ExtractJsonFloat(json, "wonderStars", WonderUniverseIntegrationSystem.StaticWonderStarsBanked);
+                WonderUniverseIntegrationSystem.ApplyExternalBridgeSync(syncedBusinesses, syncedTension, syncedStars);
+
                 float brawler = ExtractJsonFloat(json, "arcade_brawler_payouts", 20820.71f);
                 float lease = ExtractJsonFloat(json, "commercial_lease_income", 45805.55f);
                 float tourism = ExtractJsonFloat(json, "cities_skylines_tourism_bonus", 16656.56f);
@@ -258,6 +263,12 @@ namespace WonderWorld.Cities2Mod
                         CultureInfo.InvariantCulture,
                         "{{\n" +
                         "  \"schema_version\": \"3.4.0\",\n" +
+                        "  \"municipalTreasury\": {17},\n" +
+                        "  \"wonderStars\": {18},\n" +
+                        "  \"activeBusinesses\": {19},\n" +
+                        "  \"districtTension\": {20:F1},\n" +
+                        "  \"activeRadioStation\": \"{21}\",\n" +
+                        "  \"lastSyncTimestamp\": {22},\n" +
                         "  \"tower_name\": \"Mama Wonder Tower\",\n" +
                         "  \"hardware_profile\": \"RTX_5060_16GB_RAM\",\n" +
                         "  \"evon_hub_permission_granted\": {0},\n" +
@@ -314,7 +325,12 @@ namespace WonderWorld.Cities2Mod
                         Col3FoundationCapital,
                         StakedIndustrialBonds,
                         UnlockedTowerTier,
-                        MamaCityControlSystem.LastKnownCityTreasury);
+                        MamaCityControlSystem.LastKnownCityTreasury,
+                        WonderUniverseIntegrationSystem.StaticWonderStarsBanked,
+                        WonderUniverseIntegrationSystem.StaticActiveRetailBusinesses,
+                        WonderUniverseIntegrationSystem.StaticDistrictTensionIndex,
+                        WonderUniverseIntegrationSystem.StaticActiveRadioStation.Replace("\"", "\\\""),
+                        DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
                     File.WriteAllText(path, json);
                 }

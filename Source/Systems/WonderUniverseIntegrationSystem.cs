@@ -162,6 +162,13 @@ namespace WonderWorldCS2.Systems
             return StaticDistrictTensionIndex > 15.0f ? GlyphWarningSvg : GlyphHeartFilledSvg;
         }
 
+        public static void ApplyExternalBridgeSync(int activeBusinesses, float districtTension, int wonderStars)
+        {
+            StaticActiveRetailBusinesses = Mathf.Max(1, activeBusinesses);
+            StaticDistrictTensionIndex = Mathf.Max(0f, districtTension);
+            StaticWonderStarsBanked = Mathf.Max(0, wonderStars);
+        }
+
         // Triggered via F8 Wonder Command HUD
         public void HostDistrictShowdown() => HostDistrictShowdownStatic();
 

@@ -1,5 +1,11 @@
 {
   "schema_version": "3.4.0",
+  "municipalTreasury": 500000,
+  "wonderStars": 1500,
+  "activeBusinesses": 12,
+  "districtTension": 24.5,
+  "activeRadioStation": "The Smooth Beat (85 BPM Harmonic)",
+  "lastSyncTimestamp": 1793568000,
   "tower_name": "Mama Wonder Tower",
   "hardware_profile": "RTX_5060_16GB_RAM",
   "evon_hub_permission_granted": true,
@@ -7,10 +13,10 @@
   "universe": "Mama's Wonder World // Purple City Universe (Wonder Command v3.4)",
   "dual_currency_hud": {
     "city_treasury_usd": 500000,
-    "municipal_dollars_usd": 174298.80,
-    "wonder_super_currency_w": 1413.93,
+    "municipal_dollars_usd": 174514.80,
+    "wonder_super_currency_w": 1418.07,
     "bond_yield_rate_annual": 0.12,
-    "bond_yield_converted_usd": 115560.00
+    "bond_yield_converted_usd": 115920.00
   },
   "cinema_portal_state": {
     "nearest_active_top_hatter": "Darrell X-Gen",
@@ -18,10 +24,10 @@
   },
   "ledger_columns": {
     "column_1_gross_revenue": {
-      "cna_and_wetvac_minigames": 17429.88,
-      "arcade_brawler_payouts": 43574.71,
-      "commercial_lease_income": 78434.47,
-      "cities_skylines_tourism_bonus": 34859.77
+      "cna_and_wetvac_minigames": 17451.48,
+      "arcade_brawler_payouts": 43628.71,
+      "commercial_lease_income": 78531.67,
+      "cities_skylines_tourism_bonus": 34902.96
     },
     "column_2_operating_expenses": {
       "structural_maintenance": 0.00,
@@ -29,10 +35,10 @@
       "utility_grid_load_cost": 0.00
     },
     "column_3_net_reserve_and_upgrades": {
-      "liquid_reserve": 100891.00,
+      "liquid_reserve": 101035.00,
       "staked_industrial_bonds": 15000.00,
-      "wonder_super_currency_w": 1413.93,
-      "bond_yield_converted_usd": 115560.00,
+      "wonder_super_currency_w": 1418.07,
+      "bond_yield_converted_usd": 115920.00,
       "unlocked_tier": 5,
       "cities_skylines_lot_size": "8m x 8m",
       "emissive_signage_active": true
