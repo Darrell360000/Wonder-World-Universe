@@ -1,26 +1,27 @@
 {
-  "schema_version": "3.2.0",
+  "schema_version": "3.4.0",
   "tower_name": "Mama Wonder Tower",
   "hardware_profile": "RTX_5060_16GB_RAM",
   "evon_hub_permission_granted": true,
   "current_era_index": 5,
-  "universe": "Mama's Wonder World // Purple City Universe (Wonder Command v3.2)",
+  "universe": "Mama's Wonder World // Purple City Universe (Wonder Command v3.4)",
   "dual_currency_hud": {
-    "municipal_dollars_usd": 174190.80,
-    "wonder_super_currency_w": 1411.86,
+    "city_treasury_usd": 500000,
+    "municipal_dollars_usd": 174298.80,
+    "wonder_super_currency_w": 1413.93,
     "bond_yield_rate_annual": 0.12,
-    "bond_yield_converted_usd": 115380.00
+    "bond_yield_converted_usd": 115560.00
   },
   "cinema_portal_state": {
-    "nearest_active_top_hatter": "The Divine Hands Top-Hatter",
-    "marquee_headline": "🎬 WONDER CINEMA MARQUEE: [THE DIVINE HANDS TOP-HATTER] — \"REALITY SHAPER & GOLDEN LEDGER MIRACLE\" (5.7m)"
+    "nearest_active_top_hatter": "Darrell X-Gen",
+    "marquee_headline": "🎬 WONDER CINEMA MARQUEE: [DARRELL X-GEN] — \"85 BPM GOD-HAND SONIC ODYSSEY\" (7.2m)"
   },
   "ledger_columns": {
     "column_1_gross_revenue": {
-      "cna_and_wetvac_minigames": 17419.08,
-      "arcade_brawler_payouts": 43547.71,
-      "commercial_lease_income": 78385.87,
-      "cities_skylines_tourism_bonus": 34838.17
+      "cna_and_wetvac_minigames": 17429.88,
+      "arcade_brawler_payouts": 43574.71,
+      "commercial_lease_income": 78434.47,
+      "cities_skylines_tourism_bonus": 34859.77
     },
     "column_2_operating_expenses": {
       "structural_maintenance": 0.00,
@@ -28,10 +29,10 @@
       "utility_grid_load_cost": 0.00
     },
     "column_3_net_reserve_and_upgrades": {
-      "liquid_reserve": 100819.00,
+      "liquid_reserve": 100891.00,
       "staked_industrial_bonds": 15000.00,
-      "wonder_super_currency_w": 1411.86,
-      "bond_yield_converted_usd": 115380.00,
+      "wonder_super_currency_w": 1413.93,
+      "bond_yield_converted_usd": 115560.00,
       "unlocked_tier": 5,
       "cities_skylines_lot_size": "8m x 8m",
       "emissive_signage_active": true

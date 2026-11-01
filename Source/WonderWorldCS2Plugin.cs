@@ -12,8 +12,8 @@ using Unity.Entities;
 using UnityEngine;
 using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
-using WonderWorld.Cities2Mod.UI;
 using WonderWorld.Cities2Mod.Vehicles;
+using WonderWorldCS2.UI;
 using WonderWorldCS2.Systems;
 
 namespace WonderWorld.Cities2Mod
@@ -130,6 +130,7 @@ namespace WonderWorld.Cities2Mod
                 updateSystem.UpdateAt<MamaTowerCities2System>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<EconomyOverhaul>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<MamaCityControlSystem>(SystemUpdatePhase.GameSimulation);
+                updateSystem.UpdateAt<WonderUniverseIntegrationSystem>(SystemUpdatePhase.GameSimulation);
             }
         }
 

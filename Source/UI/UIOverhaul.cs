@@ -4,16 +4,18 @@ using System.Text;
 using cohtml.Net;
 using Game.SceneFlow;
 using UnityEngine;
+using WonderWorld.Cities2Mod;
 using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
 using WonderWorld.Cities2Mod.Vehicles;
 using WonderWorldCS2.Systems;
 
-namespace WonderWorld.Cities2Mod.UI
+namespace WonderWorldCS2.UI
 {
     /// <summary>
     /// Cities: Skylines II Native Cohtml HTML5 UI Overhaul + IMGUI Fallback.
     /// Injects the Purple City Dual-Currency HUD (Municipal $ + City Treasury $ + Wonder ⭐️W),
+    /// Multi-Game Wonder Universe Integration (Big Ambitions, Movies Tycoon, Fatal Fury / Marvel Tokon, Pragmata),
     /// Modular Hover-Drive [V] Flight Cockpit, Cinema Portal Marquee, and Mama's City Treasury Controls
     /// directly into GameManager.instance.userInterface.view.View so it renders natively in CS2 HDRP.
     /// </summary>
@@ -27,7 +29,7 @@ namespace WonderWorld.Cities2Mod.UI
         private View _boundView = null;
         private BoundEventHandle _boundCallHandle;
         private BoundEventHandle _boundEventHandle;
-        private Rect _fallbackWindowRect = new Rect(24f, 62f, 660f, 620f);
+        private Rect _fallbackWindowRect = new Rect(24f, 52f, 680f, 680f);
 
         private void Awake()
         {
@@ -55,9 +57,10 @@ namespace WonderWorld.Cities2Mod.UI
             _lastTickedFrame = Time.frameCount;
 
             MamaCityControlSystem.EnsureRegisteredInWorld();
+            WonderUniverseIntegrationSystem.EnsureRegisteredInWorld();
             WonderWorldOptionsSetting.EnsureRegisteredInOptionsUI();
 
-            // [F8] Toggles the full Wonder Command v3.3 Interactive Panel
+            // [F8] Toggles the full Wonder Command Interactive Panel
             if (Input.GetKeyDown(KeyCode.F8))
             {
                 ShowHud = !ShowHud;
@@ -105,6 +108,7 @@ namespace WonderWorld.Cities2Mod.UI
 
             var vehicle = HoverDriveVehicle.ActiveInstance;
             var cinema = CinemaBuildingAI.ActiveInstance;
+            var universe = WonderUniverseIntegrationSystem.EnsureRegisteredInWorld();
 
             switch (cmd)
             {
@@ -131,6 +135,26 @@ namespace WonderWorld.Cities2Mod.UI
                     break;
                 case "mint_wonder_w":
                     EconomyOverhaul.ExecuteBondYieldCycle(EconomyOverhaul.AnnualBondCouponRate);
+                    break;
+                case "host_tokon_showdown":
+                    if (universe != null)
+                    {
+                        universe.HostDistrictShowdown();
+                    }
+                    else
+                    {
+                        WonderUniverseIntegrationSystem.HostDistrictShowdownStatic();
+                    }
+                    break;
+                case "premiere_wonder_movie":
+                    if (universe != null)
+                    {
+                        universe.PremiereBlockbusterMovie();
+                    }
+                    else
+                    {
+                        WonderUniverseIntegrationSystem.PremiereBlockbusterMovieStatic();
+                    }
                     break;
                 case "toggle_hover":
                     vehicle?.ToggleHoverFlight();
@@ -210,6 +234,13 @@ namespace WonderWorld.Cities2Mod.UI
                 int cityTreasury = MamaCityControlSystem.ReadLiveCityTreasury();
                 var vehicle = HoverDriveVehicle.ActiveInstance;
                 var cinema = CinemaBuildingAI.ActiveInstance;
+                var universe = WonderUniverseIntegrationSystem.Instance;
+
+                int activeRetail = universe != null ? universe.ActiveRetailBusinesses : WonderUniverseIntegrationSystem.StaticActiveRetailBusinesses;
+                int boxOfficeYield = universe != null ? universe.BoxOfficeWeeklyYield : WonderUniverseIntegrationSystem.StaticBoxOfficeWeeklyYield;
+                float tensionIndex = universe != null ? universe.DistrictTensionIndex : WonderUniverseIntegrationSystem.StaticDistrictTensionIndex;
+                bool cyberGrid = universe != null ? universe.CyberGridActive : WonderUniverseIntegrationSystem.StaticCyberGridActive;
+                int wonderStars = universe != null ? universe.WonderStarsBanked : WonderUniverseIntegrationSystem.StaticWonderStarsBanked;
 
                 bool hoverOn = vehicle != null && vehicle.IsHoverFlightActive;
                 float altitude = vehicle != null ? vehicle.CurrentAltitudeMeters : 0f;
@@ -230,6 +261,11 @@ namespace WonderWorld.Cities2Mod.UI
                     MamaTowerCities2System.Col3FoundationCapital,
                     MamaTowerCities2System.StakedIndustrialBonds,
                     WonderCurrencyConverter.WonderSuperCurrencyBalance,
+                    activeRetail,
+                    boxOfficeYield,
+                    tensionIndex,
+                    cyberGrid,
+                    wonderStars,
                     hoverOn,
                     altitude,
                     speedKmh,
@@ -267,6 +303,11 @@ namespace WonderWorld.Cities2Mod.UI
             float col3Reserve,
             float stakedBonds,
             float wonderW,
+            int activeRetail,
+            int boxOfficeYield,
+            float tensionIndex,
+            bool cyberGrid,
+            int wonderStars,
             bool hoverOn,
             float altitude,
             float speedKmh,
@@ -284,14 +325,14 @@ namespace WonderWorld.Cities2Mod.UI
             string hoverColor = hoverOn ? "#00ffcc" : "#ffd700";
             string deckDisplay = showDeck ? "block" : "none";
 
-            var sb = new StringBuilder(4096);
+            var sb = new StringBuilder(6144);
             sb.Append("(function(){");
             sb.Append("if(!document.body)return;");
             sb.Append("window.wwSend=function(c){try{if(window.engine&&engine.call)engine.call('wonder_cmd',c);else if(window.engine&&engine.trigger)engine.trigger('wonder_cmd',c);}catch(e){}};");
             sb.Append("var root=document.getElementById('ww-cs2-hud-root');");
             sb.Append("if(!root){");
             sb.Append("root=document.createElement('div');root.id='ww-cs2-hud-root';");
-            sb.Append("root.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;font-family:sans-serif;color:#fff;pointer-events:auto;width:920px;';");
+            sb.Append("root.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;font-family:sans-serif;color:#fff;pointer-events:auto;width:940px;';");
             sb.Append("document.body.appendChild(root);");
             sb.Append("}");
 
@@ -304,7 +345,7 @@ namespace WonderWorld.Cities2Mod.UI
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<span style=\"color:#4deeea;\">💵 Municipal: ${0:N2}</span>", col1Grind);
             sb.AppendFormat(CultureInfo.InvariantCulture,
-                "<span style=\"color:#ffd700;font-size:14px;\">⭐️W Wonder: {0:N2} ⭐️W</span>", wonderW);
+                "<span style=\"color:#ffd700;font-size:14px;\">⭐️W Wonder: {0:N2} ⭐️W ({1:N0} Banked)</span>", wonderW, wonderStars);
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<span style=\"color:{0};cursor:pointer;\" onclick=\"window.wwSend(\\x27toggle_hover\\x27)\">{1}</span>", hoverColor, hoverBadge);
             sb.Append("<span style=\"background:#8a2be2;color:#fff;padding:4px 10px;border-radius:5px;cursor:pointer;\" onclick=\"window.wwSend(\\x27toggle_hud\\x27)\">🎩 WONDER HUD [F8]</span>");
@@ -327,8 +368,22 @@ namespace WonderWorld.Cities2Mod.UI
             sb.Append("<div onclick=\"window.wwSend(\\x27wetvac_shift\\x27)\" style=\"background:#1b6ca8;padding:6px 10px;border-radius:5px;cursor:pointer;font-weight:bold;\">🌊 Wet-Vac Shift (+$185)</div>");
             sb.Append("</div>");
 
-            // Section 2: Modular Hover-Drive Vehicle ([V] Key)
-            sb.Append("<div style=\"color:#00ffcc;font-weight:bold;font-size:13px;margin-bottom:6px;border-bottom:1px solid #552288;padding-bottom:4px;\">2. MODULAR HOVER-DRIVE VEHICLE ([V] FLIGHT TOGGLE | WASD + SPACE/C + SHIFT BOOST)</div>");
+            // Section 2: 6-Game Wonder Universe ECS Integration
+            sb.Append("<div style=\"color:#ff9900;font-weight:bold;font-size:13px;margin-bottom:6px;border-bottom:1px solid #552288;padding-bottom:4px;\">2. MULTI-GAME WONDER UNIVERSE INTEGRATION (BIG AMBITIONS | MOVIES TYCOON | FIGHTING SOULS | PRAGMATA)</div>");
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:4px;color:#e0d4ff;\">🏪 Retail Businesses Active (Big Ambitions): <b style=\"color:#00ffb4;\">{0}</b> &nbsp;|&nbsp; 🎬 Weekly Box Office Yield (Movies Tycoon): <b style=\"color:#ffd700;\">${1:N0}</b></div>",
+                activeRetail, boxOfficeYield);
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:8px;color:#e0d4ff;\">🥊 District Tension Meter (Fighting Souls): <b style=\"color:#ff5577;\">{0:F1}%</b> &nbsp;|&nbsp; 🤖 Pragmata Cyber Grid: <b style=\"color:#00f0ff;\">{1}</b> &nbsp;|&nbsp; ⭐️W Banked: <b>{2:N0}</b></div>",
+                tensionIndex, cyberGrid ? "ONLINE (+5 ⭐️W/tick)" : "STANDBY", wonderStars);
+
+            sb.Append("<div style=\"display:flex;flex-wrap:wrap;margin-bottom:10px;\">");
+            sb.Append("<div onclick=\"window.wwSend(\\x27host_tokon_showdown\\x27)\" style=\"background:#d90429;color:#fff;padding:6px 12px;border-radius:5px;margin-right:10px;cursor:pointer;font-weight:bold;\">🏆 Host Tokon Showdown</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27premiere_wonder_movie\\x27)\" style=\"background:#f77f00;color:#111;padding:6px 12px;border-radius:5px;cursor:pointer;font-weight:bold;\">🎬 Premiere Wonder Movie</div>");
+            sb.Append("</div>");
+
+            // Section 3: Modular Hover-Drive Vehicle ([V] Key)
+            sb.Append("<div style=\"color:#00ffcc;font-weight:bold;font-size:13px;margin-bottom:6px;border-bottom:1px solid #552288;padding-bottom:4px;\">3. MODULAR HOVER-DRIVE VEHICLE ([V] FLIGHT TOGGLE | WASD + SPACE/C + SHIFT BOOST)</div>");
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<div style=\"margin-bottom:6px;color:#e0d4ff;\">Mode: <b style=\"color:{0};\">{1}</b> &nbsp;|&nbsp; Altitude: <b>{2:F1}m</b> &nbsp;|&nbsp; Speed: <b>{3:F0} km/h</b> &nbsp;|&nbsp; Thrust: <b>{4:F2}x</b> &nbsp;|&nbsp; Stability: <b>{5:F0}</b></div>",
                 hoverColor, hoverOn ? "ENGAGED (85 BPM ANTI-GRAV)" : "GROUNDED CRUISER", altitude, speedKmh, thrustMult, stability);
@@ -341,8 +396,8 @@ namespace WonderWorld.Cities2Mod.UI
             sb.Append("<div onclick=\"window.wwSend(\\x27part_4\\x27)\" style=\"background:#3c1361;border:1px solid #b84dff;padding:5px 8px;border-radius:5px;cursor:pointer;\">🔧 [Alt+4] Top-Hat Turret</div>");
             sb.Append("</div>");
 
-            // Section 3: Cinema Portal Marquee (5 Top Hatters)
-            sb.Append("<div style=\"color:#ff77ff;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">3. WONDER CINEMA PORTAL MARQUEE (NEAREST ACTIVE TOP HATTER HERO)</div>");
+            // Section 4: Cinema Portal Marquee (5 Top Hatters)
+            sb.Append("<div style=\"color:#ff77ff;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">4. WONDER CINEMA PORTAL MARQUEE (NEAREST ACTIVE TOP HATTER HERO)</div>");
             sb.AppendFormat("<div style=\"margin-bottom:4px;color:#fff;font-weight:bold;\">{0}</div>", marquee);
             sb.AppendFormat("<div style=\"margin-bottom:6px;color:#aaddff;font-size:11px;\">🌀 Portal Destination: {0}</div>", portalStage);
 
@@ -372,6 +427,31 @@ namespace WonderWorld.Cities2Mod.UI
                 ShowHud = !ShowHud;
             }
             GUI.color = Color.white;
+
+            if (!ShowHud) return;
+
+            var universe = WonderUniverseIntegrationSystem.Instance;
+            int activeRetail = universe != null ? universe.ActiveRetailBusinesses : WonderUniverseIntegrationSystem.StaticActiveRetailBusinesses;
+            int boxOfficeYield = universe != null ? universe.BoxOfficeWeeklyYield : WonderUniverseIntegrationSystem.StaticBoxOfficeWeeklyYield;
+            float tensionIndex = universe != null ? universe.DistrictTensionIndex : WonderUniverseIntegrationSystem.StaticDistrictTensionIndex;
+
+            GUILayout.BeginArea(_fallbackWindowRect, GUI.skin.box);
+            GUILayout.Label("🎩 MAMA'S WONDER WORLD // F8 WONDER COMMAND HUD");
+            GUILayout.Space(4f);
+            GUILayout.Label($"Retail Businesses Active (Big Ambitions): {activeRetail}");
+            GUILayout.Label($"Weekly Box Office Yield (Movies Tycoon): ${boxOfficeYield:N0}");
+            GUILayout.Label($"District Tension Meter (Fighting Souls): {tensionIndex:F1}%");
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Host Tokon Showdown", GUILayout.Height(28f)))
+            {
+                ExecuteWonderAction("host_tokon_showdown");
+            }
+            if (GUILayout.Button("Premiere Wonder Movie", GUILayout.Height(28f)))
+            {
+                ExecuteWonderAction("premiere_wonder_movie");
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
         }
     }
 }

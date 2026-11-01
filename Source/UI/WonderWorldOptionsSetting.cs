@@ -4,12 +4,13 @@ using Game.SceneFlow;
 using Game.Settings;
 using Game.UI.Menu;
 using Unity.Entities;
+using WonderWorld.Cities2Mod;
 using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
 using WonderWorld.Cities2Mod.Vehicles;
 using WonderWorldCS2.Systems;
 
-namespace WonderWorld.Cities2Mod.UI
+namespace WonderWorldCS2.UI
 {
     /// <summary>
     /// Native Cities: Skylines II Options Menu Section ("🎩 MAMA'S WONDER WORLD").
