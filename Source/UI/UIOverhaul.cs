@@ -14,10 +14,12 @@ namespace WonderWorldCS2.UI
 {
     /// <summary>
     /// Cities: Skylines II Native Cohtml HTML5 UI Overhaul + IMGUI Fallback.
-    /// Injects the Purple City Dual-Currency HUD (Municipal $ + City Treasury $ + Wonder ⭐️W),
+    /// Injects the Purple City Dual-Currency HUD (Municipal $ + City Treasury $ + Wonder ⭐️W)
+    /// skinned with native CS2 vector glyphs (StarFilled.svg, Money.svg, Warning.svg, HeartFilled.svg),
+    /// Signature Building thumbnails (EU_CommercialHighSignature01.png, IndustrialManufacturingSignature01.png),
+    /// Drome Cinema audio stings, 85 BPM Radio Presets (The Smooth Beat / The Second Moon),
     /// Multi-Game Wonder Universe Integration (Big Ambitions, Movies Tycoon, Fatal Fury / Marvel Tokon, Pragmata),
-    /// Modular Hover-Drive [V] Flight Cockpit, Cinema Portal Marquee, and Mama's City Treasury Controls
-    /// directly into GameManager.instance.userInterface.view.View so it renders natively in CS2 HDRP.
+    /// Modular Hover-Drive [V] Flight Cockpit, and Cinema Portal Marquee.
     /// </summary>
     public sealed class UIOverhaul : MonoBehaviour
     {
@@ -29,7 +31,7 @@ namespace WonderWorldCS2.UI
         private View _boundView = null;
         private BoundEventHandle _boundCallHandle;
         private BoundEventHandle _boundEventHandle;
-        private Rect _fallbackWindowRect = new Rect(24f, 52f, 680f, 680f);
+        private Rect _fallbackWindowRect = new Rect(24f, 52f, 700f, 700f);
 
         private void Awake()
         {
@@ -156,6 +158,9 @@ namespace WonderWorldCS2.UI
                         WonderUniverseIntegrationSystem.PremiereBlockbusterMovieStatic();
                     }
                     break;
+                case "cycle_radio_preset":
+                    WonderUniverseIntegrationSystem.CycleWonderRadioPresetStatic();
+                    break;
                 case "toggle_hover":
                     vehicle?.ToggleHoverFlight();
                     break;
@@ -242,6 +247,10 @@ namespace WonderWorldCS2.UI
                 bool cyberGrid = universe != null ? universe.CyberGridActive : WonderUniverseIntegrationSystem.StaticCyberGridActive;
                 int wonderStars = universe != null ? universe.WonderStarsBanked : WonderUniverseIntegrationSystem.StaticWonderStarsBanked;
 
+                string tensionGlyph = WonderUniverseIntegrationSystem.GetTensionStatusGlyphPath();
+                string radioStation = EscapeJs(WonderUniverseIntegrationSystem.StaticActiveRadioStation);
+                string lastSting = EscapeJs(WonderUniverseIntegrationSystem.StaticLastAudioStingPlayed);
+
                 bool hoverOn = vehicle != null && vehicle.IsHoverFlightActive;
                 float altitude = vehicle != null ? vehicle.CurrentAltitudeMeters : 0f;
                 float speedKmh = vehicle != null ? vehicle.CurrentSpeedKmh : 0f;
@@ -266,6 +275,9 @@ namespace WonderWorldCS2.UI
                     tensionIndex,
                     cyberGrid,
                     wonderStars,
+                    tensionGlyph,
+                    radioStation,
+                    lastSting,
                     hoverOn,
                     altitude,
                     speedKmh,
@@ -308,6 +320,9 @@ namespace WonderWorldCS2.UI
             float tensionIndex,
             bool cyberGrid,
             int wonderStars,
+            string tensionGlyph,
+            string radioStation,
+            string lastSting,
             bool hoverOn,
             float altitude,
             float speedKmh,
@@ -324,31 +339,35 @@ namespace WonderWorldCS2.UI
 
             string hoverColor = hoverOn ? "#00ffcc" : "#ffd700";
             string deckDisplay = showDeck ? "block" : "none";
+            string tensionColor = tensionIndex > 15.0f ? "#ff5577" : "#00ffb4";
 
-            var sb = new StringBuilder(6144);
+            var sb = new StringBuilder(8192);
             sb.Append("(function(){");
             sb.Append("if(!document.body)return;");
             sb.Append("window.wwSend=function(c){try{if(window.engine&&engine.call)engine.call('wonder_cmd',c);else if(window.engine&&engine.trigger)engine.trigger('wonder_cmd',c);}catch(e){}};");
             sb.Append("var root=document.getElementById('ww-cs2-hud-root');");
             sb.Append("if(!root){");
             sb.Append("root=document.createElement('div');root.id='ww-cs2-hud-root';");
-            sb.Append("root.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;font-family:sans-serif;color:#fff;pointer-events:auto;width:940px;';");
+            sb.Append("root.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;font-family:sans-serif;color:#fff;pointer-events:auto;width:960px;';");
             sb.Append("document.body.appendChild(root);");
             sb.Append("}");
 
-            // Build clean innerHTML
+            // Build clean innerHTML using native CS2 SVG/PNG assets (Money.svg, StarFilled.svg, Warning.svg, HeartFilled.svg, SignatureBuildings)
             sb.Append("root.innerHTML='");
-            // Top Dual-Currency Bar
+            // Top Dual-Currency Bar with Native CS2 Vector Glyphs
             sb.Append("<div style=\"background:rgba(22,6,38,0.94);border:2px solid #b84dff;border-radius:8px;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 18px rgba(0,0,0,0.75);font-size:13px;font-weight:bold;\">");
             sb.AppendFormat(CultureInfo.InvariantCulture,
-                "<span style=\"color:#00ffb4;\">🏛️ City: ${0:N0}</span>", cityTreasury);
+                "<span style=\"color:#00ffb4;display:flex;align-items:center;\"><img src=\"{0}\" style=\"width:18px;height:18px;margin-right:5px;\" />🏛️ City: ${1:N0}</span>",
+                WonderUniverseIntegrationSystem.GlyphMoneySvg, cityTreasury);
             sb.AppendFormat(CultureInfo.InvariantCulture,
-                "<span style=\"color:#4deeea;\">💵 Municipal: ${0:N2}</span>", col1Grind);
+                "<span style=\"color:#4deeea;display:flex;align-items:center;\"><img src=\"{0}\" style=\"width:18px;height:18px;margin-right:5px;\" />Municipal: ${1:N2}</span>",
+                WonderUniverseIntegrationSystem.GlyphMoneySvg, col1Grind);
             sb.AppendFormat(CultureInfo.InvariantCulture,
-                "<span style=\"color:#ffd700;font-size:14px;\">⭐️W Wonder: {0:N2} ⭐️W ({1:N0} Banked)</span>", wonderW, wonderStars);
+                "<span style=\"color:#ffd700;font-size:14px;display:flex;align-items:center;\"><img src=\"{0}\" style=\"width:18px;height:18px;margin-right:5px;\" />⭐️W Wonder: {1:N2} ⭐️W ({2:N0})</span>",
+                WonderUniverseIntegrationSystem.GlyphStarFilledSvg, wonderW, wonderStars);
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<span style=\"color:{0};cursor:pointer;\" onclick=\"window.wwSend(\\x27toggle_hover\\x27)\">{1}</span>", hoverColor, hoverBadge);
-            sb.Append("<span style=\"background:#8a2be2;color:#fff;padding:4px 10px;border-radius:5px;cursor:pointer;\" onclick=\"window.wwSend(\\x27toggle_hud\\x27)\">🎩 WONDER HUD [F8]</span>");
+            sb.Append("<span style=\"background:#8a2be2;color:#fff;padding:4px 10px;border-radius:5px;cursor:pointer;\" onclick=\"window.wwSend(\\x27toggle_hud\\x27)\">⭐️ WONDER COMMAND [F8]</span>");
             sb.Append("</div>");
 
             // Expandable F8 Command Deck
@@ -368,18 +387,34 @@ namespace WonderWorldCS2.UI
             sb.Append("<div onclick=\"window.wwSend(\\x27wetvac_shift\\x27)\" style=\"background:#1b6ca8;padding:6px 10px;border-radius:5px;cursor:pointer;font-weight:bold;\">🌊 Wet-Vac Shift (+$185)</div>");
             sb.Append("</div>");
 
-            // Section 2: 6-Game Wonder Universe ECS Integration
-            sb.Append("<div style=\"color:#ff9900;font-weight:bold;font-size:13px;margin-bottom:6px;border-bottom:1px solid #552288;padding-bottom:4px;\">2. MULTI-GAME WONDER UNIVERSE INTEGRATION (BIG AMBITIONS | MOVIES TYCOON | FIGHTING SOULS | PRAGMATA)</div>");
+            // Section 2: 6-Game Wonder Universe ECS Integration + Native Glyphs, Signature Buildings & Drome Cinema Audio Sting
+            sb.Append("<div style=\"color:#ff9900;font-weight:bold;font-size:13px;margin-bottom:6px;border-bottom:1px solid #552288;padding-bottom:4px;\">2. MULTI-GAME WONDER UNIVERSE INTEGRATION & NATIVE CS2 ASSET ANCHORS</div>");
+
+            sb.Append("<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;\">");
+            sb.Append("<div>");
             sb.AppendFormat(CultureInfo.InvariantCulture,
-                "<div style=\"margin-bottom:4px;color:#e0d4ff;\">🏪 Retail Businesses Active (Big Ambitions): <b style=\"color:#00ffb4;\">{0}</b> &nbsp;|&nbsp; 🎬 Weekly Box Office Yield (Movies Tycoon): <b style=\"color:#ffd700;\">${1:N0}</b></div>",
-                activeRetail, boxOfficeYield);
+                "<div style=\"margin-bottom:4px;color:#e0d4ff;display:flex;align-items:center;\"><img src=\"{0}\" style=\"width:16px;height:16px;margin-right:5px;\" />Retail Businesses Active (Big Ambitions): &nbsp;<b style=\"color:#00ffb4;\">{1}</b> &nbsp;|&nbsp; 🎬 Weekly Box Office Yield (Movies Tycoon): &nbsp;<b style=\"color:#ffd700;\">${2:N0}</b></div>",
+                WonderUniverseIntegrationSystem.GlyphMoneySvg, activeRetail, boxOfficeYield);
             sb.AppendFormat(CultureInfo.InvariantCulture,
-                "<div style=\"margin-bottom:8px;color:#e0d4ff;\">🥊 District Tension Meter (Fighting Souls): <b style=\"color:#ff5577;\">{0:F1}%</b> &nbsp;|&nbsp; 🤖 Pragmata Cyber Grid: <b style=\"color:#00f0ff;\">{1}</b> &nbsp;|&nbsp; ⭐️W Banked: <b>{2:N0}</b></div>",
-                tensionIndex, cyberGrid ? "ONLINE (+5 ⭐️W/tick)" : "STANDBY", wonderStars);
+                "<div style=\"margin-bottom:4px;color:#e0d4ff;display:flex;align-items:center;\"><img src=\"{0}\" style=\"width:16px;height:16px;margin-right:5px;\" />District Tension Meter (Fighting Souls): &nbsp;<b style=\"color:{1};\">{2:F1}%</b> &nbsp;|&nbsp; 🤖 Pragmata Cyber Grid: &nbsp;<b style=\"color:#00f0ff;\">{3}</b> &nbsp;|&nbsp; <img src=\"{4}\" style=\"width:15px;height:15px;margin-right:3px;\" /><b>{5:N0} ⭐️W</b></div>",
+                tensionGlyph, tensionColor, tensionIndex, cyberGrid ? "ONLINE (+5 ⭐️W)" : "STANDBY", WonderUniverseIntegrationSystem.GlyphStarFilledSvg, wonderStars);
+            sb.AppendFormat("<div style=\"color:#b8c0ff;font-size:11px;\">📻 85 BPM Radio: <b style=\"color:#00ffcc;\">{0}</b> &nbsp;|&nbsp; 🔊 Audio Sting: <b style=\"color:#ffd700;\">{1}</b></div>",
+                radioStation, lastSting);
+            sb.Append("</div>");
+
+            // Signature Building Anchors (Papa AI Tower + Mama AI Biodome)
+            sb.Append("<div style=\"display:flex;align-items:center;\">");
+            sb.AppendFormat("<div style=\"text-align:center;margin-right:10px;background:rgba(255,255,255,0.06);padding:4px 6px;border-radius:6px;border:1px solid #ffd700;\"><img src=\"{0}\" style=\"width:42px;height:42px;display:block;margin:0 auto;\" /><span style=\"font-size:9px;color:#ffd700;\">Papa Tower HQ</span></div>",
+                WonderUniverseIntegrationSystem.PapaTowerSignatureImg);
+            sb.AppendFormat("<div style=\"text-align:center;background:rgba(255,255,255,0.06);padding:4px 6px;border-radius:6px;border:1px solid #00ffb4;\"><img src=\"{0}\" style=\"width:42px;height:42px;display:block;margin:0 auto;\" /><span style=\"font-size:9px;color:#00ffb4;\">Mama Biodome HQ</span></div>",
+                WonderUniverseIntegrationSystem.MamaBiodomeSignatureImg);
+            sb.Append("</div>");
+            sb.Append("</div>");
 
             sb.Append("<div style=\"display:flex;flex-wrap:wrap;margin-bottom:10px;\">");
             sb.Append("<div onclick=\"window.wwSend(\\x27host_tokon_showdown\\x27)\" style=\"background:#d90429;color:#fff;padding:6px 12px;border-radius:5px;margin-right:10px;cursor:pointer;font-weight:bold;\">🏆 Host Tokon Showdown</div>");
-            sb.Append("<div onclick=\"window.wwSend(\\x27premiere_wonder_movie\\x27)\" style=\"background:#f77f00;color:#111;padding:6px 12px;border-radius:5px;cursor:pointer;font-weight:bold;\">🎬 Premiere Wonder Movie</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27premiere_wonder_movie\\x27)\" style=\"background:#f77f00;color:#111;padding:6px 12px;border-radius:5px;margin-right:10px;cursor:pointer;font-weight:bold;\">🎬 Premiere Wonder Movie (Drome Cinema Sting)</div>");
+            sb.Append("<div onclick=\"window.wwSend(\\x27cycle_radio_preset\\x27)\" style=\"background:#4361ee;color:#fff;padding:6px 12px;border-radius:5px;cursor:pointer;font-weight:bold;\">📻 Switch 85 BPM Radio (Smooth Beat / Second Moon)</div>");
             sb.Append("</div>");
 
             // Section 3: Modular Hover-Drive Vehicle ([V] Key)
@@ -441,6 +476,8 @@ namespace WonderWorldCS2.UI
             GUILayout.Label($"Retail Businesses Active (Big Ambitions): {activeRetail}");
             GUILayout.Label($"Weekly Box Office Yield (Movies Tycoon): ${boxOfficeYield:N0}");
             GUILayout.Label($"District Tension Meter (Fighting Souls): {tensionIndex:F1}%");
+            GUILayout.Label($"85 BPM Radio Preset: {WonderUniverseIntegrationSystem.StaticActiveRadioStation}");
+            GUILayout.Label($"Last Audio Sting: {WonderUniverseIntegrationSystem.StaticLastAudioStingPlayed}");
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Host Tokon Showdown", GUILayout.Height(28f)))
             {
@@ -449,6 +486,10 @@ namespace WonderWorldCS2.UI
             if (GUILayout.Button("Premiere Wonder Movie", GUILayout.Height(28f)))
             {
                 ExecuteWonderAction("premiere_wonder_movie");
+            }
+            if (GUILayout.Button("Switch 85 BPM Radio", GUILayout.Height(28f)))
+            {
+                ExecuteWonderAction("cycle_radio_preset");
             }
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
