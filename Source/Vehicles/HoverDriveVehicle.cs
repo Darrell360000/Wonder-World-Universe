@@ -134,8 +134,18 @@ namespace WonderWorld.Cities2Mod.Vehicles
                 true);
         }
 
+        private int _lastTickedFrame = -1;
+
         private void Update()
         {
+            TickFrame();
+        }
+
+        public void TickFrame()
+        {
+            if (_lastTickedFrame == Time.frameCount) return;
+            _lastTickedFrame = Time.frameCount;
+
             if (Input.GetKeyDown(KeyCode.V))
             {
                 ToggleHoverFlight();

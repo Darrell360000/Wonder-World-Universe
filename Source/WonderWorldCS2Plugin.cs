@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 using BepInEx;
 using BepInEx.Logging;
 using Game;
+using Game.Modding;
+using Game.SceneFlow;
+using HarmonyLib;
 using Unity.Entities;
 using UnityEngine;
 using WonderWorld.Cities2Mod.Economy;
@@ -16,40 +19,122 @@ using WonderWorldCS2.Systems;
 namespace WonderWorld.Cities2Mod
 {
     /// <summary>
-    /// Live BepInEx 5.4.23.6 Plugin for Cities: Skylines II (D:\Games\Cities - Skylines II\Cities2.exe)
-    /// Integrates Mama's Wonder World // Project Purple City:
-    /// - Native Cohtml HTML5 Dual-Currency HUD (City Treasury $ + Municipal $ + Wonder ⭐️W) via UIOverhaul.cs
-    /// - Live 3D Street-to-Sky Hover-Drive Flight ([V] Toggle + CameraController + 3D Cruiser) via HoverDriveVehicle.cs
-    /// - Dynamic Top-Hatter Cinema Portal Marquee via CinemaBuildingAI.cs
-    /// - Real-Time City Treasury Injection ([F6] +$500k / [F7] +$250k Bailout) via MamaCityControlSystem.cs
-    /// - 12% Bond Yield -> Wonder ⭐️W Exchange ([F9]) via EconomyOverhaul.cs & WonderCurrencyConverter.cs
+    /// Live BepInEx 5.4.23.6 Plugin + Native CS2 IMod + Harmony GameManager.Update Hook
+    /// for Cities: Skylines II (D:\Games\Cities - Skylines II\Cities2.exe).
     /// </summary>
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     public class WonderWorldCS2Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.wonderworld.mamatower.cs2";
         public const string PluginName = "Mama's Wonder World // Purple City Dual-Currency, Hover-Drive & Cinema Portals";
-        public const string PluginVersion = "3.3.0";
+        public const string PluginVersion = "3.4.0";
 
         internal static ManualLogSource ModLogger;
-        private UIOverhaul _uiOverhaul;
-        private HoverDriveVehicle _hoverDriveVehicle;
-        private CinemaBuildingAI _cinemaBuildingAI;
+        private static GameObject _suiteObject;
+        private static UIOverhaul _uiOverhaul;
+        private static HoverDriveVehicle _hoverDriveVehicle;
+        private static CinemaBuildingAI _cinemaBuildingAI;
+        private static Harmony _harmony;
 
         private void Awake()
         {
             ModLogger = Logger;
             ModLogger.LogInfo("====================================================================");
             ModLogger.LogInfo($"[WonderWorldCS2] {PluginName} v{PluginVersion} Loaded!");
-            ModLogger.LogInfo("[WonderWorldCS2] Native Cohtml HTML5 Dual-Currency HUD Active (City $ + Municipal $ + ⭐️W)");
+            ModLogger.LogInfo("[WonderWorldCS2] Native Cohtml HTML5 Dual-Currency HUD + CS2 Options Tab ('🎩 MAMA'S WONDER WORLD')");
             ModLogger.LogInfo("[WonderWorldCS2] Hotkeys: [F8] HUD | [V] Hover-Drive Flight | [F6] +$500k | [F7] +$250k Bailout | [F9] Mint ⭐️W");
             ModLogger.LogInfo("====================================================================");
 
-            DontDestroyOnLoad(gameObject);
+            try
+            {
+                _harmony = new Harmony(PluginGuid);
+                _harmony.PatchAll(typeof(WonderWorldCS2Plugin).Assembly);
+                ModLogger.LogInfo("[WonderWorldCS2] Harmony patched Game.SceneFlow.GameManager.Update successfully.");
+            }
+            catch (Exception ex)
+            {
+                ModLogger.LogWarning($"[WonderWorldCS2] Harmony patch warning: {ex.Message}");
+            }
 
-            _hoverDriveVehicle = gameObject.GetComponent<HoverDriveVehicle>() ?? gameObject.AddComponent<HoverDriveVehicle>();
-            _cinemaBuildingAI = gameObject.GetComponent<CinemaBuildingAI>() ?? gameObject.AddComponent<CinemaBuildingAI>();
-            _uiOverhaul = gameObject.GetComponent<UIOverhaul>() ?? gameObject.AddComponent<UIOverhaul>();
+            EnsureSuiteCreated();
+        }
+
+        public static void EnsureSuiteCreated()
+        {
+            if (_suiteObject == null)
+            {
+                _suiteObject = new GameObject("WonderWorld_CS2_PurpleCity_Suite");
+                DontDestroyOnLoad(_suiteObject);
+                _suiteObject.hideFlags = HideFlags.HideAndDontSave;
+            }
+
+            if (_hoverDriveVehicle == null)
+            {
+                _hoverDriveVehicle = _suiteObject.GetComponent<HoverDriveVehicle>() ?? _suiteObject.AddComponent<HoverDriveVehicle>();
+            }
+
+            if (_cinemaBuildingAI == null)
+            {
+                _cinemaBuildingAI = _suiteObject.GetComponent<CinemaBuildingAI>() ?? _suiteObject.AddComponent<CinemaBuildingAI>();
+            }
+
+            if (_uiOverhaul == null)
+            {
+                _uiOverhaul = _suiteObject.GetComponent<UIOverhaul>() ?? _suiteObject.AddComponent<UIOverhaul>();
+            }
+        }
+
+        public static void EnsureSuiteAndTickFrame()
+        {
+            EnsureSuiteCreated();
+            _hoverDriveVehicle?.TickFrame();
+            _cinemaBuildingAI?.TickFrame();
+            _uiOverhaul?.TickFrame();
+        }
+    }
+
+    /// <summary>
+    /// Harmony Postfix on Game.SceneFlow.GameManager.Update so our HUD, Options tab registration,
+    /// Hover-Drive flight, and City Treasury controls execute every frame inside Cities: Skylines II's main loop.
+    /// </summary>
+    [HarmonyPatch(typeof(GameManager), "Update")]
+    public static class GameManagerUpdateHarmonyPatch
+    {
+        [HarmonyPostfix]
+        public static void Postfix()
+        {
+            try
+            {
+                WonderWorldCS2Plugin.EnsureSuiteAndTickFrame();
+            }
+            catch
+            {
+            }
+        }
+    }
+
+    /// <summary>
+    /// Native Cities: Skylines II IMod entrypoint so CS2's ModManager also registers our systems
+    /// and Options UI tab ("🎩 MAMA'S WONDER WORLD").
+    /// </summary>
+    public sealed class WonderWorldNativeCS2Mod : IMod
+    {
+        public void OnLoad(UpdateSystem updateSystem)
+        {
+            WonderWorldCS2Plugin.ModLogger?.LogInfo("[WonderWorldNativeCS2Mod] IMod.OnLoad executed via CS2 ModManager!");
+            WonderWorldCS2Plugin.EnsureSuiteCreated();
+            WonderWorldOptionsSetting.EnsureRegisteredInOptionsUI();
+
+            if (updateSystem != null)
+            {
+                updateSystem.UpdateAt<MamaTowerCities2System>(SystemUpdatePhase.GameSimulation);
+                updateSystem.UpdateAt<EconomyOverhaul>(SystemUpdatePhase.GameSimulation);
+                updateSystem.UpdateAt<MamaCityControlSystem>(SystemUpdatePhase.GameSimulation);
+            }
+        }
+
+        public void OnDispose()
+        {
         }
     }
 
@@ -171,12 +256,12 @@ namespace WonderWorld.Cities2Mod
                     string json = string.Format(
                         CultureInfo.InvariantCulture,
                         "{{\n" +
-                        "  \"schema_version\": \"3.3.0\",\n" +
+                        "  \"schema_version\": \"3.4.0\",\n" +
                         "  \"tower_name\": \"Mama Wonder Tower\",\n" +
                         "  \"hardware_profile\": \"RTX_5060_16GB_RAM\",\n" +
                         "  \"evon_hub_permission_granted\": {0},\n" +
                         "  \"current_era_index\": {1},\n" +
-                        "  \"universe\": \"Mama's Wonder World // Purple City Universe (Wonder Command v3.3)\",\n" +
+                        "  \"universe\": \"Mama's Wonder World // Purple City Universe (Wonder Command v3.4)\",\n" +
                         "  \"dual_currency_hud\": {{\n" +
                         "    \"city_treasury_usd\": {17},\n" +
                         "    \"municipal_dollars_usd\": {2:F2},\n" +

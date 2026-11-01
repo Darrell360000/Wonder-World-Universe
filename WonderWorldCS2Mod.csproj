@@ -8,6 +8,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RestoreFallbackFolders>clear</RestoreFallbackFolders>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>MSB3277</NoWarn>
     <CS2InstallDir>D:\Games\Cities - Skylines II</CS2InstallDir>
     <ManagedDir>$(CS2InstallDir)\Cities2_Data\Managed</ManagedDir>
     <BepInExCoreDir>$(CS2InstallDir)\BepInEx\core</BepInExCoreDir>
@@ -64,6 +65,22 @@
     </Reference>
     <Reference Include="Colossal.Logging">
       <HintPath>$(ManagedDir)\Colossal.Logging.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.Localization">
+      <HintPath>$(ManagedDir)\Colossal.Localization.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.Mathematics">
+      <HintPath>$(ManagedDir)\Colossal.Mathematics.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.UI">
+      <HintPath>$(ManagedDir)\Colossal.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="cohtml.Net">
+      <HintPath>$(ManagedDir)\cohtml.Net.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

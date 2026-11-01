@@ -22,6 +22,7 @@ namespace WonderWorld.Cities2Mod.UI
         public static UIOverhaul Instance { get; private set; }
 
         public bool ShowHud = true;
+        private int _lastTickedFrame = -1;
         private float _cohtmlSyncTimer = 0f;
         private View _boundView = null;
         private BoundEventHandle _boundCallHandle;
@@ -40,9 +41,23 @@ namespace WonderWorld.Cities2Mod.UI
 
         private void Update()
         {
-            MamaCityControlSystem.EnsureRegisteredInWorld();
+            TickFrame();
+        }
 
-            // [F8] Toggles the full Wonder Command v3.2 Interactive Panel
+        public void ForceCohtmlRefresh()
+        {
+            PushStateToCohtmlDom(forceImmediate: true);
+        }
+
+        public void TickFrame()
+        {
+            if (_lastTickedFrame == Time.frameCount) return;
+            _lastTickedFrame = Time.frameCount;
+
+            MamaCityControlSystem.EnsureRegisteredInWorld();
+            WonderWorldOptionsSetting.EnsureRegisteredInOptionsUI();
+
+            // [F8] Toggles the full Wonder Command v3.3 Interactive Panel
             if (Input.GetKeyDown(KeyCode.F8))
             {
                 ShowHud = !ShowHud;

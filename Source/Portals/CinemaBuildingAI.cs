@@ -95,8 +95,18 @@ namespace WonderWorld.Cities2Mod.Portals
             RefreshMarqueeForNearestHero();
         }
 
+        private int _lastTickedFrame = -1;
+
         private void Update()
         {
+            TickFrame();
+        }
+
+        public void TickFrame()
+        {
+            if (_lastTickedFrame == Time.frameCount) return;
+            _lastTickedFrame = Time.frameCount;
+
             // Allow hot-swapping the nearest active Top Hatter hero at the Cinema Portal via Alpha1-Alpha5 keys when Shift is held
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
