@@ -11,23 +11,25 @@ using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
 using WonderWorld.Cities2Mod.UI;
 using WonderWorld.Cities2Mod.Vehicles;
+using WonderWorldCS2.Systems;
 
 namespace WonderWorld.Cities2Mod
 {
     /// <summary>
     /// Live BepInEx 5.4.23.6 Plugin for Cities: Skylines II (D:\Games\Cities - Skylines II\Cities2.exe)
     /// Integrates Mama's Wonder World // Project Purple City:
-    /// - Dual-Currency HUD (Municipal $ + Wonder ⭐️W) via UIOverhaul.cs
-    /// - Modular Hover-Drive Vehicle Physics ([V] Flight Toggle) via HoverDriveVehicle.cs
+    /// - Native Cohtml HTML5 Dual-Currency HUD (City Treasury $ + Municipal $ + Wonder ⭐️W) via UIOverhaul.cs
+    /// - Live 3D Street-to-Sky Hover-Drive Flight ([V] Toggle + CameraController + 3D Cruiser) via HoverDriveVehicle.cs
     /// - Dynamic Top-Hatter Cinema Portal Marquee via CinemaBuildingAI.cs
-    /// - 12% Bond Yield -> Wonder ⭐️W Exchange via EconomyOverhaul.cs & WonderCurrencyConverter.cs
+    /// - Real-Time City Treasury Injection ([F6] +$500k / [F7] +$250k Bailout) via MamaCityControlSystem.cs
+    /// - 12% Bond Yield -> Wonder ⭐️W Exchange ([F9]) via EconomyOverhaul.cs & WonderCurrencyConverter.cs
     /// </summary>
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     public class WonderWorldCS2Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.wonderworld.mamatower.cs2";
         public const string PluginName = "Mama's Wonder World // Purple City Dual-Currency, Hover-Drive & Cinema Portals";
-        public const string PluginVersion = "3.2.0";
+        public const string PluginVersion = "3.3.0";
 
         internal static ManualLogSource ModLogger;
         private UIOverhaul _uiOverhaul;
@@ -39,17 +41,15 @@ namespace WonderWorld.Cities2Mod
             ModLogger = Logger;
             ModLogger.LogInfo("====================================================================");
             ModLogger.LogInfo($"[WonderWorldCS2] {PluginName} v{PluginVersion} Loaded!");
-            ModLogger.LogInfo("[WonderWorldCS2] Dual-Currency HUD: Municipal ($) + Wonder Super-Currency (⭐️W)");
-            ModLogger.LogInfo("[WonderWorldCS2] Press [V] to toggle Modular Hover-Drive Flight | Press [F8] for Full HUD.");
+            ModLogger.LogInfo("[WonderWorldCS2] Native Cohtml HTML5 Dual-Currency HUD Active (City $ + Municipal $ + ⭐️W)");
+            ModLogger.LogInfo("[WonderWorldCS2] Hotkeys: [F8] HUD | [V] Hover-Drive Flight | [F6] +$500k | [F7] +$250k Bailout | [F9] Mint ⭐️W");
             ModLogger.LogInfo("====================================================================");
 
-            var go = new GameObject("WonderWorld_CS2_PurpleCity_Suite");
-            DontDestroyOnLoad(go);
-            go.hideFlags = HideFlags.HideAndDontSave;
+            DontDestroyOnLoad(gameObject);
 
-            _hoverDriveVehicle = go.AddComponent<HoverDriveVehicle>();
-            _cinemaBuildingAI = go.AddComponent<CinemaBuildingAI>();
-            _uiOverhaul = go.AddComponent<UIOverhaul>();
+            _hoverDriveVehicle = gameObject.GetComponent<HoverDriveVehicle>() ?? gameObject.AddComponent<HoverDriveVehicle>();
+            _cinemaBuildingAI = gameObject.GetComponent<CinemaBuildingAI>() ?? gameObject.AddComponent<CinemaBuildingAI>();
+            _uiOverhaul = gameObject.GetComponent<UIOverhaul>() ?? gameObject.AddComponent<UIOverhaul>();
         }
     }
 
@@ -69,7 +69,7 @@ namespace WonderWorld.Cities2Mod
         public static float WetVacGallonsRemaining = 0.0f;
         public static float CnaPatientDignity = 100.0f;
         public static string LastVoiceBroadcast =
-            "Mama AI: Welcome to Purple City, baby! Press [V] for Hover-Drive or [F8] for the Dual-Currency & Cinema Portal HUD!";
+            "Mama AI: Welcome to Purple City, baby! Press [V] to fly the Hover-Cruiser, [F6] for +$500k City Treasury, or [F8] for the Command Deck!";
 
         public static readonly string[] SharedLedgerCandidatePaths = new[]
         {
@@ -171,13 +171,14 @@ namespace WonderWorld.Cities2Mod
                     string json = string.Format(
                         CultureInfo.InvariantCulture,
                         "{{\n" +
-                        "  \"schema_version\": \"3.2.0\",\n" +
+                        "  \"schema_version\": \"3.3.0\",\n" +
                         "  \"tower_name\": \"Mama Wonder Tower\",\n" +
                         "  \"hardware_profile\": \"RTX_5060_16GB_RAM\",\n" +
                         "  \"evon_hub_permission_granted\": {0},\n" +
                         "  \"current_era_index\": {1},\n" +
-                        "  \"universe\": \"Mama's Wonder World // Purple City Universe (Wonder Command v3.2)\",\n" +
+                        "  \"universe\": \"Mama's Wonder World // Purple City Universe (Wonder Command v3.3)\",\n" +
                         "  \"dual_currency_hud\": {{\n" +
+                        "    \"city_treasury_usd\": {17},\n" +
                         "    \"municipal_dollars_usd\": {2:F2},\n" +
                         "    \"wonder_super_currency_w\": {3:F2},\n" +
                         "    \"bond_yield_rate_annual\": 0.12,\n" +
@@ -226,7 +227,8 @@ namespace WonderWorld.Cities2Mod
                         Col2OverheadDebt * 0.20f,
                         Col3FoundationCapital,
                         StakedIndustrialBonds,
-                        UnlockedTowerTier);
+                        UnlockedTowerTier,
+                        MamaCityControlSystem.LastKnownCityTreasury);
 
                     File.WriteAllText(path, json);
                 }
