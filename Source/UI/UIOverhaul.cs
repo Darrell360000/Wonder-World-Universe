@@ -32,6 +32,8 @@ namespace WonderWorldCS2.UI
         private int _lastTickedFrame = -1;
         private float _cohtmlSyncTimer = 0f;
         private Rect _fallbackWindowRect = new Rect(24f, 52f, 740f, 760f);
+        private IBindingRegistry _commandBindingRegistry;
+        private TriggerBinding _spawnStreetBrawlBinding;
 
         private void Awake()
         {
@@ -48,6 +50,19 @@ namespace WonderWorldCS2.UI
             TickFrame();
         }
 
+        private void OnDestroy()
+        {
+            if (_commandBindingRegistry != null && _spawnStreetBrawlBinding != null)
+            {
+                _commandBindingRegistry.RemoveBinding(_spawnStreetBrawlBinding);
+            }
+
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         public void ForceCohtmlRefresh()
         {
             PushStateToCohtmlDom(forceImmediate: true);
@@ -62,6 +77,7 @@ namespace WonderWorldCS2.UI
             WonderUniverseIntegrationSystem.EnsureRegisteredInWorld();
             CinemaPortalMissionSystem.EnsureRegisteredInWorld();
             WonderDeepSimulationSystem.EnsureRegisteredInWorld();
+            SyndicateEnforcerSpawnerSystem.EnsureRegisteredInWorld();
             WonderWorldOptionsSetting.EnsureRegisteredInOptionsUI();
 
             // [F8] Toggles the full Wonder Command Interactive Panel
@@ -266,6 +282,9 @@ namespace WonderWorldCS2.UI
                 case "boost_vip_commutes":
                     WonderDeepSimulationSystem.BoostVipCitizenCommutesStatic();
                     break;
+                case "spawn_street_brawl":
+                    SyndicateEnforcerSpawnerSystem.SpawnStreetBrawlWave();
+                    break;
             }
 
             PushStateToCohtmlDom(forceImmediate: true);
@@ -279,6 +298,7 @@ namespace WonderWorldCS2.UI
                 if (gm == null || gm.state < GameManager.State.UIReady) return;
 
                 var ui = gm.userInterface;
+                EnsureStreetBrawlBindingRegistered(ui);
                 var uiView = ui?.view;
                 View cohtmlView = uiView?.View;
                 if (cohtmlView == null) return;
@@ -350,6 +370,24 @@ namespace WonderWorldCS2.UI
             }
         }
 
+        private void EnsureStreetBrawlBindingRegistered(Game.SceneFlow.UserInterface userInterface)
+        {
+            IBindingRegistry bindings = userInterface?.bindings;
+            if (bindings == null || ReferenceEquals(bindings, _commandBindingRegistry)) return;
+
+            if (_commandBindingRegistry != null && _spawnStreetBrawlBinding != null)
+            {
+                _commandBindingRegistry.RemoveBinding(_spawnStreetBrawlBinding);
+            }
+
+            _spawnStreetBrawlBinding = new TriggerBinding(
+                "WonderWorldCS2Mod",
+                "SpawnStreetBrawlWave",
+                SyndicateEnforcerSpawnerSystem.SpawnStreetBrawlWave);
+            bindings.AddBinding(_spawnStreetBrawlBinding);
+            _commandBindingRegistry = bindings;
+        }
+
         private static string EscapeJs(string input)
         {
             if (string.IsNullOrEmpty(input)) return "";
@@ -408,7 +446,7 @@ namespace WonderWorldCS2.UI
             var sb = new StringBuilder(10240);
             sb.Append("(function(){");
             sb.Append("if(!document.body)return;");
-            sb.Append("window.wwSend=function(c){try{var r=document.getElementById('ww-cs2-hud-root');if(r)r.style.borderColor='#ffd700';}catch(e){}};");
+            sb.Append("window.wwSend=function(c){try{if(c==='spawn_street_brawl')engine.trigger('WonderWorldCS2Mod','SpawnStreetBrawlWave');var r=document.getElementById('ww-cs2-hud-root');if(r)r.style.borderColor='#ffd700';}catch(e){}};");
             sb.Append("var root=document.getElementById('ww-cs2-hud-root');");
             sb.Append("if(!root){");
             sb.Append("root=document.createElement('div');root.id='ww-cs2-hud-root';");
@@ -507,6 +545,15 @@ namespace WonderWorldCS2.UI
                 sonicDiscStatus,
                 counterWindowOpen ? "#00ffb4" : "#b7a8c9",
                 counterWindowOpen ? string.Format(CultureInfo.InvariantCulture, "OPEN ({0:F2}s) — Right Click", counterWindowRemaining) : "Waiting for attack cue");
+            int activeEnforcerCount = SyndicateEnforcerSpawnerSystem.Instance != null
+                ? SyndicateEnforcerSpawnerSystem.Instance.ActiveEnforcerCount
+                : 0;
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:6px;color:#ff8c9b;\">Active Syndicate Thugs: <b>{0}</b></div>",
+                activeEnforcerCount);
+            sb.Append("<div style=\"display:flex;flex-wrap:wrap;margin-bottom:8px;\">");
+            sb.Append("<div onclick=\"window.wwSend(\\x27spawn_street_brawl\\x27)\" style=\"background:#b91c3c;color:#fff;padding:5px 9px;border-radius:5px;margin-right:6px;cursor:pointer;font-weight:bold;\">🚨 Spawn Street Brawl Wave</div>");
+            sb.Append("</div>");
             sb.Append("<div style=\"margin-bottom:8px;color:#b7a8c9;\">Shift: Bullet Time | Right-click: Counter during an attack cue | Left+Right-click: Throw Disc | R: Recall</div>");
 
             // Section 5: Cinema Story Missions
@@ -659,6 +706,12 @@ namespace WonderWorldCS2.UI
             GUILayout.Label(heroActions != null && heroActions.CounterWindowOpen
                 ? $"Counter window OPEN ({heroActions.CounterWindowRemaining:F2}s) — Right Click"
                 : "Counter window: Waiting for attack cue");
+            var enforcerSpawner = SyndicateEnforcerSpawnerSystem.Instance;
+            GUILayout.Label($"Active Syndicate Thugs: {(enforcerSpawner != null ? enforcerSpawner.ActiveEnforcerCount : 0)}");
+            if (GUILayout.Button("Spawn Street Brawl Wave", GUILayout.Height(28f)))
+            {
+                SyndicateEnforcerSpawnerSystem.SpawnStreetBrawlWave();
+            }
             if (GUILayout.Button(
                 vehicle != null && vehicle.IsCloaked ? "Uncloak Hover-Cruiser [Alt+5]" : "Cloak Hover-Cruiser [Alt+5]",
                 GUILayout.Height(26f)))

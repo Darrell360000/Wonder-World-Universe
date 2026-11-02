@@ -142,6 +142,7 @@ namespace WonderWorld.Cities2Mod
                 updateSystem.UpdateAt<WonderUniverseIntegrationSystem>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<CinemaPortalMissionSystem>(SystemUpdatePhase.GameSimulation);
                 updateSystem.UpdateAt<WonderDeepSimulationSystem>(SystemUpdatePhase.GameSimulation);
+                updateSystem.UpdateAt<SyndicateEnforcerSpawnerSystem>(SystemUpdatePhase.GameSimulation);
             }
         }
 

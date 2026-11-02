@@ -42,6 +42,7 @@ namespace WonderWorldCS2.Systems
         private Rigidbody _activeDiscBody;
         private SonicDiscState _discState = SonicDiscState.Equipped;
         private float _counterWindowRemaining;
+        private GameObject _counterTarget;
         private float _comboRemaining;
         private float _timeScaleBeforeBulletTime = 1f;
         private float _fixedDeltaTimeBeforeBulletTime = 0.02f;
@@ -380,13 +381,40 @@ namespace WonderWorldCS2.Systems
 
         public void OpenCounterWindow()
         {
-            _counterWindowRemaining = Mathf.Max(0.05f, counterWindowDuration);
+            OpenCounterWindow(null, counterWindowDuration);
+        }
+
+        public void OpenCounterWindow(GameObject attacker, float duration)
+        {
+            _counterTarget = attacker;
+            _counterWindowRemaining = Mathf.Max(0.05f, duration);
         }
 
         private void RegisterCounter()
         {
-            ComboCounter++;
-            _comboRemaining = Mathf.Max(0.1f, comboDuration);
+            bool hitCounterTarget = false;
+            if (_counterTarget != null)
+            {
+                MonoBehaviour[] behaviours = _counterTarget.GetComponentsInParent<MonoBehaviour>(true);
+                foreach (MonoBehaviour behaviour in behaviours)
+                {
+                    if (behaviour is IWonderHeroCounterTarget counterTarget)
+                    {
+                        counterTarget.TakeCounterDamage(50);
+                        RegisterHit(_counterTarget, 50);
+                        hitCounterTarget = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hitCounterTarget)
+            {
+                ComboCounter++;
+                _comboRemaining = Mathf.Max(0.1f, comboDuration);
+            }
+
+            _counterTarget = null;
             Debug.Log($"[WonderHeroActionMechanics] Perfect counter! Combo x{ComboCounter}.");
         }
 

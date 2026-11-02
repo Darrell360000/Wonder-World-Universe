@@ -169,6 +169,16 @@ namespace WonderWorldCS2.Systems
             StaticWonderStarsBanked = Mathf.Max(0, wonderStars);
         }
 
+        public static void RegisterStreetBrawlWaveClear()
+        {
+            StaticDistrictTensionIndex = Mathf.Max(0f, StaticDistrictTensionIndex - 10f);
+            StaticWonderStarsBanked += 100;
+            WonderCurrencyConverter.WonderSuperCurrencyBalance += 100f;
+            MamaTowerCities2System.LastVoiceBroadcast =
+                "Mama AI: Syndicate street brawl cleared! District tension reduced by 10%, +100 ⭐️W awarded.";
+            MamaTowerCities2System.SaveToSharedJson();
+        }
+
         // Triggered via F8 Wonder Command HUD
         public void HostDistrictShowdown() => HostDistrictShowdownStatic();
 
