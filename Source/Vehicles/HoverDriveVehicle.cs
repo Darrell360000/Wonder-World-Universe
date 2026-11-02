@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game;
 using Unity.Mathematics;
 using UnityEngine;
+using WonderWorldCS2.Systems;
 
 namespace WonderWorld.Cities2Mod.Vehicles
 {
@@ -74,6 +75,15 @@ namespace WonderWorld.Cities2Mod.Vehicles
         private GameObject _cruiserRoot;
         private readonly Dictionary<ModularVehicleSlot, GameObject> _partVisuals =
             new Dictionary<ModularVehicleSlot, GameObject>();
+        private readonly List<Renderer> _allCruiserRenderers = new List<Renderer>();
+        private readonly List<Renderer> _glowRenderers = new List<Renderer>();
+        private readonly List<Material> _glowMaterials = new List<Material>();
+        private readonly List<Color> _glowBaseColors = new List<Color>();
+
+        [Header("Visibility / Cloak ([Alt+5], HUD, or Options)")]
+        public bool IsCloaked = false;
+        public float CruiserVisualScale = 2.0f;
+        public string ActiveShaderName { get; private set; } = "(not spawned)";
 
         private readonly Dictionary<ModularVehicleSlot, ModularVehiclePart> _modularLoadout =
             new Dictionary<ModularVehicleSlot, ModularVehiclePart>();
@@ -146,7 +156,7 @@ namespace WonderWorld.Cities2Mod.Vehicles
             if (_lastTickedFrame == Time.frameCount) return;
             _lastTickedFrame = Time.frameCount;
 
-            if (Input.GetKeyDown(KeyCode.V))
+            if (Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.F4))
             {
                 ToggleHoverFlight();
             }
@@ -158,9 +168,30 @@ namespace WonderWorld.Cities2Mod.Vehicles
                 if (Input.GetKeyDown(KeyCode.Alpha2)) AttachOrToggleModularPart(ModularVehicleSlot.SonicPhaserFrontGrille);
                 if (Input.GetKeyDown(KeyCode.Alpha3)) AttachOrToggleModularPart(ModularVehicleSlot.RainbowEqualizerAeroWing);
                 if (Input.GetKeyDown(KeyCode.Alpha4)) AttachOrToggleModularPart(ModularVehicleSlot.TopHatMagneticRoofTurret);
+                if (Input.GetKeyDown(KeyCode.Alpha5)) ToggleCloak();
             }
 
+            UpdateCruiserVisualEffects();
             SimulateHoverPhysicsAndCamera(Time.unscaledDeltaTime);
+        }
+
+        /// <summary>
+        /// Toggles 85 BPM Cloak Mode. When cloaked the Hover-Cruiser is invisible except for a faint
+        /// cyan shimmer pulse on every beat so you can still find it. Toggle again to make it fully visible.
+        /// </summary>
+        public bool ToggleCloak()
+        {
+            IsCloaked = !IsCloaked;
+            ApplyCloakState(true);
+            string state = IsCloaked ? "CLOAK ENGAGED (Invisible + 85 BPM shimmer)" : "CLOAK OFF (Fully Visible)";
+            MamaTowerCities2System.LastVoiceBroadcast = $"Darrell X-Gen: Hover-Cruiser {state}!";
+            WonderWorldCS2Plugin.ModLogger?.LogInfo($"[HoverDriveVehicle] {state}");
+            return IsCloaked;
+        }
+
+        public void SetCloak(bool cloaked)
+        {
+            if (IsCloaked != cloaked) ToggleCloak();
         }
 
         public bool ToggleHoverFlight()
@@ -291,12 +322,14 @@ namespace WonderWorld.Cities2Mod.Vehicles
             }
 
             // Altitude climb/descent controls while in Hover-Drive mode:
-            // [Space] / [PageUp] climbs; [C] / [LeftControl] / [PageDown] descends
-            if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.PageUp))
+            // [R] / [PageUp] climbs; R is reserved for disc recall while the disc is out.
+            bool discRecallUsesR = WonderHeroActionMechanics.Instance != null &&
+                WonderHeroActionMechanics.Instance.IsDiscThrown;
+            if (Input.GetKey(KeyCode.PageUp) || (Input.GetKey(KeyCode.R) && !discRecallUsesR))
             {
                 TargetHoverAltitudeMeters = Mathf.Clamp(TargetHoverAltitudeMeters + 35.0f * dt, 8.0f, 260.0f);
             }
-            if (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.PageDown))
+            if (Input.GetKey(KeyCode.F) || Input.GetKey(KeyCode.PageDown))
             {
                 TargetHoverAltitudeMeters = Mathf.Clamp(TargetHoverAltitudeMeters - 35.0f * dt, 8.0f, 260.0f);
             }
@@ -374,109 +407,156 @@ namespace WonderWorld.Cities2Mod.Vehicles
             {
                 _cruiserRoot = new GameObject("PurpleCity_HoverDrive_Cruiser3D");
                 DontDestroyOnLoad(_cruiserRoot);
+                _cruiserRoot.transform.localScale = Vector3.one * CruiserVisualScale;
 
-                // Find an existing HDRP material in the scene so our cruiser renders cleanly in HDRP
-                Material baseMat = FindExistingHdrpMaterial();
+                Color purple = new Color(0.42f, 0.10f, 0.78f);
+                Color gold = new Color(1.00f, 0.78f, 0.10f);
+                Color cyan = new Color(0.00f, 0.95f, 1.00f);
+                Color obsidian = new Color(0.06f, 0.05f, 0.09f);
+                Color glass = new Color(0.20f, 0.55f, 0.95f);
 
-                // 0. Main Purple-Gold Monocoque Body
-                GameObject chassis = CreatePartPrimitive(
-                    PrimitiveType.Cube,
-                    "Chassis_Monocoque",
-                    _cruiserRoot.transform,
-                    new Vector3(0f, 0f, 0f),
-                    new Vector3(2.4f, 0.65f, 5.2f),
-                    baseMat,
-                    new Color(0.45f, 0.12f, 0.78f));
+                // 0. Chassis: purple monocoque + gold trim rails + glass canopy + headlights/taillights
+                GameObject chassis = new GameObject("Chassis_Monocoque");
+                chassis.transform.SetParent(_cruiserRoot.transform, false);
+                CreatePart(PrimitiveType.Cube, "Body", chassis.transform, new Vector3(0f, 0f, 0f), new Vector3(2.4f, 0.65f, 5.2f), purple, 0f);
+                CreatePart(PrimitiveType.Cube, "Nose", chassis.transform, new Vector3(0f, -0.08f, 2.95f), new Vector3(2.0f, 0.45f, 0.9f), purple, 0f);
+                CreatePart(PrimitiveType.Cube, "GoldRail_L", chassis.transform, new Vector3(-1.23f, 0.05f, 0f), new Vector3(0.08f, 0.18f, 5.3f), gold, 0.4f);
+                CreatePart(PrimitiveType.Cube, "GoldRail_R", chassis.transform, new Vector3(1.23f, 0.05f, 0f), new Vector3(0.08f, 0.18f, 5.3f), gold, 0.4f);
+                CreatePart(PrimitiveType.Sphere, "Canopy", chassis.transform, new Vector3(0f, 0.45f, 0.6f), new Vector3(1.6f, 0.7f, 2.4f), glass, 0.25f);
+                CreatePart(PrimitiveType.Cube, "Headlight_L", chassis.transform, new Vector3(-0.7f, 0f, 3.42f), new Vector3(0.45f, 0.16f, 0.06f), Color.white, 3.0f);
+                CreatePart(PrimitiveType.Cube, "Headlight_R", chassis.transform, new Vector3(0.7f, 0f, 3.42f), new Vector3(0.45f, 0.16f, 0.06f), Color.white, 3.0f);
+                CreatePart(PrimitiveType.Cube, "Taillight", chassis.transform, new Vector3(0f, 0.05f, -2.62f), new Vector3(2.0f, 0.12f, 0.06f), new Color(1f, 0.1f, 0.35f), 2.5f);
+                CreatePart(PrimitiveType.Cube, "Underglow", chassis.transform, new Vector3(0f, -0.36f, 0f), new Vector3(2.0f, 0.04f, 4.6f), cyan, 2.5f);
                 _partVisuals[ModularVehicleSlot.ChassisCore] = chassis;
 
-                // 1. 85 BPM Sub-Bass Repulsor Pods (x4)
+                // 1. 85 BPM Sub-Bass Repulsor Pods (x4) with glowing cyan cores
                 GameObject repulsors = new GameObject("SubBass_Repulsor_Pods");
                 repulsors.transform.SetParent(_cruiserRoot.transform, false);
-                Vector3[] podOffsets = new[]
+                Vector3[] podOffsets =
                 {
-                    new Vector3(-1.35f, -0.25f, 1.8f),
-                    new Vector3(1.35f, -0.25f, 1.8f),
-                    new Vector3(-1.35f, -0.25f, -1.8f),
-                    new Vector3(1.35f, -0.25f, -1.8f)
+                    new Vector3(-1.45f, -0.3f, 1.8f),
+                    new Vector3(1.45f, -0.3f, 1.8f),
+                    new Vector3(-1.45f, -0.3f, -1.8f),
+                    new Vector3(1.45f, -0.3f, -1.8f)
                 };
                 foreach (var offset in podOffsets)
                 {
-                    CreatePartPrimitive(
-                        PrimitiveType.Cylinder,
-                        "RepulsorPod",
-                        repulsors.transform,
-                        offset,
-                        new Vector3(0.75f, 0.22f, 0.75f),
-                        baseMat,
-                        new Color(0.0f, 0.95f, 1.0f));
+                    CreatePart(PrimitiveType.Cylinder, "RepulsorPod", repulsors.transform, offset, new Vector3(0.85f, 0.22f, 0.85f), obsidian, 0f);
+                    CreatePart(PrimitiveType.Cylinder, "RepulsorCore", repulsors.transform, offset + new Vector3(0f, -0.2f, 0f), new Vector3(0.6f, 0.04f, 0.6f), cyan, 4.0f);
                 }
                 _partVisuals[ModularVehicleSlot.SubBassRepulsorThrusters] = repulsors;
 
-                // 2. God-Hand Cyan Sonic Front Grille
-                GameObject grille = CreatePartPrimitive(
-                    PrimitiveType.Cube,
-                    "Sonic_Front_Grille",
-                    _cruiserRoot.transform,
-                    new Vector3(0f, -0.05f, 2.75f),
-                    new Vector3(2.1f, 0.35f, 0.45f),
-                    baseMat,
-                    new Color(0.05f, 1.0f, 0.92f));
+                // 2. God-Hand Cyan Sonic Front Grille (3 glowing slats)
+                GameObject grille = new GameObject("Sonic_Front_Grille");
+                grille.transform.SetParent(_cruiserRoot.transform, false);
+                for (int i = 0; i < 3; i++)
+                {
+                    CreatePart(PrimitiveType.Cube, "GrilleSlat", grille.transform, new Vector3(0f, -0.2f + i * 0.12f, 3.43f), new Vector3(1.2f, 0.05f, 0.05f), cyan, 3.0f);
+                }
                 _partVisuals[ModularVehicleSlot.SonicPhaserFrontGrille] = grille;
 
-                // 3. 5-Stop Rainbow LED Equalizer Aero Wing
-                GameObject wing = CreatePartPrimitive(
-                    PrimitiveType.Cube,
-                    "Rainbow_Equalizer_Wing",
-                    _cruiserRoot.transform,
-                    new Vector3(0f, 0.65f, -2.35f),
-                    new Vector3(2.9f, 0.14f, 0.75f),
-                    baseMat,
-                    new Color(1.0f, 0.84f, 0.0f));
+                // 3. 5-Stop Rainbow LED Equalizer Aero Wing (Blue -> Green -> Yellow -> Orange -> Red)
+                GameObject wing = new GameObject("Rainbow_Equalizer_Wing");
+                wing.transform.SetParent(_cruiserRoot.transform, false);
+                CreatePart(PrimitiveType.Cube, "WingStrut_L", wing.transform, new Vector3(-0.9f, 0.55f, -2.3f), new Vector3(0.1f, 0.5f, 0.2f), obsidian, 0f);
+                CreatePart(PrimitiveType.Cube, "WingStrut_R", wing.transform, new Vector3(0.9f, 0.55f, -2.3f), new Vector3(0.1f, 0.5f, 0.2f), obsidian, 0f);
+                Color[] rainbow =
+                {
+                    new Color(0.1f, 0.35f, 1f), new Color(0.1f, 1f, 0.3f), new Color(1f, 0.95f, 0.1f),
+                    new Color(1f, 0.5f, 0.05f), new Color(1f, 0.1f, 0.1f)
+                };
+                for (int i = 0; i < rainbow.Length; i++)
+                {
+                    float x = -1.24f + i * 0.62f;
+                    CreatePart(PrimitiveType.Cube, "EqualizerBar", wing.transform, new Vector3(x, 0.85f, -2.35f), new Vector3(0.6f, 0.14f, 0.75f), rainbow[i], 2.0f);
+                }
                 _partVisuals[ModularVehicleSlot.RainbowEqualizerAeroWing] = wing;
 
-                // 4. Magnetic Top-Hat Roof Turret
-                GameObject turret = CreatePartPrimitive(
-                    PrimitiveType.Cylinder,
-                    "TopHat_Roof_Turret",
-                    _cruiserRoot.transform,
-                    new Vector3(0f, 0.65f, 0.2f),
-                    new Vector3(0.85f, 0.45f, 0.85f),
-                    baseMat,
-                    new Color(0.12f, 0.12f, 0.15f));
+                // 4. Magnetic Top-Hat Roof Turret (black velvet top hat + rainbow band)
+                GameObject turret = new GameObject("TopHat_Roof_Turret");
+                turret.transform.SetParent(_cruiserRoot.transform, false);
+                CreatePart(PrimitiveType.Cylinder, "HatBrim", turret.transform, new Vector3(0f, 0.95f, -0.9f), new Vector3(1.1f, 0.04f, 1.1f), obsidian, 0f);
+                CreatePart(PrimitiveType.Cylinder, "HatCrown", turret.transform, new Vector3(0f, 1.35f, -0.9f), new Vector3(0.7f, 0.4f, 0.7f), obsidian, 0f);
+                CreatePart(PrimitiveType.Cylinder, "HatBand", turret.transform, new Vector3(0f, 1.05f, -0.9f), new Vector3(0.72f, 0.06f, 0.72f), gold, 2.5f);
                 _partVisuals[ModularVehicleSlot.TopHatMagneticRoofTurret] = turret;
+
+                // Respect current modular loadout attach states
+                foreach (var kvp in _modularLoadout)
+                {
+                    if (_partVisuals.TryGetValue(kvp.Key, out GameObject go) && go != null)
+                    {
+                        go.SetActive(kvp.Value.IsAttached);
+                    }
+                }
+
+                ApplyCameraLayer(_cruiserRoot);
+                ApplyCloakState(false);
+
+                WonderWorldCS2Plugin.ModLogger?.LogInfo(
+                    $"[HoverDriveVehicle] Hover-Cruiser spawned with {_allCruiserRenderers.Count} visible parts using shader '{ActiveShaderName}' (layer {_cruiserRoot.layer}).");
             }
-            catch
+            catch (Exception ex)
             {
+                WonderWorldCS2Plugin.ModLogger?.LogWarning($"[HoverDriveVehicle] Cruiser spawn warning: {ex.Message}");
             }
         }
 
-        private static Material FindExistingHdrpMaterial()
+        private static Shader _cachedShader;
+        private static bool _shaderSearched;
+
+        /// <summary>
+        /// Resolves a shader that the Cities: Skylines II HDRP pipeline can draw on plain GameObject meshes.
+        /// (City building shaders only render through CS2's ECS batch renderer, which made the old cruiser invisible.)
+        /// </summary>
+        private static Shader ResolveVisibleShader()
         {
+            if (_shaderSearched) return _cachedShader;
+            _shaderSearched = true;
+
+            string[] candidates = { "HDRP/Lit", "HDRP/LitTessellation", "HDRP/Unlit", "Universal Render Pipeline/Lit", "Standard", "Unlit/Color" };
+            foreach (string name in candidates)
+            {
+                try
+                {
+                    Shader s = Shader.Find(name);
+                    if (s != null && s.isSupported)
+                    {
+                        _cachedShader = s;
+                        return s;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            // Fallback: borrow any loaded HDRP Lit shader instance from memory
             try
             {
-                var renderers = FindObjectsOfType<MeshRenderer>();
-                foreach (var r in renderers)
+                foreach (Shader s in Resources.FindObjectsOfTypeAll<Shader>())
                 {
-                    if (r != null && r.sharedMaterial != null)
+                    if (s != null && s.isSupported && s.name.IndexOf("HDRP/Lit", StringComparison.OrdinalIgnoreCase) >= 0)
                     {
-                        return new Material(r.sharedMaterial);
+                        _cachedShader = s;
+                        return s;
                     }
                 }
             }
             catch
             {
             }
+
             return null;
         }
 
-        private static GameObject CreatePartPrimitive(
+        private GameObject CreatePart(
             PrimitiveType type,
             string name,
             Transform parent,
             Vector3 localPos,
             Vector3 localScale,
-            Material templateMat,
-            Color tint)
+            Color tint,
+            float glowStrength)
         {
             GameObject go = GameObject.CreatePrimitive(type);
             go.name = name;
@@ -488,18 +568,154 @@ namespace WonderWorld.Cities2Mod.Vehicles
             if (col != null) Destroy(col);
 
             var mr = go.GetComponent<MeshRenderer>();
-            if (mr != null)
+            if (mr == null) return go;
+
+            mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            mr.receiveShadows = true;
+            mr.allowOcclusionWhenDynamic = false;
+
+            Shader shader = ResolveVisibleShader();
+            Material mat = shader != null ? new Material(shader) : (mr.sharedMaterial != null ? new Material(mr.sharedMaterial) : null);
+            if (mat == null) return go;
+
+            ActiveShaderName = mat.shader != null ? mat.shader.name : "(unknown)";
+            mat.name = "WW_HoverCruiser_" + name;
+
+            SetColorIfPresent(mat, "_BaseColor", tint);
+            SetColorIfPresent(mat, "_Color", tint);
+            SetColorIfPresent(mat, "_UnlitColor", tint);
+            if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", glowStrength > 0f ? 0.1f : 0.65f);
+            if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 0.8f);
+
+            if (glowStrength > 0f)
             {
-                if (templateMat != null)
+                // HDRP emissive is physically based (nits) so it needs a strong value to read under daylight exposure
+                Color emissive = tint * (glowStrength * 6000f);
+                mat.EnableKeyword("_EMISSIVE_COLOR_MAP");
+                SetColorIfPresent(mat, "_EmissiveColor", emissive);
+                SetColorIfPresent(mat, "_EmissionColor", tint * glowStrength);
+                mat.EnableKeyword("_EMISSION");
+                if (mat.HasProperty("_EmissiveIntensity")) mat.SetFloat("_EmissiveIntensity", glowStrength * 6000f);
+
+                _glowRenderers.Add(mr);
+                _glowMaterials.Add(mat);
+                _glowBaseColors.Add(tint);
+            }
+
+            mr.sharedMaterial = mat;
+            _allCruiserRenderers.Add(mr);
+            return go;
+        }
+
+        private static void SetColorIfPresent(Material mat, string prop, Color c)
+        {
+            if (mat.HasProperty(prop)) mat.SetColor(prop, c);
+        }
+
+        /// <summary>
+        /// Put the cruiser on a layer the gameplay camera actually renders.
+        /// </summary>
+        private static void ApplyCameraLayer(GameObject root)
+        {
+            int layer = 0;
+            try
+            {
+                Camera cam = Camera.main;
+                if (cam == null)
                 {
-                    Material mat = new Material(templateMat);
-                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", tint);
-                    if (mat.HasProperty("_Color")) mat.SetColor("_Color", tint);
-                    if (mat.HasProperty("_EmissiveColor")) mat.SetColor("_EmissiveColor", tint * 2.5f);
-                    mr.sharedMaterial = mat;
+                    foreach (Camera c in Camera.allCameras)
+                    {
+                        if (c != null && c.enabled) { cam = c; break; }
+                    }
+                }
+
+                if (cam != null)
+                {
+                    int mask = cam.cullingMask;
+                    if ((mask & 1) == 0)
+                    {
+                        for (int i = 0; i < 32; i++)
+                        {
+                            if ((mask & (1 << i)) != 0) { layer = i; break; }
+                        }
+                    }
                 }
             }
-            return go;
+            catch
+            {
+            }
+
+            foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
+            {
+                t.gameObject.layer = layer;
+            }
+        }
+
+        private void ApplyCloakState(bool announce)
+        {
+            if (_cruiserRoot == null) return;
+            foreach (Renderer r in _allCruiserRenderers)
+            {
+                if (r != null) r.enabled = !IsCloaked;
+            }
+        }
+
+        /// <summary>
+        /// 85 BPM visual effects: pulsing glow on emissive parts, and the cloak shimmer when invisible.
+        /// </summary>
+        private void UpdateCruiserVisualEffects()
+        {
+            if (_cruiserRoot == null || !_cruiserRoot.activeSelf) return;
+
+            float beatPhase = (Time.unscaledTime * Harmonic85BpmPulseHz) % 1.0f;
+            float pulse = 0.65f + 0.35f * Mathf.Cos(beatPhase * Mathf.PI * 2.0f);
+
+            if (IsCloaked)
+            {
+                // Brief, dim cyan shimmer on each beat.
+                bool shimmer = beatPhase < 0.08f;
+                Color shimmerColor = new Color(0f, 0.18f, 0.2f, 1f);
+                for (int i = 0; i < _glowMaterials.Count; i++)
+                {
+                    Material material = _glowMaterials[i];
+                    if (material == null) continue;
+
+                    SetColorIfPresent(material, "_BaseColor", shimmerColor);
+                    SetColorIfPresent(material, "_Color", shimmerColor);
+                    SetColorIfPresent(material, "_UnlitColor", shimmerColor);
+                    if (material.HasProperty("_EmissiveColor"))
+                    {
+                        material.SetColor("_EmissiveColor", shimmer ? shimmerColor * 180f : Color.black);
+                    }
+                    if (material.HasProperty("_EmissionColor"))
+                    {
+                        material.SetColor("_EmissionColor", shimmer ? shimmerColor * 0.18f : Color.black);
+                    }
+                }
+
+                foreach (Renderer renderer in _allCruiserRenderers)
+                {
+                    if (renderer != null) renderer.enabled = false;
+                }
+                foreach (Renderer renderer in _glowRenderers)
+                {
+                    if (renderer != null) renderer.enabled = shimmer;
+                }
+                return;
+            }
+
+            float boost = SonicBoostActive ? 1.8f : 1.0f;
+            for (int i = 0; i < _glowMaterials.Count; i++)
+            {
+                Material m = _glowMaterials[i];
+                if (m == null) continue;
+                Color baseC = _glowBaseColors[i];
+                SetColorIfPresent(m, "_BaseColor", baseC);
+                SetColorIfPresent(m, "_Color", baseC);
+                SetColorIfPresent(m, "_UnlitColor", baseC);
+                if (m.HasProperty("_EmissiveColor")) m.SetColor("_EmissiveColor", baseC * (pulse * boost * 12000f));
+                if (m.HasProperty("_EmissionColor")) m.SetColor("_EmissionColor", baseC * (pulse * boost * 2f));
+            }
         }
 
         private void UpdateCruiserVisualTransform(CameraController cam, float beatOscillation)
@@ -508,8 +724,17 @@ namespace WonderWorld.Cities2Mod.Vehicles
 
             Vector3 pivot = cam.pivot;
             float yawDeg = cam.angle.x;
-            _cruiserRoot.transform.position = pivot + new Vector3(0f, 2.2f + beatOscillation * 0.5f, 0f);
-            _cruiserRoot.transform.rotation = Quaternion.Euler(0f, yawDeg + 180f, 0f);
+            // Float the cruiser above the street at the camera focus point, bobbing on the 85 BPM beat
+            _cruiserRoot.transform.position = pivot + new Vector3(0f, 3.0f + beatOscillation * 0.6f, 0f);
+
+            // Bank into turns when strafing / rotating
+            float bank = 0f;
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Q)) bank = 12f;
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.E)) bank = -12f;
+            float pitch = (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) ? 4f : 0f;
+
+            Quaternion target = Quaternion.Euler(pitch, yawDeg + 180f, bank);
+            _cruiserRoot.transform.rotation = Quaternion.Slerp(_cruiserRoot.transform.rotation, target, 0.15f);
         }
     }
 }

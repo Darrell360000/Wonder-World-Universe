@@ -8,6 +8,7 @@ using UnityEngine;
 using WonderWorld.Cities2Mod;
 using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
+using WonderWorld.Cities2Mod.UI;
 using WonderWorld.Cities2Mod.Vehicles;
 using WonderWorldCS2.Portals;
 using WonderWorldCS2.Systems;
@@ -86,8 +87,8 @@ namespace WonderWorldCS2.UI
                 ExecuteWonderAction("bailout_250k");
             }
 
-            // [F9] Trigger 12% Bond Yield -> Wonder ⭐️W Super-Currency Conversion
-            if (Input.GetKeyDown(KeyCode.F9))
+            // [F10] (or [F9]) Trigger 12% Bond Yield -> Wonder ⭐️W Super-Currency Conversion
+            if (Input.GetKeyDown(KeyCode.F10) || Input.GetKeyDown(KeyCode.F9))
             {
                 ExecuteWonderAction("mint_wonder_w");
             }
@@ -204,6 +205,9 @@ namespace WonderWorldCS2.UI
                 case "toggle_hover":
                     vehicle?.ToggleHoverFlight();
                     break;
+                case "toggle_cloak":
+                    vehicle?.ToggleCloak();
+                    break;
                 case "part_1":
                     vehicle?.AttachOrToggleModularPart(ModularVehicleSlot.SubBassRepulsorThrusters);
                     break;
@@ -281,6 +285,7 @@ namespace WonderWorldCS2.UI
 
                 int cityTreasury = MamaCityControlSystem.ReadLiveCityTreasury();
                 var vehicle = HoverDriveVehicle.ActiveInstance;
+                var heroActions = WonderHeroActionMechanics.Instance;
                 var cinema = CinemaBuildingAI.ActiveInstance;
                 var universe = WonderUniverseIntegrationSystem.Instance;
 
@@ -326,6 +331,12 @@ namespace WonderWorldCS2.UI
                     speedKmh,
                     thrustMult,
                     stability,
+                    heroActions != null ? heroActions.BulletTimeEnergyPercent : 100f,
+                    heroActions != null && heroActions.IsBulletTimeActive,
+                    heroActions != null ? heroActions.ComboCounter : 0,
+                    heroActions != null ? heroActions.SonicDiscStatus : "Equipped",
+                    heroActions != null && heroActions.CounterWindowOpen,
+                    heroActions != null ? heroActions.CounterWindowRemaining : 0f,
                     marquee,
                     portalStage,
                     voiceText,
@@ -371,6 +382,12 @@ namespace WonderWorldCS2.UI
             float speedKmh,
             float thrustMult,
             float stability,
+            float bulletTimeEnergy,
+            bool bulletTimeActive,
+            int comboCounter,
+            string sonicDiscStatus,
+            bool counterWindowOpen,
+            float counterWindowRemaining,
             string marquee,
             string portalStage,
             string voiceText,
@@ -478,8 +495,22 @@ namespace WonderWorldCS2.UI
             sb.Append("<div onclick=\"window.wwSend(\\x27part_4\\x27)\" style=\"background:#3c1361;border:1px solid #b84dff;padding:5px 8px;border-radius:5px;cursor:pointer;\">🔧 [Alt+4] Top-Hat Turret</div>");
             sb.Append("</div>");
 
-            // Section 4: CINEMA STORY MISSIONS (5 Top Hatter Narrative Portals)
-            sb.Append("<div style=\"color:#ff77ff;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">4. CINEMA STORY MISSIONS (REEL MEMORY PORTALS & TOP HATTER BACKSTORIES)</div>");
+            // Section 4: Hero action mechanics
+            sb.Append("<div style=\"color:#00f5d4;font-weight:bold;font-size:13px;margin:8px 0 5px;border-bottom:1px solid #552288;padding-bottom:4px;\">4. HERO COMBAT ABILITIES</div>");
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"display:flex;align-items:center;gap:8px;margin-bottom:5px;color:#e0d4ff;\">Bullet Time {0}: <div style=\"width:180px;height:12px;background:#241b2f;border:1px solid #00f5d4;border-radius:6px;overflow:hidden;\"><div style=\"width:{1:F0}%;height:100%;background:#00d9ff;\"></div></div><b>{1:F0}%</b></div>",
+                bulletTimeActive ? "ACTIVE" : "[Left Shift]",
+                Mathf.Clamp(bulletTimeEnergy, 0f, 100f));
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:5px;color:#e0d4ff;\">Freeflow: <b style=\"color:#ffd700;\">Combo ×{0}</b> &nbsp;|&nbsp; Sonic Disc: <b style=\"color:#00f5d4;\">{1}</b> &nbsp;|&nbsp; Counter: <b style=\"color:{2};\">{3}</b></div>",
+                comboCounter,
+                sonicDiscStatus,
+                counterWindowOpen ? "#00ffb4" : "#b7a8c9",
+                counterWindowOpen ? string.Format(CultureInfo.InvariantCulture, "OPEN ({0:F2}s) — Right Click", counterWindowRemaining) : "Waiting for attack cue");
+            sb.Append("<div style=\"margin-bottom:8px;color:#b7a8c9;\">Shift: Bullet Time | Right-click: Counter during an attack cue | Left+Right-click: Throw Disc | R: Recall</div>");
+
+            // Section 5: Cinema Story Missions
+            sb.Append("<div style=\"color:#ff77ff;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">5. CINEMA STORY MISSIONS (REEL MEMORY PORTALS & TOP HATTER BACKSTORIES)</div>");
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<div style=\"margin-bottom:4px;color:#fff;font-weight:bold;\">Current Cinema Marquee: <span style=\"color:#ffd700;\">\"{0}\"</span> — Featured Top Hatter: <span style=\"color:#00ffcc;\">{1}</span> ({2})</div>",
                 EscapeJs(activeMission.MovieTitle), EscapeJs(activeMission.HeroName), EscapeJs(activeMission.District));
@@ -516,8 +547,8 @@ namespace WonderWorldCS2.UI
             sb.Append("<div onclick=\"window.wwSend(\\x27hero_4\\x27)\" style=\"background:#5a189a;padding:4px 8px;border-radius:4px;cursor:pointer;\">🌌 Vesper Vance</div>");
             sb.Append("</div>");
 
-            // Section 5: 5 DEEP SIMULATION PILLARS (Supply Chains | 59,000-Gal Hydro Dome | Hope Decrees | Specialist Grid | Named VIP Citizens)
-            sb.Append("<div style=\"color:#00f5d4;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">5. DEEP SIMULATION PILLARS (SUPPLY CHAIN | 59K-GAL HYDRO DOME | HOPE DECREES | SPECIALIST GRID | NAMED VIPs)</div>");
+            // Section 6: 5 Deep Simulation Pillars
+            sb.Append("<div style=\"color:#00f5d4;font-weight:bold;font-size:13px;margin-bottom:5px;border-bottom:1px solid #552288;padding-bottom:4px;\">6. DEEP SIMULATION PILLARS (SUPPLY CHAIN | 59K-GAL HYDRO DOME | HOPE DECREES | SPECIALIST GRID | NAMED VIPs)</div>");
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<div style=\"margin-bottom:4px;color:#e0d4ff;font-size:11px;\">📦 <b>4-Tier Supply Chain:</b> Alloy: <b>{0}t</b> &rarr; Spores: <b>{1}</b> &rarr; Sub-Bass Coils: <b>{2}</b> &rarr; Storefront Stock: <b style=\"color:#00ffb4;\">{3} Crates</b> ({4} Drones/Trucks)</div>",
                 WonderDeepSimulationSystem.RawAcousticAlloyTons,
@@ -585,6 +616,8 @@ namespace WonderWorldCS2.UI
             int boxOfficeYield = universe != null ? universe.BoxOfficeWeeklyYield : WonderUniverseIntegrationSystem.StaticBoxOfficeWeeklyYield;
             float tensionIndex = universe != null ? universe.DistrictTensionIndex : WonderUniverseIntegrationSystem.StaticDistrictTensionIndex;
             var activeMission = CinemaPortalMissionSystem.StaticActiveMission;
+            var heroActions = WonderHeroActionMechanics.Instance;
+            var vehicle = HoverDriveVehicle.ActiveInstance;
 
             GUILayout.BeginArea(_fallbackWindowRect, GUI.skin.box);
             GUILayout.Label("🎩 MAMA'S WONDER WORLD // F8 WONDER COMMAND HUD");
@@ -610,6 +643,27 @@ namespace WonderWorldCS2.UI
             {
                 string status = m.IsCompleted ? "Completed" : "Ready to Enter";
                 GUILayout.Label($"• [{m.MissionId}] {m.MovieTitle} ({m.HeroName}) — {status}");
+            }
+            GUILayout.Space(6f);
+            GUILayout.Label("HERO COMBAT ABILITIES");
+            float bulletEnergy = heroActions != null ? heroActions.BulletTimeEnergyPercent : 100f;
+            GUILayout.Label($"Bullet Time Energy: {bulletEnergy:F0}% {(heroActions != null && heroActions.IsBulletTimeActive ? "(ACTIVE)" : "(Left Shift)")}");
+            Rect energyBar = GUILayoutUtility.GetRect(250f, 14f);
+            GUI.color = new Color(0.14f, 0.1f, 0.18f, 1f);
+            GUI.DrawTexture(energyBar, Texture2D.whiteTexture);
+            energyBar.width *= bulletEnergy / 100f;
+            GUI.color = new Color(0f, 0.85f, 1f, 1f);
+            GUI.DrawTexture(energyBar, Texture2D.whiteTexture);
+            GUI.color = Color.white;
+            GUILayout.Label($"Freeflow: Combo ×{(heroActions != null ? heroActions.ComboCounter : 0)} | Sonic Disc: {(heroActions != null ? heroActions.SonicDiscStatus : "Equipped")}");
+            GUILayout.Label(heroActions != null && heroActions.CounterWindowOpen
+                ? $"Counter window OPEN ({heroActions.CounterWindowRemaining:F2}s) — Right Click"
+                : "Counter window: Waiting for attack cue");
+            if (GUILayout.Button(
+                vehicle != null && vehicle.IsCloaked ? "Uncloak Hover-Cruiser [Alt+5]" : "Cloak Hover-Cruiser [Alt+5]",
+                GUILayout.Height(26f)))
+            {
+                ExecuteWonderAction("toggle_cloak");
             }
             if (GUILayout.Button("Enter Cinema Portal Flashback [E]", GUILayout.Height(30f)))
             {

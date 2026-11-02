@@ -14,8 +14,9 @@ using WonderWorld.Cities2Mod.Economy;
 using WonderWorld.Cities2Mod.Portals;
 using WonderWorld.Cities2Mod.Vehicles;
 using WonderWorldCS2.Portals;
-using WonderWorldCS2.UI;
 using WonderWorldCS2.Systems;
+using WonderWorldCS2.UI;
+using WonderWorld.Cities2Mod.UI;
 
 namespace WonderWorld.Cities2Mod
 {
@@ -35,6 +36,7 @@ namespace WonderWorld.Cities2Mod
         private static UIOverhaul _uiOverhaul;
         private static HoverDriveVehicle _hoverDriveVehicle;
         private static CinemaBuildingAI _cinemaBuildingAI;
+        private static WonderHeroActionMechanics _heroActionMechanics;
         private static Harmony _harmony;
 
         private void Awake()
@@ -77,6 +79,12 @@ namespace WonderWorld.Cities2Mod
             if (_cinemaBuildingAI == null)
             {
                 _cinemaBuildingAI = _suiteObject.GetComponent<CinemaBuildingAI>() ?? _suiteObject.AddComponent<CinemaBuildingAI>();
+            }
+
+            if (_heroActionMechanics == null)
+            {
+                _heroActionMechanics = _suiteObject.GetComponent<WonderHeroActionMechanics>() ??
+                    _suiteObject.AddComponent<WonderHeroActionMechanics>();
             }
 
             if (_uiOverhaul == null)
