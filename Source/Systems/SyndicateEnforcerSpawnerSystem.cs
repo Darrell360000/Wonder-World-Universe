@@ -10,15 +10,18 @@ namespace WonderWorldCS2.Systems
         void TakeCounterDamage(int damage);
     }
 
-    public sealed class SyndicateEnforcerEntity : MonoBehaviour, IWonderHeroDamageable, IWonderHeroCounterTarget
+    public sealed class SyndicateEnforcerEntity : MonoBehaviour, IWonderHeroDamageable, IWonderHeroCounterTarget, IWonderHeroPostureTarget
     {
         private const float AttackInterval = 60f / 85f * 5f;
         private const float AttackTelegraphDuration = 60f / 85f;
+        public const int AttackDamage = 20;
 
         public int Health { get; private set; } = 100;
+        public float HarmonicStrain { get; private set; }
         public bool IsAttacking { get; private set; }
 
         private float _attackTimer;
+        private bool _attackDeflected;
         private Renderer _renderer;
         private Material _material;
         private Color _baseColor = new Color(0.2f, 0.2f, 0.2f);
@@ -57,12 +60,18 @@ namespace WonderWorldCS2.Systems
             if (!IsAttacking && _attackTimer >= AttackInterval - AttackTelegraphDuration)
             {
                 IsAttacking = true;
+                _attackDeflected = false;
                 SetColor(new Color(1f, 0.1f, 0.2f));
-                WonderHeroActionMechanics.Instance?.OpenCounterWindow(gameObject, AttackTelegraphDuration);
+                WonderHeroActionMechanics.Instance?.OpenCounterWindow(gameObject, AttackTelegraphDuration, AttackDamage);
             }
 
             if (_attackTimer >= AttackInterval)
             {
+                if (!_attackDeflected)
+                {
+                    WonderHeroActionMechanics.Instance?.ResolveIncomingAttack(gameObject, AttackDamage);
+                }
+
                 _attackTimer = 0f;
                 IsAttacking = false;
                 SetColor(_baseColor);
@@ -77,6 +86,21 @@ namespace WonderWorldCS2.Systems
         public void TakeCounterDamage(int damage)
         {
             ApplyDamage(damage);
+        }
+
+        public void TakePostureDamage(float damage)
+        {
+            if (Health <= 0 || damage <= 0f) return;
+
+            HarmonicStrain = Mathf.Min(100f, HarmonicStrain + damage);
+            if (HarmonicStrain < 100f) return;
+
+            ApplyDamage(Health);
+        }
+
+        public void RegisterAttackDeflection()
+        {
+            _attackDeflected = true;
         }
 
         private void ApplyDamage(int damage)

@@ -353,6 +353,10 @@ namespace WonderWorldCS2.UI
                     stability,
                     heroActions != null ? heroActions.BulletTimeEnergyPercent : 100f,
                     heroActions != null && heroActions.IsBulletTimeActive,
+                    heroActions != null ? heroActions.currentHealth : 100,
+                    heroActions != null ? heroActions.maxHealth : 100,
+                    heroActions != null ? heroActions.rallyPotentialHealth : 0,
+                    heroActions != null ? heroActions.PlayerPosturePercent : 0f,
                     heroActions != null ? heroActions.ComboCounter : 0,
                     heroActions != null ? heroActions.SonicDiscStatus : "Equipped",
                     heroActions != null && heroActions.CounterWindowOpen,
@@ -422,6 +426,10 @@ namespace WonderWorldCS2.UI
             float stability,
             float bulletTimeEnergy,
             bool bulletTimeActive,
+            int currentHealth,
+            int maxHealth,
+            int rallyPotentialHealth,
+            float playerPosturePercent,
             int comboCounter,
             string sonicDiscStatus,
             bool counterWindowOpen,
@@ -438,6 +446,10 @@ namespace WonderWorldCS2.UI
             string hoverColor = hoverOn ? "#00ffcc" : "#ffd700";
             string deckDisplay = showDeck ? "block" : "none";
             string tensionColor = tensionIndex > 15.0f ? "#ff5577" : "#00ffb4";
+            float healthCapacity = Mathf.Max(1, maxHealth);
+            float currentHealthPercent = Mathf.Clamp(currentHealth / healthCapacity * 100f, 0f, 100f);
+            float rallyPotentialPercent = Mathf.Clamp(rallyPotentialHealth / healthCapacity * 100f, 0f, 100f - currentHealthPercent);
+            float depletedHealthPercent = Mathf.Max(0f, 100f - currentHealthPercent - rallyPotentialPercent);
 
             var activeMission = CinemaPortalMissionSystem.StaticActiveMission;
             bool inPortal = CinemaPortalMissionSystem.StaticInMissionPortal;
@@ -539,6 +551,17 @@ namespace WonderWorldCS2.UI
                 "<div style=\"display:flex;align-items:center;gap:8px;margin-bottom:5px;color:#e0d4ff;\">Bullet Time {0}: <div style=\"width:180px;height:12px;background:#241b2f;border:1px solid #00f5d4;border-radius:6px;overflow:hidden;\"><div style=\"width:{1:F0}%;height:100%;background:#00d9ff;\"></div></div><b>{1:F0}%</b></div>",
                 bulletTimeActive ? "ACTIVE" : "[Left Shift]",
                 Mathf.Clamp(bulletTimeEnergy, 0f, 100f));
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:3px;color:#e0d4ff;\">Bio-Rally Health: <b style=\"color:#35e58a;\">{0}/{1} HP</b> &nbsp;|&nbsp; Rally Potential: <b style=\"color:#ff9f43;\">{2} HP</b></div>",
+                Mathf.Clamp(currentHealth, 0, maxHealth), maxHealth, Mathf.Clamp(rallyPotentialHealth, 0, maxHealth));
+            sb.Append("<div style=\"display:flex;width:250px;height:12px;margin-bottom:4px;background:#e5484d;border:1px solid #5b2630;border-radius:5px;overflow:hidden;\">");
+            sb.AppendFormat(CultureInfo.InvariantCulture, "<div style=\"width:{0:F1}%;height:100%;background:#35d07f;\"></div>", currentHealthPercent);
+            sb.AppendFormat(CultureInfo.InvariantCulture, "<div style=\"width:{0:F1}%;height:100%;background:#ff9f43;\"></div>", rallyPotentialPercent);
+            sb.AppendFormat(CultureInfo.InvariantCulture, "<div style=\"width:{0:F1}%;height:100%;background:#e5484d;\"></div>", depletedHealthPercent);
+            sb.Append("</div>");
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:5px;color:#b7a8c9;font-size:10px;\"><span style=\"color:#35d07f;\">■ Current HP</span> &nbsp; <span style=\"color:#ff9f43;\">■ Rally</span> &nbsp; <span style=\"color:#e5484d;\">■ Depleted</span> &nbsp;|&nbsp; Harmonic Strain / Posture: <b style=\"color:#00f5d4;\">{0:F0}%</b></div>",
+                Mathf.Clamp(playerPosturePercent, 0f, 100f));
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<div style=\"margin-bottom:5px;color:#e0d4ff;\">Freeflow: <b style=\"color:#ffd700;\">Combo ×{0}</b> &nbsp;|&nbsp; Sonic Disc: <b style=\"color:#00f5d4;\">{1}</b> &nbsp;|&nbsp; Counter: <b style=\"color:{2};\">{3}</b></div>",
                 comboCounter,
@@ -703,6 +726,23 @@ namespace WonderWorldCS2.UI
             GUI.DrawTexture(energyBar, Texture2D.whiteTexture);
             GUI.color = Color.white;
             GUILayout.Label($"Freeflow: Combo ×{(heroActions != null ? heroActions.ComboCounter : 0)} | Sonic Disc: {(heroActions != null ? heroActions.SonicDiscStatus : "Equipped")}");
+            int maxHealth = heroActions != null ? Mathf.Max(1, heroActions.maxHealth) : 100;
+            int currentHealth = heroActions != null ? Mathf.Clamp(heroActions.currentHealth, 0, maxHealth) : maxHealth;
+            int rallyPotentialHealth = heroActions != null
+                ? Mathf.Clamp(heroActions.rallyPotentialHealth, 0, maxHealth - currentHealth)
+                : 0;
+            GUILayout.Label($"Bio-Rally Health: {currentHealth}/{maxHealth} HP | Rally Potential: {rallyPotentialHealth} HP");
+            Rect healthBar = GUILayoutUtility.GetRect(250f, 14f);
+            float currentHealthWidth = healthBar.width * currentHealth / maxHealth;
+            float rallyPotentialWidth = healthBar.width * rallyPotentialHealth / maxHealth;
+            GUI.color = new Color(0.9f, 0.28f, 0.3f, 1f);
+            GUI.DrawTexture(healthBar, Texture2D.whiteTexture);
+            GUI.color = new Color(0.2f, 0.82f, 0.5f, 1f);
+            GUI.DrawTexture(new Rect(healthBar.x, healthBar.y, currentHealthWidth, healthBar.height), Texture2D.whiteTexture);
+            GUI.color = new Color(1f, 0.62f, 0.26f, 1f);
+            GUI.DrawTexture(new Rect(healthBar.x + currentHealthWidth, healthBar.y, rallyPotentialWidth, healthBar.height), Texture2D.whiteTexture);
+            GUI.color = Color.white;
+            GUILayout.Label($"Harmonic Strain / Posture: {(heroActions != null ? heroActions.PlayerPosturePercent : 0f):F0}%");
             GUILayout.Label(heroActions != null && heroActions.CounterWindowOpen
                 ? $"Counter window OPEN ({heroActions.CounterWindowRemaining:F2}s) — Right Click"
                 : "Counter window: Waiting for attack cue");

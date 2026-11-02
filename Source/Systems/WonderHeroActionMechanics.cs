@@ -9,6 +9,12 @@ namespace WonderWorldCS2.Systems
         void TakeWonderDamage(int damage, GameObject source);
     }
 
+    public interface IWonderHeroPostureTarget
+    {
+        void TakePostureDamage(float damage);
+        void RegisterAttackDeflection();
+    }
+
     public sealed class WonderHeroActionMechanics : MonoBehaviour
     {
         private enum SonicDiscState
@@ -37,6 +43,18 @@ namespace WonderWorldCS2.Systems
         public float counterWindowDuration = 0.35f;
         public float comboDuration = 3.5f;
 
+        [Header("Sekiro Posture / Harmonic Strain")]
+        public float playerPosture;
+        public float maxPosture = 100f;
+        public float perfectParryWindow = 0.22f;
+
+        [Header("Bloodborne Bio-Rally")]
+        public int currentHealth = 100;
+        public int maxHealth = 100;
+        public int rallyPotentialHealth;
+        public float rallyWindowTimer;
+        public float maxRallyDuration = 4f * 60f / 85f;
+
         private readonly HashSet<int> _hitTargetIds = new HashSet<int>();
         private GameObject _activeDisc;
         private Rigidbody _activeDiscBody;
@@ -48,9 +66,14 @@ namespace WonderWorldCS2.Systems
         private float _fixedDeltaTimeBeforeBulletTime = 0.02f;
         private float _bulletTimeAppliedScale;
         private float _bulletTimeAppliedFixedDeltaTime;
+        private int _counterIncomingDamage = SyndicateEnforcerEntity.AttackDamage;
 
         public bool IsBulletTimeActive { get; private set; }
         public float BulletTimeEnergyPercent => Mathf.Clamp(bulletTimeEnergy, 0f, 100f);
+        public float PlayerPosturePercent => maxPosture > 0f ? Mathf.Clamp(playerPosture / maxPosture * 100f, 0f, 100f) : 0f;
+        public float CurrentHealthPercent => maxHealth > 0 ? Mathf.Clamp((float)currentHealth / maxHealth * 100f, 0f, 100f) : 0f;
+        public float RallyPotentialPercent => maxHealth > 0 ? Mathf.Clamp((float)rallyPotentialHealth / maxHealth * 100f, 0f, 100f) : 0f;
+        public float DepletedHealthPercent => Mathf.Max(0f, 100f - CurrentHealthPercent - RallyPotentialPercent);
         public int ComboCounter { get; private set; }
         public bool CounterWindowOpen => _counterWindowRemaining > 0f;
         public float CounterWindowRemaining => _counterWindowRemaining;
@@ -82,6 +105,12 @@ namespace WonderWorldCS2.Systems
 
             Instance = this;
             bulletTimeEnergy = Mathf.Clamp(bulletTimeEnergy, 0f, 100f);
+            maxHealth = Mathf.Max(1, maxHealth);
+            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+            rallyPotentialHealth = Mathf.Clamp(rallyPotentialHealth, 0, maxHealth - currentHealth);
+            maxPosture = Mathf.Max(1f, maxPosture);
+            playerPosture = Mathf.Clamp(playerPosture, 0f, maxPosture);
+            maxRallyDuration = Mathf.Max(0.1f, maxRallyDuration);
         }
 
         private void Update()
@@ -89,6 +118,7 @@ namespace WonderWorldCS2.Systems
             HandleBulletTimeInput();
             HandleDiscInput();
             HandleFreeflowCombatTiming();
+            UpdateRallyDecay();
 
             if (_discState == SonicDiscState.Thrown && _activeDisc != null)
             {
@@ -373,8 +403,12 @@ namespace WonderWorldCS2.Systems
                 _counterWindowRemaining = Mathf.Max(0f, _counterWindowRemaining - deltaTime);
                 if (_counterWindowRemaining > 0f && Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0))
                 {
-                    _counterWindowRemaining = 0f;
-                    RegisterCounter();
+                    TryDeflectEnemyAttack(_counterTarget, _counterIncomingDamage);
+                }
+
+                if (_counterWindowRemaining <= 0f)
+                {
+                    _counterTarget = null;
                 }
             }
         }
@@ -386,36 +420,99 @@ namespace WonderWorldCS2.Systems
 
         public void OpenCounterWindow(GameObject attacker, float duration)
         {
-            _counterTarget = attacker;
-            _counterWindowRemaining = Mathf.Max(0.05f, duration);
+            OpenCounterWindow(attacker, duration, SyndicateEnforcerEntity.AttackDamage);
         }
 
-        private void RegisterCounter()
+        public void OpenCounterWindow(GameObject attacker, float duration, int incomingDamage)
         {
-            bool hitCounterTarget = false;
-            if (_counterTarget != null)
+            _counterTarget = attacker;
+            _counterWindowRemaining = Mathf.Max(0.05f, duration);
+            _counterIncomingDamage = Mathf.Max(0, incomingDamage);
+        }
+
+        public bool TryDeflectEnemyAttack(GameObject enemy, int incomingDamage)
+        {
+            if (enemy == null ||
+                enemy != _counterTarget ||
+                _counterWindowRemaining <= 0f ||
+                _counterWindowRemaining > Mathf.Max(0.01f, perfectParryWindow))
             {
-                MonoBehaviour[] behaviours = _counterTarget.GetComponentsInParent<MonoBehaviour>(true);
-                foreach (MonoBehaviour behaviour in behaviours)
+                return false;
+            }
+
+            _counterWindowRemaining = 0f;
+            _counterTarget = null;
+
+            MonoBehaviour[] behaviours = enemy.GetComponentsInParent<MonoBehaviour>(true);
+            foreach (MonoBehaviour behaviour in behaviours)
+            {
+                if (behaviour is IWonderHeroPostureTarget postureTarget)
                 {
-                    if (behaviour is IWonderHeroCounterTarget counterTarget)
-                    {
-                        counterTarget.TakeCounterDamage(50);
-                        RegisterHit(_counterTarget, 50);
-                        hitCounterTarget = true;
-                        break;
-                    }
+                    postureTarget.RegisterAttackDeflection();
+                    postureTarget.TakePostureDamage(45f);
+                    break;
                 }
             }
 
-            if (!hitCounterTarget)
+            playerPosture = Mathf.Max(0f, playerPosture - 45f);
+            ComboCounter += 2;
+            _comboRemaining = Mathf.Max(0.1f, 4f);
+            ApplyRallyRecovery(45);
+
+            Debug.Log($"[WonderHeroActionMechanics] Perfect harmonic deflection! {incomingDamage} incoming damage prevented; 45 posture damage inflicted.");
+            return true;
+        }
+
+        public void ResolveIncomingAttack(GameObject attacker, int incomingDamage)
+        {
+            if (attacker == _counterTarget)
             {
-                ComboCounter++;
-                _comboRemaining = Mathf.Max(0.1f, comboDuration);
+                _counterTarget = null;
+                _counterWindowRemaining = 0f;
             }
 
-            _counterTarget = null;
-            Debug.Log($"[WonderHeroActionMechanics] Perfect counter! Combo x{ComboCounter}.");
+            TakeHeroDamage(incomingDamage);
+        }
+
+        public void TakeHeroDamage(int damage)
+        {
+            if (damage <= 0 || currentHealth <= 0) return;
+
+            int appliedDamage = Mathf.Min(damage, currentHealth);
+            currentHealth -= appliedDamage;
+            rallyPotentialHealth = Mathf.Min(maxHealth - currentHealth, rallyPotentialHealth + appliedDamage);
+            rallyWindowTimer = Mathf.Max(0.1f, maxRallyDuration);
+            playerPosture = Mathf.Min(maxPosture, playerPosture + appliedDamage);
+
+            Debug.Log($"[WonderHeroActionMechanics] Hit taken! Health: {currentHealth}. Rally potential: {rallyPotentialHealth}.");
+        }
+
+        private void UpdateRallyDecay()
+        {
+            if (rallyWindowTimer <= 0f) return;
+
+            rallyWindowTimer = Mathf.Max(0f, rallyWindowTimer - Time.unscaledDeltaTime);
+            if (rallyWindowTimer <= 0f)
+            {
+                rallyPotentialHealth = 0;
+            }
+        }
+
+        public void ApplyRallyRecovery(int damageDealt)
+        {
+            if (damageDealt <= 0 || rallyPotentialHealth <= 0 || rallyWindowTimer <= 0f) return;
+
+            int healthRecovered = Mathf.Min(rallyPotentialHealth, Mathf.RoundToInt(damageDealt * 0.5f));
+            if (healthRecovered <= 0) return;
+
+            currentHealth = Mathf.Min(maxHealth, currentHealth + healthRecovered);
+            rallyPotentialHealth -= healthRecovered;
+            if (rallyPotentialHealth <= 0)
+            {
+                rallyWindowTimer = 0f;
+            }
+
+            Debug.Log($"[WonderHeroActionMechanics] Bio-Rally recovered {healthRecovered} HP. Health: {currentHealth}.");
         }
 
         public void RegisterHit(GameObject target, int damage)
@@ -424,6 +521,7 @@ namespace WonderWorldCS2.Systems
 
             ComboCounter++;
             _comboRemaining = Mathf.Max(0.1f, comboDuration);
+            ApplyRallyRecovery(damage);
             Debug.Log($"[WonderHeroActionMechanics] Hit {target.name} for {damage} damage. Combo x{ComboCounter}.");
         }
     }
