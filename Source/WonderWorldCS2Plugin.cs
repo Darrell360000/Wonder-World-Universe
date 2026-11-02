@@ -37,6 +37,7 @@ namespace WonderWorld.Cities2Mod
         private static HoverDriveVehicle _hoverDriveVehicle;
         private static CinemaBuildingAI _cinemaBuildingAI;
         private static WonderHeroActionMechanics _heroActionMechanics;
+        private static WonderLegendaryMechanicsSystem _legendaryMechanics;
         private static Harmony _harmony;
 
         private void Awake()
@@ -85,6 +86,12 @@ namespace WonderWorld.Cities2Mod
             {
                 _heroActionMechanics = _suiteObject.GetComponent<WonderHeroActionMechanics>() ??
                     _suiteObject.AddComponent<WonderHeroActionMechanics>();
+            }
+
+            if (_legendaryMechanics == null)
+            {
+                _legendaryMechanics = _suiteObject.GetComponent<WonderLegendaryMechanicsSystem>() ??
+                    _suiteObject.AddComponent<WonderLegendaryMechanicsSystem>();
             }
 
             if (_uiOverhaul == null)

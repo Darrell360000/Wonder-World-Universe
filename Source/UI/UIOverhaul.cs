@@ -109,8 +109,9 @@ namespace WonderWorldCS2.UI
                 ExecuteWonderAction("mint_wonder_w");
             }
 
-            // [E] Enter or Complete Active Cinema Story Portal Flashback
-            if (Input.GetKeyDown(KeyCode.E))
+            // [Ctrl+E] Enter or Complete Active Cinema Story Portal Flashback; E places the Magenta portal.
+            if (Input.GetKeyDown(KeyCode.E) &&
+                (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
             {
                 ExecuteWonderAction("enter_cinema_portal");
             }
@@ -306,6 +307,7 @@ namespace WonderWorldCS2.UI
                 int cityTreasury = MamaCityControlSystem.ReadLiveCityTreasury();
                 var vehicle = HoverDriveVehicle.ActiveInstance;
                 var heroActions = WonderHeroActionMechanics.Instance;
+                var legendary = WonderLegendaryMechanicsSystem.Instance;
                 var cinema = CinemaBuildingAI.ActiveInstance;
                 var universe = WonderUniverseIntegrationSystem.Instance;
 
@@ -361,6 +363,11 @@ namespace WonderWorldCS2.UI
                     heroActions != null ? heroActions.SonicDiscStatus : "Equipped",
                     heroActions != null && heroActions.CounterWindowOpen,
                     heroActions != null ? heroActions.CounterWindowRemaining : 0f,
+                    legendary != null ? legendary.AscendStatus : "UNAVAILABLE",
+                    legendary != null ? legendary.GrindStatus : "UNAVAILABLE",
+                    legendary != null ? legendary.PortalStatus : "Unavailable",
+                    legendary != null ? legendary.EnemyPostureStrain : 0f,
+                    legendary != null ? legendary.RallyBuffer : 0,
                     marquee,
                     portalStage,
                     voiceText,
@@ -434,6 +441,11 @@ namespace WonderWorldCS2.UI
             string sonicDiscStatus,
             bool counterWindowOpen,
             float counterWindowRemaining,
+            string ascendStatus,
+            string grindStatus,
+            string portalStatus,
+            float enemyPostureStrain,
+            int rallyBuffer,
             string marquee,
             string portalStage,
             string voiceText,
@@ -562,6 +574,14 @@ namespace WonderWorldCS2.UI
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<div style=\"margin-bottom:5px;color:#b7a8c9;font-size:10px;\"><span style=\"color:#35d07f;\">■ Current HP</span> &nbsp; <span style=\"color:#ff9f43;\">■ Rally</span> &nbsp; <span style=\"color:#e5484d;\">■ Depleted</span> &nbsp;|&nbsp; Harmonic Strain / Posture: <b style=\"color:#00f5d4;\">{0:F0}%</b></div>",
                 Mathf.Clamp(playerPosturePercent, 0f, 100f));
+            sb.Append("<div style=\"color:#ffd700;font-weight:bold;font-size:12px;margin:7px 0 4px;border-bottom:1px solid #552288;padding-bottom:3px;\">LEGENDARY 5-PILLAR MECHANICS</div>");
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:5px;color:#e0d4ff;\">Ascend: <b style=\"color:#00f5d4;\">{0}</b> &nbsp;|&nbsp; Neon Rail Grind: <b style=\"color:#ff66d9;\">{1}</b></div>",
+                ascendStatus, grindStatus);
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "<div style=\"margin-bottom:5px;color:#e0d4ff;\">Active Portals: <b style=\"color:#00d9ff;\">{0}</b> &nbsp;|&nbsp; Enemy Posture Strain: <b style=\"color:#ff9f43;\">{1:F0}%</b> &nbsp;|&nbsp; Rally Buffer: <b style=\"color:#ff9f43;\">{2} HP</b></div>",
+                portalStatus, Mathf.Clamp(enemyPostureStrain, 0f, 100f), Mathf.Max(0, rallyBuffer));
+            sb.Append("<div style=\"margin-bottom:6px;color:#b7a8c9;font-size:10px;\">C: Ascend | G: Ultra-Fuse | Q/E: Place portals | J: Frequency Codex | Space: Rail Surge</div>");
             sb.AppendFormat(CultureInfo.InvariantCulture,
                 "<div style=\"margin-bottom:5px;color:#e0d4ff;\">Freeflow: <b style=\"color:#ffd700;\">Combo ×{0}</b> &nbsp;|&nbsp; Sonic Disc: <b style=\"color:#00f5d4;\">{1}</b> &nbsp;|&nbsp; Counter: <b style=\"color:{2};\">{3}</b></div>",
                 comboCounter,
@@ -605,8 +625,8 @@ namespace WonderWorldCS2.UI
             // Interactive Cinema Portal Flashback [E] + Top Hatter Marquee Selector Buttons
             sb.Append("<div style=\"display:flex;flex-wrap:wrap;align-items:center;margin-bottom:8px;\">");
             string portalBtnText = inPortal
-                ? string.Format(CultureInfo.InvariantCulture, "⭐️ Complete Flashback: {0} (+{1} ⭐️W & +${2:N0}) [E]", EscapeJs(activeMission.MovieTitle), activeMission.WonderStarReward, activeMission.TreasuryBonus)
-                : "🎬 Enter Cinema Portal Flashback [E]";
+                ? string.Format(CultureInfo.InvariantCulture, "⭐️ Complete Flashback: {0} (+{1} ⭐️W & +${2:N0}) [Ctrl+E]", EscapeJs(activeMission.MovieTitle), activeMission.WonderStarReward, activeMission.TreasuryBonus)
+                : "🎬 Enter Cinema Portal Flashback [Ctrl+E]";
             string portalBtnBg = inPortal ? "#00b4d8" : "#e63946";
             sb.AppendFormat("<div onclick=\"window.wwSend(\\x27enter_cinema_portal\\x27)\" style=\"background:{0};color:#fff;padding:6px 14px;border-radius:5px;margin-right:10px;cursor:pointer;font-weight:bold;\">{1}</div>",
                 portalBtnBg, portalBtnText);
@@ -687,6 +707,7 @@ namespace WonderWorldCS2.UI
             float tensionIndex = universe != null ? universe.DistrictTensionIndex : WonderUniverseIntegrationSystem.StaticDistrictTensionIndex;
             var activeMission = CinemaPortalMissionSystem.StaticActiveMission;
             var heroActions = WonderHeroActionMechanics.Instance;
+            var legendary = WonderLegendaryMechanicsSystem.Instance;
             var vehicle = HoverDriveVehicle.ActiveInstance;
 
             GUILayout.BeginArea(_fallbackWindowRect, GUI.skin.box);
@@ -752,13 +773,19 @@ namespace WonderWorldCS2.UI
             {
                 SyndicateEnforcerSpawnerSystem.SpawnStreetBrawlWave();
             }
+            GUILayout.Space(4f);
+            GUILayout.Label("LEGENDARY 5-PILLAR MECHANICS");
+            GUILayout.Label($"Ascend: {(legendary != null ? legendary.AscendStatus : "UNAVAILABLE")} | Neon Rail Grind: {(legendary != null ? legendary.GrindStatus : "UNAVAILABLE")}");
+            GUILayout.Label($"Active Portals: {(legendary != null ? legendary.PortalStatus : "Unavailable")}");
+            GUILayout.Label($"Enemy Posture Strain: {(legendary != null ? legendary.EnemyPostureStrain : 0f):F0}% | Rally Buffer: {(legendary != null ? legendary.RallyBuffer : 0)} HP");
+            GUILayout.Label("C: Ascend | G: Ultra-Fuse | Q/E: Portals | J: Frequency Codex | Space: Rail Surge");
             if (GUILayout.Button(
                 vehicle != null && vehicle.IsCloaked ? "Uncloak Hover-Cruiser [Alt+5]" : "Cloak Hover-Cruiser [Alt+5]",
                 GUILayout.Height(26f)))
             {
                 ExecuteWonderAction("toggle_cloak");
             }
-            if (GUILayout.Button("Enter Cinema Portal Flashback [E]", GUILayout.Height(30f)))
+            if (GUILayout.Button("Enter Cinema Portal Flashback [Ctrl+E]", GUILayout.Height(30f)))
             {
                 ExecuteWonderAction("enter_cinema_portal");
             }
