@@ -1,0 +1,82 @@
+{
+    "Category": "",
+    "Description": "",
+    "EngineAssociation": "5.8",
+    "FileVersion": 3,
+    "Modules": [
+        {
+            "Name": "WonderTowerTycoon",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
+    ],
+    "Plugins": [
+        {
+            "Enabled": true,
+            "Name": "ModelingToolsEditorMode",
+            "TargetAllowList": [
+                "Editor"
+            ]
+        },
+        {
+            "Enabled": true,
+            "Name": "GameplayStateTree"
+        },
+        {
+            "Enabled": true,
+            "Name": "EditorToolset"
+        },
+        {
+            "Enabled": true,
+            "Name": "PCGExternalDataInterop"
+        },
+        {
+            "Enabled": true,
+            "Name": "PythonAutomationTest"
+        },
+        {
+            "Enabled": true,
+            "Name": "MCPClientToolset"
+        },
+        {
+            "Enabled": true,
+            "Name": "ModelContextProtocol"
+        },
+        {
+            "Enabled": true,
+            "Name": "ConfigSettingsToolset"
+        },
+        {
+            "Enabled": true,
+            "Name": "PluginToolset"
+        },
+        {
+            "Enabled": true,
+            "Name": "GameFeaturesToolset"
+        },
+        {
+            "Enabled": true,
+            "Name": "SemanticSearchToolset"
+        },
+        {
+            "Enabled": true,
+            "Name": "UnrealMCP"
+        },
+        {
+            "Enabled": true,
+            "Name": "PythonScriptPlugin"
+        },
+        {
+            "Enabled": true,
+            "Name": "EditorScriptingUtilities"
+        },
+        {
+            "Enabled": true,
+            "Name": "EnhancedInput"
+        },
+        {
+            "Name": "RawInput",
+            "Enabled": true
+        }
+    ]
+}

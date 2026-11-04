@@ -1,24 +1,83 @@
-name: Metropolis Brawler - Wonder World CI/CD Pipeline
+name: Wonder World Master Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [main, master]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wonder-world-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-generate:
+  build-and-validate:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up .NET 8
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
-    - name: Build Unity Validation Project
-      run: |
-        dotnet build WonderWorldUnity/WonderWorldValidation.csproj --configuration Release
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Validate shared financial ledger
+        shell: pwsh
+        run: python Scripts/validate_wonder_ledger.py
+
+      - name: Validate Unreal Engine 5 source contracts
+        shell: pwsh
+        run: python Scripts/validate_municipal_subsystems.py
+
+      - name: Validate Unity and Cities: Skylines II source contracts
+        shell: pwsh
+        run: python Scripts/validate_unity_source_contract.py
+
+      - name: Build Unity Validation Project
+        shell: pwsh
+        run: dotnet build WonderWorldUnity/WonderWorldValidation.csproj --configuration Release
+
+      - name: Set up Blender
+        uses: moguri/setup-blender@v1
+        with:
+          blender-version: "4.5.1"
+
+      - name: Generate Wonder World character assets
+        shell: pwsh
+        run: |
+          blender --background --python Scripts/wonder_world_assets.py -- `
+            --output Assets/WonderWorld/Generated
+
+      - name: Generate Metropolis District environment
+        shell: pwsh
+        run: |
+          blender --background --python Scripts/generate_metropolis_district.py -- `
+            --output Assets/WonderWorld/Environment
+
+      - name: Generate Darrell X-Gen character
+        shell: pwsh
+        run: |
+          blender --background --python Scripts/build_darrell_xgen_to_ue5.py -- `
+            --output Assets/WonderWorld/Characters/DarrellXGen
+
+      - name: Upload generated assets and shared game sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: wonder-world-build-artifacts
+          if-no-files-found: warn
+          path: |
+            Assets/WonderWorld/Generated/
+            Assets/WonderWorld/Environment/
+            Assets/WonderWorld/Characters/DarrellXGen/
+            WonderPipeline/02_Shared_Game_Core/State/WonderLedgerState.json
+            Source/WonderTowerTycoon/

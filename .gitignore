@@ -1,3 +1,43 @@
+# Unreal Engine Bulky Build Caches & Binaries
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Plugins/**/Binaries/
+Plugins/**/Intermediate/
+.vs/
+*.pdb
+*.dll
+*.pch
+*.obj
+*.bin
+*.uhtmanifest
+*.uhttimestamps
+*.uhtpath
+*.uhtsettings
+*.deps
+*.rsp
+*.ipch
+*.opendb
+*.db
+*.VC.db
+*.suo
+*.user
+*.sln.docstates
+*.log
+*.tmp
+
+# Python
+**/__pycache__/
+*.pyc
+
+# Unity / CS2
+WonderWorldUnity/bin/
+WonderWorldUnity/obj/
+WonderWorldUnity/CS2BepInExPlugin/bin/
+WonderWorldUnity/CS2BepInExPlugin/obj/
+
+# Cities Skylines II binaries & assets
 Cities2.exe
 Cities2_Data/
 BepInEx/
@@ -5,7 +45,6 @@ MonoBleedingEdge/
 Launcher/
 _Redist/
 *.exe
-*.dll
 *.cok
 *.cid
 *.assets
@@ -13,6 +52,8 @@ _Redist/
 *.dat
 bin/
 obj/
+
+# Protected Source
 !Source/
 !WonderWorldCS2Mod.csproj
 !02_Shared_Game_Core/

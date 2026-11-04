@@ -1,0 +1,3 @@
+@echo off
+echo Requesting Administrator privileges to set GPU TdrDelay and TdrDdiDelay to 60 seconds...
+powershell -Command "Start-Process powershell -Verb RunAs -ArgumentList '-NoExit', '-Command', 'New-ItemProperty -Path \"HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\" -Name \"TdrDelay\" -PropertyType DWord -Value 60 -Force; New-ItemProperty -Path \"HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\" -Name \"TdrDdiDelay\" -PropertyType DWord -Value 60 -Force; Write-Host \"`n[SUCCESS] GPU TdrDelay and TdrDdiDelay successfully set to 60 seconds (0x3C)!\" -ForegroundColor Green; Write-Host \"Please restart your computer for these changes to take effect in Windows.`n\"; pause'"

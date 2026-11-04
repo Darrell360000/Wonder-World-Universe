@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <RestoreFallbackFolders>$(UserProfile)\.nuget\packages</RestoreFallbackFolders>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Colossal.UI">
+      <HintPath>$(ManagedDir)\Colossal.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.UI.Binding">
+      <HintPath>$(ManagedDir)\Colossal.UI.Binding.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="cohtml.Net">
+      <HintPath>$(ManagedDir)\cohtml.Net.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+<ItemGroup>
+  <Compile Include="Assets\Scripts\**\*.cs" />
+</ItemGroup>
+</Project>

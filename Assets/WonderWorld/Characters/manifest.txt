@@ -1,0 +1,3 @@
+Crimnon_Tophatter: Assets/WonderWorld/Characters\Crimnon_Tophatter.glb
+Wonder_Sound: Assets/WonderWorld/Characters\Wonder_Sound.glb
+Wonder_Warden: Assets/WonderWorld/Characters\Wonder_Warden.glb

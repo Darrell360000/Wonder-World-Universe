@@ -1,0 +1,86 @@
+{
+  "expansion_reference": "Cities: Skylines II // Bridges & Ports + Mama's Wonder World Purple City Integration",
+  "ui_host_config": {
+    "file": "gameui.uiHost",
+    "hostname": "gameui",
+    "scheme": "assetdb",
+    "priority": -10,
+    "mount_point": "assetdb://gameui/"
+  },
+  "map_packages_cok_cid": [
+    { "name": "Ribbon Isles", "container": "Ribbon Isles.cok", "cid_pair": "Ribbon Isles.cok.cid" },
+    { "name": "Sanctuary Bay", "container": "Sanctuary Bay.cok", "cid_pair": "Sanctuary Bay.cok.cid" },
+    { "name": "Verdant Vale", "container": "Verdant Vale.cok", "cid_pair": "Verdant Vale.cok.cid" },
+    { "name": "Driftwood Reach", "container": "Driftwood Reach.cok", "cid_pair": "Driftwood Reach.cok.cid" },
+    { "name": "Lakeside Harbour", "container": "Lakeside Harbour.cok", "cid_pair": "Lakeside Harbour.cok.cid" }
+  ],
+  "expansion_vector_badge": {
+    "svg": "BridgesAndPorts.svg",
+    "cid": "BridgesAndPorts.svg.cid"
+  },
+  "dual_state_achievements": [
+    {
+      "id": "Pierfect",
+      "unlocked_icon": "Pierfect.png",
+      "locked_icon": "Pierfect_locked.png",
+      "unlocked_cid": "cb9ecd2f66eccc83fe888416dae6592"
+    },
+    {
+      "id": "ItsPronouncedKey",
+      "unlocked_icon": "ItsPronouncedKey.png",
+      "locked_icon": "ItsPronouncedKey_locked.png",
+      "unlocked_cid": "555edf70e023cf8fc788e0a26d9fbb9"
+    },
+    {
+      "id": "ShipIt",
+      "unlocked_icon": "ShipIt.png",
+      "locked_icon": "ShipIt_locked.png",
+      "unlocked_cid": "ce05d778ae3e774ffdd530b5ce07a35e",
+      "locked_cid": "c5a6c9b1871e92051caca1e76d247f87"
+    },
+    {
+      "id": "DrawMeLikeOneOfYourLiftBridges",
+      "unlocked_icon": "DrawMeLikeOneOfYourLiftBridges.png",
+      "locked_icon": "DrawMeLikeOneOfYourLiftBridges_locked.png"
+    },
+    {
+      "id": "HowMuchIsTheFish",
+      "unlocked_icon": "HowMuchIsTheFish.png",
+      "locked_icon": "HowMuchIsTheFish_locked.png"
+    },
+    {
+      "id": "ADifferentPlatformer",
+      "unlocked_icon": "ADifferentPlatformer.png",
+      "locked_icon": "ADifferentPlatformer_locked.png"
+    }
+  ],
+  "isometric_64x64_toolbar_bridges": [
+    {
+      "svg": "DrawBridge01.svg",
+      "type": "64x64 Isometric Toolbar SVG"
+    },
+    {
+      "svg": "DoubleSubwayTrackLiftBridge.svg",
+      "type": "64x64 Isometric Toolbar SVG",
+      "cid": "a46decbbcfbaadc3bc63d353ef6c1b22"
+    },
+    {
+      "svg": "DoubleSubwayTrackTrussArchBridge.svg",
+      "type": "64x64 Isometric Toolbar SVG",
+      "cid": "15bf81efa285cb0401cb10eb0c40be16"
+    },
+    {
+      "svg": "DoubleTramTrackLiftBridge.svg",
+      "type": "64x64 Isometric Toolbar SVG",
+      "cid": "190729ec8b1cfeecbf4002a7cb4f7c66"
+    },
+    {
+      "svg": "ExtradosedBridge03.svg",
+      "type": "64x64 Isometric Toolbar SVG"
+    },
+    {
+      "svg": "ExtradosedBridge04.svg",
+      "type": "64x64 Isometric Toolbar SVG"
+    }
+  ]
+}

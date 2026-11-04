@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mama's Wonder World // Open-World 3D Sandbox, City Builder, Street Driving & Flying Cars</title>
+  <style>
+    :root {
+      --bg: #04060d;
+      --panel: rgba(11, 15, 29, 0.88);
+      --border: rgba(0, 240, 255, 0.35);
+      --cyan: #00f0ff;
+      --purple: #b845ff;
+      --gold: #ffcc33;
+      --emerald: #10b981;
+      --danger: #f43f5e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    #canvas-container { position: fixed; inset: 0; z-index: 1; }
+
+    /* Top Telemetry & 3-Column Ledger Bar */
+    .top-hud {
+      position: fixed; top: 10px; left: 10px; right: 10px; z-index: 10;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      padding: 8px 14px; backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0,0,0,0.65);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-title { font-weight: 900; font-size: 14px; letter-spacing: 0.6px; color: var(--cyan); text-shadow: 0 0 10px rgba(0,240,255,0.5); }
+    .brand-sub { font-size: 11px; color: var(--muted); }
+
+    .ledger-strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .ledger-pill {
+      padding: 5px 10px; border-radius: 10px; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12); font-size: 11px; font-weight: 700;
+    }
+    .ledger-pill span { font-family: Consolas, monospace; font-size: 12px; }
+    .col1 span { color: var(--cyan); }
+    .col2 span { color: var(--danger); }
+    .col3 span { color: var(--gold); }
+    .evon-badge {
+      padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 800;
+      background: rgba(16, 185, 129, 0.2); border: 1px solid var(--emerald); color: #34d399;
+    }
+
+    /* Mode Switcher Bar */
+    .mode-bar {
+      position: fixed; top: 68px; left: 50%; transform: translateX(-50%); z-index: 10;
+      display: flex; gap: 6px; background: var(--panel); padding: 6px; border-radius: 14px;
+      border: 1px solid rgba(184, 69, 255, 0.45); backdrop-filter: blur(10px);
+    }
+    .mode-btn {
+      background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid rgba(255,255,255,0.15);
+      padding: 7px 13px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer;
+      transition: all 0.15s ease; display: flex; align-items: center; gap: 6px;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, rgba(0,240,255,0.28), rgba(184,69,255,0.35));
+      border-color: var(--cyan); color: #fff; box-shadow: 0 0 14px rgba(0,240,255,0.4);
+    }
+    .mode-btn:hover { border-color: var(--cyan); }
+
+    /* Live Status Banner */
+    .status-banner {
+      position: fixed; top: 120px; left: 50%; transform: translateX(-50%); z-index: 9;
+      background: rgba(8, 12, 24, 0.85); border: 1px solid rgba(255, 204, 51, 0.45);
+      padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--gold);
+      pointer-events: none; text-align: center; white-space: nowrap;
+    }
+
+    /* Left Telemetry & Speedometer Card */
+    .speed-card {
+      position: fixed; bottom: 110px; left: 14px; z-index: 10;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      padding: 10px 14px; width: 230px; backdrop-filter: blur(10px);
+    }
+    .speed-val { font-size: 26px; font-weight: 900; font-family: Consolas, monospace; color: var(--cyan); }
+    .speed-unit { font-size: 11px; color: var(--muted); }
+    .alt-row { margin-top: 4px; font-size: 11px; color: #c084fc; font-weight: 700; }
+
+    /* City Builder Drawer */
+    .builder-panel {
+      position: fixed; right: 14px; top: 120px; z-index: 11; width: 290px;
+      background: var(--panel); border: 1px solid var(--gold); border-radius: 16px;
+      padding: 12px; backdrop-filter: blur(12px); display: none;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.75);
+    }
+    .builder-panel.open { display: block; }
+    .builder-title { font-size: 13px; font-weight: 900; color: var(--gold); margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .build-item {
+      width: 100%; text-align: left; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 10px;
+      padding: 8px 10px; margin-bottom: 6px; color: var(--text); cursor: pointer;
+      transition: all 0.15s;
+    }
+    .build-item:hover, .build-item.selected {
+      border-color: var(--gold); background: rgba(255, 204, 51, 0.16);
+    }
+    .build-item-name { font-size: 12px; font-weight: 800; color: #fff; }
+    .build-item-meta { font-size: 11px; color: var(--emerald); margin-top: 2px; }
+
+    /* Bottom Controls & Pedals */
+    .bottom-controls {
+      position: fixed; bottom: 12px; left: 12px; right: 12px; z-index: 10;
+      display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none;
+    }
+    .dpad, .action-pad {
+      display: flex; gap: 6px; pointer-events: auto; flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      background: rgba(14, 21, 40, 0.88); color: #fff;
+      border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 12px;
+      padding: 12px 15px; font-size: 13px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5); transition: transform 0.1s;
+    }
+    .ctrl-btn:active { transform: scale(0.94); background: rgba(0,240,255,0.28); }
+    .ctrl-btn.primary {
+      background: linear-gradient(135deg, #0284c7, #7c3aed); border-color: var(--cyan);
+    }
+    .ctrl-btn.flight {
+      background: linear-gradient(135deg, #9333ea, #ec4899); border-color: #f472b6;
+    }
+    .ctrl-btn.gold {
+      background: linear-gradient(135deg, #d97706, #eab308); color: #000; border-color: #fde047;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <!-- Top Telemetry & 3-Column Financial Ledger -->
+  <div class="top-hud">
+    <div class="brand">
+      <div>
+        <div class="brand-title">🎩 MAMA'S WONDER WORLD // OPEN-WORLD 3D SANDBOX & CITY BUILDER</div>
+        <div class="brand-sub">Unreal Engine 5.8 + Blender 5.2.3 CLI Architecture • Third-Person, Street Cruiser & Flying Cars</div>
+      </div>
+    </div>
+    <div class="ledger-strip">
+      <div class="ledger-pill col1">COL 1 (Grind + City Yield): <span id="col1-val">$71,750</span> <small id="rate-val">(+$420/s)</small></div>
+      <div class="ledger-pill col2">COL 2 (Overhead): <span id="col2-val">$18,400</span></div>
+      <div class="ledger-pill col3">COL 3 (Wonder Capital): <span id="col3-val">$47,050</span></div>
+      <div class="evon-badge" id="evon-status">✅ EVON HUB: PERMISSION GRANTED</div>
+    </div>
+  </div>
+
+  <!-- Traversal & Sandbox Mode Bar -->
+  <div class="mode-bar">
+    <button class="mode-btn active" id="mode-walk" onclick="setMode('walk')">🚶 [1] Third-Person Street</button>
+    <button class="mode-btn" id="mode-drive" onclick="setMode('drive')">🏎️ [2] Street Cruiser Driving</button>
+    <button class="mode-btn" id="mode-fly" onclick="setMode('fly')">🛸 [3] Purple City Flying Car</button>
+    <button class="mode-btn" id="mode-build" onclick="toggleBuilderPanel()">🏗️ [B] Sandbox City Builder</button>
+    <button class="mode-btn" onclick="speakMamaPapaBriefing()">👩🏽🧔🏽‍♂️ Mama & Papa Co-Op Voice</button>
+  </div>
+
+  <div class="status-banner" id="status-banner">
+    🎯 WASD / Arrows to Move • Press [2] or [F] to Drive Street Cruiser • Press [3] or [V] to Fly to Twin Tower Sky-Pads!
+  </div>
+
+  <!-- Speedometer & Altitude Telemetry -->
+  <div class="speed-card">
+    <div style="font-size:11px; color:var(--muted); font-weight:700;" id="vehicle-label">DARRELL X-GEN (ON FOOT)</div>
+    <div><span class="speed-val" id="speed-val">0</span> <span class="speed-unit">MPH</span></div>
+    <div class="alt-row" id="alt-val">ALTITUDE: 0 FT (STREET LEVEL)</div>
+    <div style="font-size:11px; color:var(--emerald); margin-top:4px;" id="city-stats">Buildings: 8 | Twin Towers: Fl 6 | Flying Cars: 14</div>
+  </div>
+
+  <!-- Sandbox City Builder Panel -->
+  <div class="builder-panel" id="builder-panel">
+    <div class="builder-title">
+      <span>🏗️ SANDBOX CITY BUILDER</span>
+      <span style="cursor:pointer; color:var(--muted);" onclick="toggleBuilderPanel()">✕</span>
+    </div>
+    <div style="font-size:11px; color:var(--muted); margin-bottom:8px;">
+      Click any blueprint below to construct it on the next open city block (or click directly on the 3D grid):
+    </div>
+    <button class="build-item selected" onclick="constructBuilding('sound_tower', 500, 120, 'Commercial Sound Tower')">
+      <div class="build-item-name">🏢 Commercial Sound Tower ($500)</div>
+      <div class="build-item-meta">+$120/sec Col 1 Revenue • Neon Equalizer Facade</div>
+    </button>
+    <button class="build-item" onclick="constructBuilding('cna_clinic', 750, 180, 'Mama CNA Bio-Clinic')">
+      <div class="build-item-name">🏥 Mama's CNA Bio-Clinic ($750)</div>
+      <div class="build-item-meta">+$180/sec Col 1 • Cuts Col 2 Overhead by $1,200</div>
+    </button>
+    <button class="build-item" onclick="constructBuilding('sky_port', 1200, 260, 'Sky-Port Flying Car Hub')">
+      <div class="build-item-name">🛸 Sky-Port Flying Car Garage ($1,200)</div>
+      <div class="build-item-meta">+$260/sec Col 1 • Spawns +3 Autonomous Flying Cars</div>
+    </button>
+    <button class="build-item" onclick="upgradeTwinTowers()">
+      <div class="build-item-name">🏛️ Upgrade Mama & Papa Twin Towers ($2,000)</div>
+      <div class="build-item-meta">+1 Megastructure Floor & Rooftop Sky-Pad Expansion</div>
+    </button>
+    <button class="build-item" onclick="payOffOverheadChunk()">
+      <div class="build-item-name">💳 Pay $5,000 Off Column 2 Overhead</div>
+      <div class="build-item-meta">Uses Col 1 Grind Cash to Clear Debt</div>
+    </button>
+  </div>
+
+  <!-- On-Screen Touch & Mouse Pedals -->
+  <div class="bottom-controls">
+    <div class="dpad">
+      <button class="ctrl-btn" id="btn-left">◀ LEFT [A]</button>
+      <button class="ctrl-btn" id="btn-fwd">▲ GAS / FWD [W]</button>
+      <button class="ctrl-btn" id="btn-back">▼ BRAKE / REV [S]</button>
+      <button class="ctrl-btn" id="btn-right">▶ RIGHT [D]</button>
+    </div>
+    <div class="action-pad">
+      <button class="ctrl-btn" id="btn-up" onclick="verticalPulse(1)">⬆️ ASCEND [Space]</button>
+      <button class="ctrl-btn" id="btn-down" onclick="verticalPulse(-1)">⬇️ DESCEND [C]</button>
+      <button class="ctrl-btn primary" onclick="fireSonicShockwave()">⚡ 85 BPM SHOCKWAVE & HAT [E]</button>
+      <button class="ctrl-btn flight" onclick="cycleVehicleMode()">🏎️/🛸 ENTER CAR / TAKE OFF [F/V]</button>
+      <button class="ctrl-btn gold" onclick="constructBuilding('sound_tower', 500, 120, 'Commercial Sound Tower')">🏗️ QUICK BUILD TOWER ($500)</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // ============================================================================
+    // MAMA'S WONDER WORLD // OPEN-WORLD 3D SANDBOX, STREET DRIVING & FLYING CARS
+    // ============================================================================
+    const state = {
+      mode: 'walk', // 'walk' | 'drive' | 'fly'
+      col1: 71750,
+      col2: 18400,
+      col3: 47050,
+      passiveRate: 420,
+      towerFloors: 6,
+      buildingCount: 8,
+      flyingCarCount: 14,
+      pos: new THREE.Vector3(0, 0, 28),
+      vel: new THREE.Vector3(),
+      yaw: Math.PI,
+      speed: 0,
+      keys: { w: false, a: false, s: false, d: false, up: false, down: false, shift: false }
+    };
+
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x040711);
+    scene.fog = new THREE.FogExp2(0x060b19, 0.0038);
+
+    const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.5, 900);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0x3b4d7a, 1.35));
+    const dirLight = new THREE.DirectionalLight(0xa5f3fc, 1.4);
+    dirLight.position.set(60, 140, 80);
+    scene.add(dirLight);
+
+    const neonCyanLight = new THREE.PointLight(0x00f0ff, 3.0, 140);
+    neonCyanLight.position.set(-28, 35, -35);
+    scene.add(neonCyanLight);
+
+    const neonGoldLight = new THREE.PointLight(0xffcc33, 3.0, 140);
+    neonGoldLight.position.set(28, 35, -35);
+    scene.add(neonGoldLight);
+
+    // Ground & Wet Asphalt Boulevard Grid
+    const groundGeo = new THREE.PlaneGeometry(600, 600);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x070b14, roughness: 0.18, metalness: 0.75 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    const gridHelper = new THREE.GridHelper(600, 60, 0x00f0ff, 0x1e293b);
+    gridHelper.position.y = 0.08;
+    scene.add(gridHelper);
+
+    // Main North-South & East-West Neon Highways
+    const roadMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.25, metalness: 0.6 });
+    const nsRoad = new THREE.Mesh(new THREE.BoxGeometry(22, 0.16, 600), roadMat);
+    nsRoad.position.y = 0.05;
+    scene.add(nsRoad);
+
+    const ewRoad = new THREE.Mesh(new THREE.BoxGeometry(600, 0.16, 22), roadMat);
+    ewRoad.position.y = 0.06;
+    scene.add(ewRoad);
+
+    // ============================================================================
+    // MAMA WONDER TOWER (LEFT) & PAPA WONDER TOWER (RIGHT) + FLYING CAR SKY-PADS
+    // ============================================================================
+    const mamaTowerGroup = new THREE.Group();
+    mamaTowerGroup.position.set(-32, 0, -45);
+    scene.add(mamaTowerGroup);
+
+    const papaTowerGroup = new THREE.Group();
+    papaTowerGroup.position.set(32, 0, -45);
+    scene.add(papaTowerGroup);
+
+    let skyBridgeMesh = null;
+
+    function rebuildTwinTowers() {
+      while (mamaTowerGroup.children.length) mamaTowerGroup.remove(mamaTowerGroup.children[0]);
+      while (papaTowerGroup.children.length) papaTowerGroup.remove(papaTowerGroup.children[0]);
+
+      const fl = state.towerFloors;
+      for (let i = 0; i < fl; i++) {
+        const y = i * 9 + 4.5;
+        // Mama Tower Floor + Equalizer Ring
+        const mFloor = new THREE.Mesh(
+          new THREE.CylinderGeometry(8.5 - i * 0.18, 9.0 - i * 0.18, 8.2, 24),
+          new THREE.MeshStandardMaterial({ color: 0x0b253a, roughness: 0.15, metalness: 0.88 })
+        );
+        mFloor.position.y = y;
+        mamaTowerGroup.add(mFloor);
+
+        const mRing = new THREE.Mesh(
+          new THREE.TorusGeometry(9.2 - i * 0.18, 0.28, 12, 36),
+          new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0x00f0ff : 0xec4899 })
+        );
+        mRing.rotation.x = Math.PI / 2;
+        mRing.position.y = y + 3.6;
+        mamaTowerGroup.add(mRing);
+
+        // Papa Tower Floor + Gold Ledger Trim
+        const pFloor = new THREE.Mesh(
+          new THREE.BoxGeometry(15 - i * 0.25, 8.2, 15 - i * 0.25),
+          new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.18, metalness: 0.92 })
+        );
+        pFloor.position.y = y;
+        papaTowerGroup.add(pFloor);
+
+        const pRing = new THREE.Mesh(
+          new THREE.BoxGeometry(15.6 - i * 0.25, 0.55, 15.6 - i * 0.25),
+          new THREE.MeshBasicMaterial({ color: 0xffcc33 })
+        );
+        pRing.position.y = y + 3.8;
+        papaTowerGroup.add(pRing);
+      }
+
+      const roofY = fl * 9 + 1.2;
+      // Rooftop Flying-Car Sky-Pads (Landable in Flying Car Mode!)
+      const mamaPad = new THREE.Mesh(
+        new THREE.CylinderGeometry(11, 11, 1.0, 32),
+        new THREE.MeshStandardMaterial({ color: 0x064e3b, emissive: 0x10b981, emissiveIntensity: 0.6 })
+      );
+      mamaPad.position.y = roofY;
+      mamaTowerGroup.add(mamaPad);
+
+      const papaPad = new THREE.Mesh(
+        new THREE.CylinderGeometry(11, 11, 1.0, 32),
+        new THREE.MeshStandardMaterial({ color: 0x451a03, emissive: 0xf59e0b, emissiveIntensity: 0.6 })
+      );
+      papaPad.position.y = roofY;
+      papaTowerGroup.add(papaPad);
+
+      if (skyBridgeMesh) scene.remove(skyBridgeMesh);
+      skyBridgeMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(64, 1.4, 6),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, emissive: 0x00f0ff, emissiveIntensity: 0.35 })
+      );
+      skyBridgeMesh.position.set(0, roofY - 0.4, -45);
+      scene.add(skyBridgeMesh);
+    }
+    rebuildTwinTowers();
+
+    // ============================================================================
+    // PROCEDURAL SANDBOX CITY BLOCKS
+    // ============================================================================
+    const cityBuildingsGroup = new THREE.Group();
+    scene.add(cityBuildingsGroup);
+
+    const lotCoordinates = [
+      [-65, -20], [65, -20], [-65, 35], [65, 35],
+      [-65, 85], [65, 85], [-115, -45], [115, -45],
+      [-115, 25], [115, 25], [-115, 85], [115, 85],
+      [-35, 75], [35, 75], [-35, -105], [35, -105],
+      [-85, -105], [85, -105], [-150, -15], [150, -15]
+    ];
+    let nextLotIndex = 0;
+
+    function spawnCityBuildingMesh(x, z, type, height) {
+      const grp = new THREE.Group();
+      grp.position.set(x, 0, z);
+
+      const colorMap = {
+        sound_tower: { body: 0x0f172a, neon: 0x00f0ff },
+        cna_clinic:  { body: 0x064e3b, neon: 0x10b981 },
+        sky_port:    { body: 0x2e1065, neon: 0xc084fc }
+      };
+      const pal = colorMap[type] || colorMap.sound_tower;
+
+      const bMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(16, height, 16),
+        new THREE.MeshStandardMaterial({ color: pal.body, roughness: 0.2, metalness: 0.85 })
+      );
+      bMesh.position.y = height / 2;
+      grp.add(bMesh);
+
+      for (let h = 5; h < height; h += 6) {
+        const band = new THREE.Mesh(
+          new THREE.BoxGeometry(16.5, 0.5, 16.5),
+          new THREE.MeshBasicMaterial({ color: pal.neon })
+        );
+        band.position.y = h;
+        grp.add(band);
+      }
+
+      cityBuildingsGroup.add(grp);
+    }
+
+    // Initial 8 Metropolis Buildings
+    for (let i = 0; i < 8; i++) {
+      const [lx, lz] = lotCoordinates[nextLotIndex++];
+      const types = ['sound_tower', 'cna_clinic', 'sky_port'];
+      spawnCityBuildingMesh(lx, lz, types[i % 3], 22 + (i % 4) * 8);
+    }
+
+    // ============================================================================
+    // PLAYER rig: DARRELL X-GEN (ON FOOT) + SOUND MAGIC CRUISER / FLYING SPINNER
+    // ============================================================================
+    const playerGroup = new THREE.Group();
+    scene.add(playerGroup);
+
+    // 1. Darrell X-Gen Third-Person Mesh + Sound Magic Top Hat + Mini-Me Drone
+    const darrellMesh = new THREE.Group();
+    const torso = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.65, 0.55, 2.2, 16),
+      new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.25, metalness: 0.7 })
+    );
+    torso.position.y = 1.6;
+    darrellMesh.add(torso);
+
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.5, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0x4a2c18, roughness: 0.4 })
+    );
+    head.position.y = 3.05;
+    darrellMesh.add(head);
+
+    // Sound Magic EQ Top Hat
+    const hatBrim = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.85, 0.85, 0.1, 24),
+      new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.9, roughness: 0.15 })
+    );
+    hatBrim.position.y = 3.45;
+    darrellMesh.add(hatBrim);
+
+    const hatCrown = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.58, 0.52, 0.95, 24),
+      new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.9, roughness: 0.15 })
+    );
+    hatCrown.position.y = 3.95;
+    darrellMesh.add(hatCrown);
+
+    const eqBand = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.60, 0.56, 0.28, 24),
+      new THREE.MeshBasicMaterial({ color: 0x00f0ff })
+    );
+    eqBand.position.y = 3.75;
+    darrellMesh.add(eqBand);
+
+    // Mini-Me Shoulder Companion
+    const miniMe = new THREE.Mesh(
+      new THREE.SphereGeometry(0.32, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0xffcc33, emissive: 0x00f0ff, emissiveIntensity: 0.4 })
+    );
+    miniMe.position.set(-1.1, 3.6, 0);
+    darrellMesh.add(miniMe);
+
+    playerGroup.add(darrellMesh);
+
+    // 2. Player Transformable Cyber Cruiser / Flying Spinner Mesh
+    const vehicleMesh = new THREE.Group();
+    const carChassis = new THREE.Mesh(
+      new THREE.BoxGeometry(3.4, 1.1, 6.8),
+      new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.12, metalness: 0.92 })
+    );
+    carChassis.position.y = 0.9;
+    vehicleMesh.add(carChassis);
+
+    const carCanopy = new THREE.Mesh(
+      new THREE.BoxGeometry(2.6, 0.85, 3.4),
+      new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.05, metalness: 0.95, transparent: true, opacity: 0.72 })
+    );
+    carCanopy.position.set(0, 1.75, -0.3);
+    vehicleMesh.add(carCanopy);
+
+    // 4 Glowing Hover Thruster Pods
+    const thrusterPods = [];
+    const podOffsets = [[-1.9, 0.6, -2.2], [1.9, 0.6, -2.2], [-1.9, 0.6, 2.2], [1.9, 0.6, 2.2]];
+    podOffsets.forEach(([px, py, pz]) => {
+      const pod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.65, 0.65, 0.35, 20),
+        new THREE.MeshBasicMaterial({ color: 0x00f0ff })
+      );
+      pod.position.set(px, py, pz);
+      vehicleMesh.add(pod);
+      thrusterPods.push(pod);
+    });
+    vehicleMesh.visible = false;
+    playerGroup.add(vehicleMesh);
+
+    // Parked Interactive Street Cruiser (so player can walk up to it or press 2/3)
+    const parkedCar = vehicleMesh.clone();
+    parkedCar.visible = true;
+    parkedCar.position.set(-7, 0, 16);
+    scene.add(parkedCar);
+
+    // ============================================================================
+    // AUTONOMOUS FLYING CARS IN SKY-LANES & WALKING CITIZENS ON THE BOULEVARD
+    // ============================================================================
+    const skyTraffic = [];
+    const skyTrafficGroup = new THREE.Group();
+    scene.add(skyTrafficGroup);
+
+    function spawnAutonomousFlyingCar(index) {
+      const fc = new THREE.Group();
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(2.8, 0.85, 5.4),
+        new THREE.MeshStandardMaterial({ color: 0x3b0764, roughness: 0.15, metalness: 0.9 })
+      );
+      fc.add(body);
+      const glow = new THREE.Mesh(
+        new THREE.BoxGeometry(3.0, 0.22, 5.6),
+        new THREE.MeshBasicMaterial({ color: index % 2 === 0 ? 0x00f0ff : 0xf472b6 })
+      );
+      fc.add(glow);
+
+      const laneY = 18 + (index % 3) * 16;
+      const radius = 45 + (index % 4) * 22;
+      const angle = (index / 14) * Math.PI * 2;
+      skyTrafficGroup.add(fc);
+      skyTraffic.push({ mesh: fc, laneY, radius, angle, speed: 0.35 + (index % 3) * 0.12 });
+    }
+    for (let i = 0; i < 14; i++) spawnAutonomousFlyingCar(i);
+
+    // Walking Citizens for Street Brawler / Hat Crowning
+    const citizens = [];
+    const citizenGroup = new THREE.Group();
+    scene.add(citizenGroup);
+    for (let i = 0; i < 12; i++) {
+      const c = new THREE.Group();
+      const cBody = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.5, 0.45, 2.0, 12),
+        new THREE.MeshStandardMaterial({ color: 0x64748b })
+      );
+      cBody.position.y = 1.0;
+      c.add(cBody);
+      const cHat = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.55, 0.55, 0.65, 16),
+        new THREE.MeshBasicMaterial({ color: 0x10b981 })
+      );
+      cHat.position.y = 2.55;
+      cHat.visible = false;
+      c.add(cHat);
+
+      c.position.set((i % 2 === 0 ? -14 : 14), 0, -60 + i * 14);
+      citizenGroup.add(c);
+      citizens.push({ grp: c, body: cBody, hat: cHat, dir: i % 2 === 0 ? 1 : -1, crowned: false });
+    }
+
+    // Active Sonic Shockwave Rings
+    const shockwaves = [];
+
+    // ============================================================================
+    // CONTROLS & GAMEPLAY ACTIONS
+    // ============================================================================
+    function setMode(newMode) {
+      state.mode = newMode;
+      document.getElementById('mode-walk').classList.toggle('active', newMode === 'walk');
+      document.getElementById('mode-drive').classList.toggle('active', newMode === 'drive');
+      document.getElementById('mode-fly').classList.toggle('active', newMode === 'fly');
+
+      if (newMode === 'walk') {
+        darrellMesh.visible = true;
+        vehicleMesh.visible = false;
+        state.pos.y = 0;
+        document.getElementById('vehicle-label').textContent = 'DARRELL X-GEN (THIRD-PERSON STREET)';
+        document.getElementById('status-banner').textContent = '🚶 Third-Person Mode: Walk with WASD • Press [E] to Crown Citizens • Press [2] or [F] to Drive Cruiser!';
+      } else if (newMode === 'drive') {
+        darrellMesh.visible = false;
+        vehicleMesh.visible = true;
+        state.pos.y = 0;
+        carChassis.material.color.setHex(0x0284c7);
+        document.getElementById('vehicle-label').textContent = '🏎️ SOUND MAGIC STREET CRUISER';
+        document.getElementById('status-banner').textContent = '🏎️ Street Driving Mode: W/S Gas & Brake • A/D Steer • Press [3] or [V] to Fold Out Thrusters & Fly!';
+      } else if (newMode === 'fly') {
+        darrellMesh.visible = false;
+        vehicleMesh.visible = true;
+        if (state.pos.y < 14) state.pos.y = 18;
+        carChassis.material.color.setHex(0x7c3aed);
+        document.getElementById('vehicle-label').textContent = '🛸 PURPLE CITY FLYING SPINNER';
+        document.getElementById('status-banner').textContent = '🛸 Flying Car Mode: W/S Thrust • A/D Bank • [Space] Ascend / [C] Descend • Fly to the Twin Tower Sky-Pads!';
+      }
+    }
+
+    function cycleVehicleMode() {
+      if (state.mode === 'walk') setMode('drive');
+      else if (state.mode === 'drive') setMode('fly');
+      else setMode('walk');
+    }
+
+    function verticalPulse(dir) {
+      if (state.mode !== 'fly') setMode('fly');
+      state.pos.y = Math.max(2, Math.min(180, state.pos.y + dir * 7));
+    }
+
+    function fireSonicShockwave() {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(1.0, 2.2, 32),
+        new THREE.MeshBasicMaterial({ color: 0x00f0ff, side: THREE.DoubleSide })
+      );
+      ring.rotation.x = Math.PI / 2;
+      ring.position.copy(state.pos);
+      ring.position.y += 1.2;
+      scene.add(ring);
+      shockwaves.push({ mesh: ring, scale: 1 });
+
+      // Crown nearby citizens and award Col 1 & Col 3 bonuses
+      let hits = 0;
+      citizens.forEach(c => {
+        if (c.grp.position.distanceTo(state.pos) < 26) {
+          c.hat.visible = true;
+          c.body.material.color.setHex(0x00f0ff);
+          hits++;
+        }
+      });
+      const payout = 150 + hits * 85;
+      state.col1 += payout;
+      state.col3 += Math.round(payout * 0.25);
+      state.passiveRate += hits * 15;
+      document.getElementById('status-banner').textContent =
+        `⚡ 85 BPM Cymatic Shockwave! Crowned ${hits} Specialists (+$${payout} into 3-Column Ledger)!`;
+      updateLedgerHud();
+    }
+
+    function toggleBuilderPanel() {
+      const p = document.getElementById('builder-panel');
+      p.classList.toggle('open');
+      document.getElementById('mode-build').classList.toggle('active', p.classList.contains('open'));
+    }
+
+    function constructBuilding(type, cost, yieldPerSec, label) {
+      if (state.col3 < cost) {
+        document.getElementById('status-banner').textContent = `⚠️ Need $${cost} in Column 3 (Wonder Capital) to build ${label}!`;
+        return;
+      }
+      state.col3 -= cost;
+      state.passiveRate += yieldPerSec;
+      state.buildingCount++;
+
+      if (type === 'cna_clinic') {
+        state.col2 = Math.max(0, state.col2 - 1200);
+      } else if (type === 'sky_port') {
+        for (let i = 0; i < 3; i++) {
+          spawnAutonomousFlyingCar(state.flyingCarCount++);
+        }
+      }
+
+      const [lx, lz] = lotCoordinates[nextLotIndex % lotCoordinates.length];
+      nextLotIndex++;
+      spawnCityBuildingMesh(
+        lx + (nextLotIndex > lotCoordinates.length ? (Math.random() - 0.5) * 18 : 0),
+        lz + (nextLotIndex > lotCoordinates.length ? (Math.random() - 0.5) * 18 : 0),
+        type,
+        24 + Math.random() * 26
+      );
+
+      document.getElementById('status-banner').textContent =
+        `🏗️ Built ${label}! Passive City Yield increased by +$${yieldPerSec}/sec!`;
+      updateLedgerHud();
+    }
+
+    function upgradeTwinTowers() {
+      if (state.col3 < 2000) {
+        document.getElementById('status-banner').textContent = '⚠️ Need $2,000 in Column 3 Reserve to add a Twin Tower Floor!';
+        return;
+      }
+      state.col3 -= 2000;
+      state.towerFloors++;
+      state.passiveRate += 350;
+      rebuildTwinTowers();
+      document.getElementById('status-banner').textContent =
+        `🏛️ Mama & Papa Wonder Towers expanded to ${state.towerFloors} Floors (+$350/sec Yield)!`;
+      updateLedgerHud();
+    }
+
+    function payOffOverheadChunk() {
+      const pay = Math.min(5000, state.col2, state.col1);
+      if (pay <= 0) return;
+      state.col1 -= pay;
+      state.col2 -= pay;
+      document.getElementById('status-banner').textContent =
+        `💳 Paid $${pay.toLocaleString()} off Column 2 Overhead! Remaining Debt: $${state.col2.toLocaleString()}`;
+      updateLedgerHud();
+    }
+
+    function speakMamaPapaBriefing() {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u1 = new SpeechSynthesisUtterance(
+        "Baby, look at Mama and Papa's Wonder Towers shining over the city! Take the flying car up to the rooftop sky-pad whenever you're ready."
+      );
+      u1.pitch = 0.92; u1.rate = 0.95;
+      const u2 = new SpeechSynthesisUtterance(
+        "We movin' on up to the deluxe sky-deck! Keep building those city blocks and stacking that Column 3 Wonder Capital!"
+      );
+      u2.pitch = 1.25; u2.rate = 1.15;
+      u1.onend = () => window.speechSynthesis.speak(u2);
+      window.speechSynthesis.speak(u1);
+    }
+
+    function updateLedgerHud() {
+      document.getElementById('col1-val').textContent = '$' + Math.floor(state.col1).toLocaleString();
+      document.getElementById('col2-val').textContent = '$' + Math.floor(state.col2).toLocaleString();
+      document.getElementById('col3-val').textContent = '$' + Math.floor(state.col3).toLocaleString();
+      document.getElementById('rate-val').textContent = `(+$${state.passiveRate}/s)`;
+      document.getElementById('city-stats').textContent =
+        `Buildings: ${state.buildingCount} | Twin Towers: Fl ${state.towerFloors} | Flying Cars: ${state.flyingCarCount}`;
+    }
+
+    // Passive 3-Column Economy Tick
+    setInterval(() => {
+      state.col1 += state.passiveRate * 0.6;
+      state.col3 += state.passiveRate * 0.4;
+      updateLedgerHud();
+    }, 1000);
+
+    // Keyboard & Touch Input Binding
+    window.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (k === 'w' || e.key === 'ArrowUp') state.keys.w = true;
+      if (k === 's' || e.key === 'ArrowDown') state.keys.s = true;
+      if (k === 'a' || e.key === 'ArrowLeft') state.keys.a = true;
+      if (k === 'd' || e.key === 'ArrowRight') state.keys.d = true;
+      if (e.key === ' ') state.keys.up = true;
+      if (k === 'c') state.keys.down = true;
+      if (e.key === 'Shift') state.keys.shift = true;
+      if (k === '1') setMode('walk');
+      if (k === '2' || k === 'f') setMode(state.mode === 'drive' ? 'walk' : 'drive');
+      if (k === '3' || k === 'v') setMode(state.mode === 'fly' ? 'drive' : 'fly');
+      if (k === 'b') toggleBuilderPanel();
+      if (k === 'e') fireSonicShockwave();
+    });
+
+    window.addEventListener('keyup', e => {
+      const k = e.key.toLowerCase();
+      if (k === 'w' || e.key === 'ArrowUp') state.keys.w = false;
+      if (k === 's' || e.key === 'ArrowDown') state.keys.s = false;
+      if (k === 'a' || e.key === 'ArrowLeft') state.keys.a = false;
+      if (k === 'd' || e.key === 'ArrowRight') state.keys.d = false;
+      if (e.key === ' ') state.keys.up = false;
+      if (k === 'c') state.keys.down = false;
+      if (e.key === 'Shift') state.keys.shift = false;
+    });
+
+    function bindHoldButton(id, keyName) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('pointerdown', e => { e.preventDefault(); state.keys[keyName] = true; });
+      el.addEventListener('pointerup', () => { state.keys[keyName] = false; });
+      el.addEventListener('pointerleave', () => { state.keys[keyName] = false; });
+    }
+    bindHoldButton('btn-fwd', 'w');
+    bindHoldButton('btn-back', 's');
+    bindHoldButton('btn-left', 'a');
+    bindHoldButton('btn-right', 'd');
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ============================================================================
+    // MAIN 60FPS OPEN-WORLD ANIMATION LOOP
+    // ============================================================================
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const elapsed = clock.getElapsedTime();
+
+      // Steering & Speed Physics per Mode
+      const maxSpeed = state.mode === 'fly' ? 68 : (state.mode === 'drive' ? 48 : 18);
+      const turnSpeed = state.mode === 'walk' ? 2.4 : 1.85;
+
+      if (state.keys.a) state.yaw += turnSpeed * dt;
+      if (state.keys.d) state.yaw -= turnSpeed * dt;
+
+      let targetSpeed = 0;
+      if (state.keys.w) targetSpeed = maxSpeed * (state.keys.shift ? 1.45 : 1.0);
+      else if (state.keys.s) targetSpeed = -maxSpeed * 0.55;
+
+      state.speed += (targetSpeed - state.speed) * Math.min(1, dt * 6);
+
+      const forwardX = Math.sin(state.yaw);
+      const forwardZ = Math.cos(state.yaw);
+      state.pos.x += forwardX * state.speed * dt;
+      state.pos.z += forwardZ * state.speed * dt;
+
+      // Altitude control in Flying Car mode
+      if (state.mode === 'fly') {
+        if (state.keys.up) state.pos.y = Math.min(180, state.pos.y + 28 * dt);
+        if (state.keys.down) state.pos.y = Math.max(2, state.pos.y - 28 * dt);
+      } else {
+        state.pos.y = 0;
+      }
+
+      playerGroup.position.copy(state.pos);
+      playerGroup.rotation.y = state.yaw;
+
+      // Banking animation when steering in vehicle/flight mode
+      const targetRoll = (state.keys.a ? 0.25 : (state.keys.d ? -0.25 : 0)) * (state.mode === 'fly' ? 1.4 : 0.4);
+      vehicleMesh.rotation.z += (targetRoll - vehicleMesh.rotation.z) * 0.15;
+
+      // Bobbing Mini-Me Drone
+      miniMe.position.y = 3.6 + Math.sin(elapsed * 4) * 0.22;
+
+      // Third-Person Chase Camera
+      const camDist = state.mode === 'walk' ? 11 : (state.mode === 'drive' ? 16 : 20);
+      const camHeight = state.mode === 'walk' ? 5.5 : (state.mode === 'drive' ? 6.5 : 8.0);
+      const desiredCamPos = new THREE.Vector3(
+        state.pos.x - forwardX * camDist,
+        state.pos.y + camHeight,
+        state.pos.z - forwardZ * camDist
+      );
+      camera.position.lerp(desiredCamPos, 0.14);
+      camera.lookAt(state.pos.x + forwardX * 8, state.pos.y + 2.5, state.pos.z + forwardZ * 8);
+
+      // Update Speedometer & Altitude HUD
+      const mph = Math.round(Math.abs(state.speed) * 2.4);
+      document.getElementById('speed-val').textContent = mph;
+      const altFt = Math.round(state.pos.y * 6.5);
+      const roofFt = Math.round((state.towerFloors * 9 + 1.2) * 6.5);
+      document.getElementById('alt-val').textContent =
+        state.mode === 'fly'
+          ? `ALTITUDE: ${altFt} FT (TWIN TOWER SKY-PAD: ${roofFt} FT)`
+          : 'ALTITUDE: 0 FT (STREET LEVEL)';
+
+      // Animate Autonomous Sky-Traffic Flying Cars
+      skyTraffic.forEach((fc, idx) => {
+        fc.angle += fc.speed * dt * (idx % 2 === 0 ? 1 : -1);
+        const nx = Math.cos(fc.angle) * fc.radius;
+        const nz = -30 + Math.sin(fc.angle) * fc.radius;
+        fc.mesh.position.set(nx, fc.laneY + Math.sin(elapsed * 2 + idx) * 0.8, nz);
+        fc.mesh.rotation.y = -fc.angle + (idx % 2 === 0 ? 0 : Math.PI);
+      });
+
+      // Animate Street Citizens
+      citizens.forEach(c => {
+        c.grp.position.z += c.dir * 5.5 * dt;
+        if (c.grp.position.z > 90) c.grp.position.z = -90;
+        if (c.grp.position.z < -90) c.grp.position.z = 90;
+      });
+
+      // Animate Shockwaves
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.scale += 38 * dt;
+        sw.mesh.scale.set(sw.scale, sw.scale, 1);
+        if (sw.scale > 18) {
+          scene.remove(sw.mesh);
+          shockwaves.splice(i, 1);
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>

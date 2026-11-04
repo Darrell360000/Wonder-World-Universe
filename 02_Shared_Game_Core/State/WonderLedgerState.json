@@ -1,23 +1,23 @@
 {
   "schema_version": "3.4.0",
-  "municipalTreasury": 500000,
-  "wonderStars": 1500,
-  "activeBusinesses": 12,
-  "districtTension": 24.5,
+  "municipalTreasury": 1118918864,
+  "wonderStars": 44775,
+  "activeBusinesses": 22,
+  "districtTension": 0.0,
   "activeRadioStation": "The Smooth Beat (85 BPM Harmonic)",
-  "lastSyncTimestamp": 1793571875,
-  "completed_cinema_mission_ids": [],
-  "storefrontInventoryCrates": 640,
-  "purifiedBioCoolantGallons": 44750.0,
-  "cityHopeIndex": 92.5,
-  "crownedSpecialistsActive": 64,
+  "lastSyncTimestamp": 1793721658,
+  "completed_cinema_mission_ids": ["PORTAL_01", "PORTAL_02", "PORTAL_03", "PORTAL_04", "PORTAL_05"],
+  "storefrontInventoryCrates": 20027,
+  "purifiedBioCoolantGallons": 59000.0,
+  "cityHopeIndex": 100.0,
+  "crownedSpecialistsActive": 224,
   "grid85BpmSyncPercent": 100.0,
   "named_vip_citizens": [
-    {"id":"VIP_01","name":"Darrell X-Gen","role":"Founder & Sonic Gauntlet Architect","district":"Twin Wonder Tower Penthouse","facility":"Papa AI Financial Spire & 85 BPM Core","commute":"Hover-Cruiser [V] Express (0m Delay)","productivity_pct":250.0,"savings_usd":1250000},
-    {"id":"VIP_02","name":"Nurse Ebony Vance","role":"Chief CNA Dignity Director","district":"Mama Botanical Bio-Dome East","facility":"Wonder Rehabilitation & Care Wing","commute":"85 BPM Skybridge Monorail (On-Time)","productivity_pct":185.0,"savings_usd":420000},
-    {"id":"VIP_03","name":"Marcus 'Sub-Bass' Cole","role":"Chief 85 BPM Harmonic Grid Engineer","district":"Neon Drome District","facility":"Sub-Basement Hydro & Acoustic Relay","commute":"Pragmata Transit Pod (On-Time)","productivity_pct":175.0,"savings_usd":380000},
-    {"id":"VIP_04","name":"Elena 'Iron-Weld' Sato","role":"Master Smelter & Repulsor Forge Lead","district":"Foundry Sector 4","facility":"Acoustic Alloy & Coil Refinery","commute":"Heavy Cargo Convoy Escort (On-Time)","productivity_pct":165.0,"savings_usd":345000},
-    {"id":"VIP_05","name":"Dr. Kaelen Moss","role":"Botanical Hydro-Purification Lead","district":"Emerald Canal Terrace","facility":"59,000-Gal Bio-Dome Floodgate Control","commute":"Canal Hydro-Skiff (On-Time)","productivity_pct":190.0,"savings_usd":410000}
+    {"id":"VIP_01","name":"Darrell X-Gen","role":"Founder & Sonic Gauntlet Architect","district":"Twin Wonder Tower Penthouse","facility":"Papa AI Financial Spire & 85 BPM Core","commute":"85 BPM Hyper-Lane Express (0m Delay)","productivity_pct":265.0,"savings_usd":1394700},
+    {"id":"VIP_02","name":"Nurse Ebony Vance","role":"Chief CNA Dignity Director","district":"Mama Botanical Bio-Dome East","facility":"Wonder Rehabilitation & Care Wing","commute":"85 BPM Hyper-Lane Express (0m Delay)","productivity_pct":200.0,"savings_usd":564700},
+    {"id":"VIP_03","name":"Marcus 'Sub-Bass' Cole","role":"Chief 85 BPM Harmonic Grid Engineer","district":"Neon Drome District","facility":"Sub-Basement Hydro & Acoustic Relay","commute":"85 BPM Hyper-Lane Express (0m Delay)","productivity_pct":190.0,"savings_usd":524700},
+    {"id":"VIP_04","name":"Elena 'Iron-Weld' Sato","role":"Master Smelter & Repulsor Forge Lead","district":"Foundry Sector 4","facility":"Acoustic Alloy & Coil Refinery","commute":"85 BPM Hyper-Lane Express (0m Delay)","productivity_pct":180.0,"savings_usd":489700},
+    {"id":"VIP_05","name":"Dr. Kaelen Moss","role":"Botanical Hydro-Purification Lead","district":"Emerald Canal Terrace","facility":"59,000-Gal Bio-Dome Floodgate Control","commute":"85 BPM Hyper-Lane Express (0m Delay)","productivity_pct":205.0,"savings_usd":554700}
   ],
   "tower_name": "Mama Wonder Tower",
   "hardware_profile": "RTX_5060_16GB_RAM",
@@ -25,11 +25,11 @@
   "current_era_index": 5,
   "universe": "Mama's Wonder World // Purple City Universe (Wonder Command v3.4)",
   "dual_currency_hud": {
-    "city_treasury_usd": 500000,
-    "municipal_dollars_usd": 174622.80,
-    "wonder_super_currency_w": 1420.14,
+    "city_treasury_usd": 1118918864,
+    "municipal_dollars_usd": 10171470.00,
+    "wonder_super_currency_w": 67427.41,
     "bond_yield_rate_annual": 0.12,
-    "bond_yield_converted_usd": 116100.00
+    "bond_yield_converted_usd": 2092680.00
   },
   "cinema_portal_state": {
     "nearest_active_top_hatter": "Darrell X-Gen",
@@ -37,10 +37,10 @@
   },
   "ledger_columns": {
     "column_1_gross_revenue": {
-      "cna_and_wetvac_minigames": 17462.28,
-      "arcade_brawler_payouts": 43655.71,
-      "commercial_lease_income": 78580.27,
-      "cities_skylines_tourism_bonus": 34924.57
+      "cna_and_wetvac_minigames": 1017147.00,
+      "arcade_brawler_payouts": 2542866.00,
+      "commercial_lease_income": 4577159.00,
+      "cities_skylines_tourism_bonus": 2034293.00
     },
     "column_2_operating_expenses": {
       "structural_maintenance": 0.00,
@@ -48,10 +48,10 @@
       "utility_grid_load_cost": 0.00
     },
     "column_3_net_reserve_and_upgrades": {
-      "liquid_reserve": 101107.00,
+      "liquid_reserve": 891739.00,
       "staked_industrial_bonds": 15000.00,
-      "wonder_super_currency_w": 1420.14,
-      "bond_yield_converted_usd": 116100.00,
+      "wonder_super_currency_w": 67427.41,
+      "bond_yield_converted_usd": 2092680.00,
       "unlocked_tier": 5,
       "cities_skylines_lot_size": "8m x 8m",
       "emissive_signage_active": true

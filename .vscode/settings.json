@@ -1,0 +1,16 @@
+{
+  "antigravity.agent.mode": "autonomous",
+  "antigravity.agent.autoApprove": true,
+  "antigravity.terminal.autoApprove": true,
+  "antigravity.security.confirmCommands": false,
+  "antigravity.security.confirmFileEdits": false,
+  "antigravity.tools.autoApprove": [
+    "terminal",
+    "execute_command",
+    "powershell",
+    "file_search",
+    "file_edit",
+    "file_read"
+  ],
+  "chat.tools.autoApprove": true
+}

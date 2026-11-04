@@ -1,0 +1,18 @@
+[2026-10-28T17:12:47.265Z][INFO] Command-line: 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.0f1\\Editor\\Data\\Resources\\PackageManager\\Server\\UnityPackageManager.exe' server -s 5668 --ipc-path Unity-Upm-5668 -l 2 --log-file 'C:\\Users\\Admin\\Documents\\Unreal Projects\\WonderTowerTycoon\\WonderWorldUnity/Logs/upm.log'
+[2026-10-28T17:12:47.269Z][INFO] Detected environment variables:
+  GIT_ASKPASS=
+  GIT_TERMINAL_PROMPT=0
+[2026-10-28T17:12:47.329Z][INFO] IPC server started (IPC path=Unity-Upm-5668).
+[2026-10-28T17:12:47.329Z][INFO] Hint: To connect to this UPM instance, launch Unity with the command-line parameter -upmIpcPath Upm-5668.
+[2026-10-28T17:13:03.004Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-28T17:13:03.892Z][INFO] project:list-packages --> 200 (888 ms)
+[2026-10-28T17:13:07.382Z][INFO] project:update-dependencies <-- Request received
+params: {}
+[2026-10-28T17:13:07.427Z][INFO] project:update-dependencies --> 200 (45 ms)
+[2026-10-28T17:13:07.458Z][INFO] project:resolve-packages <-- Request received
+params: {}
+[2026-10-28T17:13:07.792Z][INFO] Downloading package [com.unity.package-manager.metadata-6000.6@0.0.97] from registry 'https://packages.unity.com'
+[2026-10-28T17:13:08.096Z][INFO] Finished downloading package [com.unity.package-manager.metadata-6000.6@0.0.97] from registry 'https://packages.unity.com' (size: 11.5 kB, time: 304ms)
+[2026-10-28T17:13:17.950Z][INFO] project:resolve-packages --> 200 (10492 ms)
+[2026-10-28T17:13:41.573Z][INFO] Shutting down UnityPackageManager.exe: parent process [5668] is no longer running.
