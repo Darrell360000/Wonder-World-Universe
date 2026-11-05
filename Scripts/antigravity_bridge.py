@@ -5,12 +5,15 @@ import glob
 import subprocess
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\Admin\Documents\Unreal Projects\WonderTowerTycoon")
+import platform
+
+IS_WINDOWS = platform.system() == "Windows"
+ROOT = Path(r"C:\Users\Admin\Documents\Unreal Projects\WonderTowerTycoon") if IS_WINDOWS else Path("/mnt/c/Users/Admin/Documents/Unreal Projects/WonderTowerTycoon")
 BUS_DIR = ROOT / "WonderPipeline" / "06_Engine_Command_Logs"
 BUS_DIR.mkdir(parents=True, exist_ok=True)
 
-UNITY_HUB = Path(r"C:\Program Files\Unity Hub\Unity Hub.exe")
-EDITOR_BASE = Path(r"C:\Program Files\Unity\Hub\Editor")
+UNITY_HUB = Path(r"C:\Program Files\Unity Hub\Unity Hub.exe") if IS_WINDOWS else Path("/mnt/c/Program Files/Unity Hub/Unity Hub.exe")
+EDITOR_BASE = Path(r"C:\Program Files\Unity\Hub\Editor") if IS_WINDOWS else Path("/mnt/c/Program Files/Unity/Hub/Editor")
 
 def find_unity_binary(version_prefix="6"):
     """Finds installed Unity editor executable matching version prefix (e.g., '6' or '7')."""

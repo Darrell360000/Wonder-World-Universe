@@ -20,9 +20,11 @@ echo   [5] VALIDATE UNREAL ENGINE 5 C++ ^& UNITY 6 C# CONTRACTS
 echo   [6] SYNC ^& PUSH EVERYTHING TO GITHUB (Antigravity + Copilot Sync)
 echo   [7] OPEN PROJECT IN VS CODE (Antigravity / GitHub Copilot Ready)
 echo   [8] LAUNCH UNREAL ENGINE 5.8 EDITOR + AI COPILOT CLI
+echo   [9] LAUNCH UNIFIED DEVELOPER POWERSHELL & BUILD PIPELINE BRIDGE
+echo   [10] LAUNCH UNIFIED WORKSPACE BRIDGE (Master 35-App Launcher)
 echo   [0] EXIT
 echo.
-set /p choice="Select an option [0-8]: "
+set /p choice="Select an option [0-10]: "
 
 if "%choice%"=="1" (
     echo Launching Mama's Wonder World 3D WebGL Game...
@@ -70,6 +72,16 @@ if "%choice%"=="7" (
 if "%choice%"=="8" (
     echo Launching Unreal Engine 5.8 Editor + AI Copilot CLI...
     call "C:\Users\Admin\Documents\Unreal Projects\WonderTowerTycoon\LAUNCH_UNREAL_AND_COPILOT.bat"
+    goto MENU
+)
+if "%choice%"=="9" (
+    echo Launching Unified Developer PowerShell Build Pipeline Bridge...
+    call "%~dp0LAUNCH_UNIFIED_DEVELOPER_PIPELINE.bat"
+    goto MENU
+)
+if "%choice%"=="10" (
+    echo Launching Unified Workspace Bridge (Invoke-AntigravityMasterBridge.ps1)...
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Scripts\Invoke-AntigravityMasterBridge.ps1"
     goto MENU
 )
 if "%choice%"=="0" exit

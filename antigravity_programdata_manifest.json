@@ -1,0 +1,818 @@
+{
+  "manifest_version": "1.0.0",
+  "system": "Linux",
+  "summary": {
+    "programdata_start_menu_count": 88,
+    "office16_apps_count": 47,
+    "game_engine_paths_count": 6
+  },
+  "programdata_start_menu_items": [
+    {
+      "name": "7-Zip",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\7-Zip",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/7-Zip"
+    },
+    {
+      "name": "Access.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Access.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Access.lnk"
+    },
+    {
+      "name": "Accessibility",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Accessibility",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Accessibility"
+    },
+    {
+      "name": "Accessories",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Accessories",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Accessories"
+    },
+    {
+      "name": "Ace.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Ace.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Ace.lnk"
+    },
+    {
+      "name": "Acoustica Mixcraft 7 (64-bit)",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Acoustica Mixcraft 7 (64-bit)",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Acoustica Mixcraft 7 (64-bit)"
+    },
+    {
+      "name": "Administrative Tools",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Administrative Tools",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Administrative Tools"
+    },
+    {
+      "name": "Adobe Acrobat Distiller.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Adobe Acrobat Distiller.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Adobe Acrobat Distiller.lnk"
+    },
+    {
+      "name": "Adobe Acrobat.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Adobe Acrobat.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Adobe Acrobat.lnk"
+    },
+    {
+      "name": "Age of Empires II Definitive Edition Chronicles Alexander the Great",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Age of Empires II Definitive Edition Chronicles Alexander the Great",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Age of Empires II Definitive Edition Chronicles Alexander the Great"
+    },
+    {
+      "name": "Apple Software Update.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Apple Software Update.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Apple Software Update.lnk"
+    },
+    {
+      "name": "ASRock Utility",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\ASRock Utility",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/ASRock Utility"
+    },
+    {
+      "name": "Blend for Visual Studio.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Blend for Visual Studio.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Blend for Visual Studio.lnk"
+    },
+    {
+      "name": "ChatGPT",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\ChatGPT",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/ChatGPT"
+    },
+    {
+      "name": "Cheat Engine",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Cheat Engine",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Cheat Engine"
+    },
+    {
+      "name": "Cities Skylines II Modern City",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Cities Skylines II Modern City",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Cities Skylines II Modern City"
+    },
+    {
+      "name": "Command and Conquer Remastered Collection",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Command and Conquer Remastered Collection",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Command and Conquer Remastered Collection"
+    },
+    {
+      "name": "CPUID",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\CPUID",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/CPUID"
+    },
+    {
+      "name": "Display Driver Uninstaller",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Display Driver Uninstaller",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Display Driver Uninstaller"
+    },
+    {
+      "name": "Driver Booster 13",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Driver Booster 13",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Driver Booster 13"
+    },
+    {
+      "name": "EaseUS Partition Master",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\EaseUS Partition Master",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/EaseUS Partition Master"
+    },
+    {
+      "name": "Epic Games Launcher.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Epic Games Launcher.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Epic Games Launcher.lnk"
+    },
+    {
+      "name": "EPSON",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\EPSON",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/EPSON"
+    },
+    {
+      "name": "EPSON Software",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\EPSON Software",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/EPSON Software"
+    },
+    {
+      "name": "Excel.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Excel.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Excel.lnk"
+    },
+    {
+      "name": "Firefox Private Browsing.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Firefox Private Browsing.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Firefox Private Browsing.lnk"
+    },
+    {
+      "name": "Firefox.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Firefox.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Firefox.lnk"
+    },
+    {
+      "name": "Games",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Games",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Games"
+    },
+    {
+      "name": "Git",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Git",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Git"
+    },
+    {
+      "name": "Google Chrome.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Google Chrome.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Google Chrome.lnk"
+    },
+    {
+      "name": "Grand Theft Auto V Enhanced",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Grand Theft Auto V Enhanced",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Grand Theft Auto V Enhanced"
+    },
+    {
+      "name": "GTA Vice City Nextgen Edition",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\GTA Vice City Nextgen Edition",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/GTA Vice City Nextgen Edition"
+    },
+    {
+      "name": "Hasleo WinToUSB",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Hasleo WinToUSB",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Hasleo WinToUSB"
+    },
+    {
+      "name": "IIS",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\IIS",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/IIS"
+    },
+    {
+      "name": "Intel Driver & Support Assistant.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Intel Driver & Support Assistant.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Intel Driver & Support Assistant.lnk"
+    },
+    {
+      "name": "IObit Uninstaller",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\IObit Uninstaller",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/IObit Uninstaller"
+    },
+    {
+      "name": "IObit Uninstaller.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\IObit Uninstaller.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/IObit Uninstaller.lnk"
+    },
+    {
+      "name": "K-Lite Codec Pack",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\K-Lite Codec Pack",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/K-Lite Codec Pack"
+    },
+    {
+      "name": "LibreOffice",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\LibreOffice",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/LibreOffice"
+    },
+    {
+      "name": "Maintenance",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Maintenance",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Maintenance"
+    },
+    {
+      "name": "Marvels SpiderMan 2",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Marvels SpiderMan 2",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Marvels SpiderMan 2"
+    },
+    {
+      "name": "Marvels SpiderMan Miles Morales",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Marvels SpiderMan Miles Morales",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Marvels SpiderMan Miles Morales"
+    },
+    {
+      "name": "Maxon",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Maxon",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Maxon"
+    },
+    {
+      "name": "MediaInfo Lite",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\MediaInfo Lite",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/MediaInfo Lite"
+    },
+    {
+      "name": "Microsoft Edge.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Edge.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Microsoft Edge.lnk"
+    },
+    {
+      "name": "Microsoft Office Tools",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office Tools",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Microsoft Office Tools"
+    },
+    {
+      "name": "Node.js",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Node.js",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Node.js"
+    },
+    {
+      "name": "NVIDIA Corporation",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\NVIDIA Corporation",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/NVIDIA Corporation"
+    },
+    {
+      "name": "NVIDIA FrameView",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\NVIDIA FrameView",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/NVIDIA FrameView"
+    },
+    {
+      "name": "NVIDIA RTX Remix.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\NVIDIA RTX Remix.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/NVIDIA RTX Remix.lnk"
+    },
+    {
+      "name": "OneDrive.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/OneDrive.lnk"
+    },
+    {
+      "name": "OneNote.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\OneNote.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/OneNote.lnk"
+    },
+    {
+      "name": "Outlook (classic).lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Outlook (classic).lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Outlook (classic).lnk"
+    },
+    {
+      "name": "PCSX2",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\PCSX2",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/PCSX2"
+    },
+    {
+      "name": "PotPlayer",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\PotPlayer",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/PotPlayer"
+    },
+    {
+      "name": "PowerPoint.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\PowerPoint.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/PowerPoint.lnk"
+    },
+    {
+      "name": "Publisher.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Publisher.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Publisher.lnk"
+    },
+    {
+      "name": "Rainmeter.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Rainmeter.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Rainmeter.lnk"
+    },
+    {
+      "name": "RollerCoaster Tycoon World.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\RollerCoaster Tycoon World.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/RollerCoaster Tycoon World.lnk"
+    },
+    {
+      "name": "Samsung",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Samsung",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Samsung"
+    },
+    {
+      "name": "SeaTools",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\SeaTools",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/SeaTools"
+    },
+    {
+      "name": "Skype for Business.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Skype for Business.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Skype for Business.lnk"
+    },
+    {
+      "name": "Smart Game Booster",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Smart Game Booster",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Smart Game Booster"
+    },
+    {
+      "name": "Stardock",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Stardock",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Stardock"
+    },
+    {
+      "name": "Startup",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Startup"
+    },
+    {
+      "name": "Sticky Notes (new).lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Sticky Notes (new).lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Sticky Notes (new).lnk"
+    },
+    {
+      "name": "Studio One 7.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Studio One 7.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Studio One 7.lnk"
+    },
+    {
+      "name": "Studio Pro 8.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Studio Pro 8.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Studio Pro 8.lnk"
+    },
+    {
+      "name": "Studio Pro Remote.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Studio Pro Remote.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Studio Pro Remote.lnk"
+    },
+    {
+      "name": "System Tools",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\System Tools",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/System Tools"
+    },
+    {
+      "name": "TEAM R2R",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\TEAM R2R",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/TEAM R2R"
+    },
+    {
+      "name": "Tesseract-OCR",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Tesseract-OCR",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Tesseract-OCR"
+    },
+    {
+      "name": "Unity 2022.3.62f2",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unity 2022.3.62f2",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Unity 2022.3.62f2"
+    },
+    {
+      "name": "Unity 6000.6.0f1",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unity 6000.6.0f1",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Unity 6000.6.0f1"
+    },
+    {
+      "name": "Unity Hub.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unity Hub.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Unity Hub.lnk"
+    },
+    {
+      "name": "Unreal Engine",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unreal Engine",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Unreal Engine"
+    },
+    {
+      "name": "VideoLAN",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\VideoLAN",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/VideoLAN"
+    },
+    {
+      "name": "Visual Studio",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio"
+    },
+    {
+      "name": "Visual Studio 2022",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio 2022",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2022"
+    },
+    {
+      "name": "Visual Studio 2022.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio 2022.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2022.lnk"
+    },
+    {
+      "name": "Visual Studio 2026",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio 2026",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2026"
+    },
+    {
+      "name": "Visual Studio Installer.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio Installer.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio Installer.lnk"
+    },
+    {
+      "name": "Visual Studio.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio.lnk"
+    },
+    {
+      "name": "Windows Kits",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Windows Kits",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Windows Kits"
+    },
+    {
+      "name": "Windows PowerShell",
+      "is_directory": true,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Windows PowerShell",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Windows PowerShell"
+    },
+    {
+      "name": "Word.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Word.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/Word.lnk"
+    },
+    {
+      "name": "WSL Settings.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\WSL Settings.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/WSL Settings.lnk"
+    },
+    {
+      "name": "WSL.lnk",
+      "is_directory": false,
+      "windows_path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\WSL.lnk",
+      "posix_path": "/mnt/c/ProgramData/Microsoft/Windows/Start Menu/Programs/WSL.lnk"
+    }
+  ],
+  "office16_apps": {
+    "ACCICONS.EXE": {
+      "filename": "ACCICONS.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\ACCICONS.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/ACCICONS.EXE"
+    },
+    "AppSharingHookController64.exe": {
+      "filename": "AppSharingHookController64.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\AppSharingHookController64.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/AppSharingHookController64.exe"
+    },
+    "CLVIEW.EXE": {
+      "filename": "CLVIEW.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\CLVIEW.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/CLVIEW.EXE"
+    },
+    "CNFNOT32.EXE": {
+      "filename": "CNFNOT32.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\CNFNOT32.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/CNFNOT32.EXE"
+    },
+    "EXCEL.EXE": {
+      "filename": "EXCEL.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/EXCEL.EXE"
+    },
+    "excelcnv.exe": {
+      "filename": "excelcnv.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\excelcnv.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/excelcnv.exe"
+    },
+    "GRAPH.EXE": {
+      "filename": "GRAPH.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\GRAPH.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/GRAPH.EXE"
+    },
+    "lync.exe": {
+      "filename": "lync.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\lync.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/lync.exe"
+    },
+    "lync99.exe": {
+      "filename": "lync99.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\lync99.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/lync99.exe"
+    },
+    "lynchtmlconv.exe": {
+      "filename": "lynchtmlconv.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\lynchtmlconv.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/lynchtmlconv.exe"
+    },
+    "misc.exe": {
+      "filename": "misc.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\misc.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/misc.exe"
+    },
+    "MSACCESS.EXE": {
+      "filename": "MSACCESS.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\MSACCESS.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/MSACCESS.EXE"
+    },
+    "msoadfsb.exe": {
+      "filename": "msoadfsb.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\msoadfsb.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/msoadfsb.exe"
+    },
+    "msoasb.exe": {
+      "filename": "msoasb.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\msoasb.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/msoasb.exe"
+    },
+    "msoev.exe": {
+      "filename": "msoev.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\msoev.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/msoev.exe"
+    },
+    "MSOHTMED.EXE": {
+      "filename": "MSOHTMED.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\MSOHTMED.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/MSOHTMED.EXE"
+    },
+    "MSOSREC.EXE": {
+      "filename": "MSOSREC.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\MSOSREC.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/MSOSREC.EXE"
+    },
+    "MSPUB.EXE": {
+      "filename": "MSPUB.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\MSPUB.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/MSPUB.EXE"
+    },
+    "MSQRY32.EXE": {
+      "filename": "MSQRY32.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\MSQRY32.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/MSQRY32.EXE"
+    },
+    "NAMECONTROLSERVER.EXE": {
+      "filename": "NAMECONTROLSERVER.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\NAMECONTROLSERVER.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/NAMECONTROLSERVER.EXE"
+    },
+    "OcPubMgr.exe": {
+      "filename": "OcPubMgr.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OcPubMgr.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/OcPubMgr.exe"
+    },
+    "officeappguardwin32.exe": {
+      "filename": "officeappguardwin32.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\officeappguardwin32.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/officeappguardwin32.exe"
+    },
+    "OfficeScrBroker.exe": {
+      "filename": "OfficeScrBroker.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OfficeScrBroker.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/OfficeScrBroker.exe"
+    },
+    "OfficeScrSanBroker.exe": {
+      "filename": "OfficeScrSanBroker.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OfficeScrSanBroker.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/OfficeScrSanBroker.exe"
+    },
+    "OLCFG.EXE": {
+      "filename": "OLCFG.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OLCFG.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/OLCFG.EXE"
+    },
+    "ONENOTE.EXE": {
+      "filename": "ONENOTE.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\ONENOTE.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/ONENOTE.EXE"
+    },
+    "onenotecapture.exe": {
+      "filename": "onenotecapture.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\onenotecapture.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/onenotecapture.exe"
+    },
+    "ONENOTEM.EXE": {
+      "filename": "ONENOTEM.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\ONENOTEM.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/ONENOTEM.EXE"
+    },
+    "ORGCHART.EXE": {
+      "filename": "ORGCHART.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\ORGCHART.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/ORGCHART.EXE"
+    },
+    "OSPPREARM.EXE": {
+      "filename": "OSPPREARM.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OSPPREARM.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/OSPPREARM.EXE"
+    },
+    "OUTLOOK.EXE": {
+      "filename": "OUTLOOK.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/OUTLOOK.EXE"
+    },
+    "PDFREFLOW.EXE": {
+      "filename": "PDFREFLOW.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\PDFREFLOW.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/PDFREFLOW.EXE"
+    },
+    "PerfBoost.exe": {
+      "filename": "PerfBoost.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\PerfBoost.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/PerfBoost.exe"
+    },
+    "POWERPNT.EXE": {
+      "filename": "POWERPNT.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\POWERPNT.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/POWERPNT.EXE"
+    },
+    "PPTICO.EXE": {
+      "filename": "PPTICO.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\PPTICO.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/PPTICO.EXE"
+    },
+    "protocolhandler.exe": {
+      "filename": "protocolhandler.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\protocolhandler.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/protocolhandler.exe"
+    },
+    "SCANPST.EXE": {
+      "filename": "SCANPST.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\SCANPST.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/SCANPST.EXE"
+    },
+    "SDXHelper.exe": {
+      "filename": "SDXHelper.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\SDXHelper.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/SDXHelper.exe"
+    },
+    "SDXHelperBgt.exe": {
+      "filename": "SDXHelperBgt.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\SDXHelperBgt.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/SDXHelperBgt.exe"
+    },
+    "SELFCERT.EXE": {
+      "filename": "SELFCERT.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\SELFCERT.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/SELFCERT.EXE"
+    },
+    "SETLANG.EXE": {
+      "filename": "SETLANG.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\SETLANG.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/SETLANG.EXE"
+    },
+    "UcMapi.exe": {
+      "filename": "UcMapi.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\UcMapi.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/UcMapi.exe"
+    },
+    "VPREVIEW.EXE": {
+      "filename": "VPREVIEW.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\VPREVIEW.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/VPREVIEW.EXE"
+    },
+    "WINWORD.EXE": {
+      "filename": "WINWORD.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/WINWORD.EXE"
+    },
+    "Wordconv.exe": {
+      "filename": "Wordconv.exe",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\Wordconv.exe",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/Wordconv.exe"
+    },
+    "WORDICON.EXE": {
+      "filename": "WORDICON.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WORDICON.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/WORDICON.EXE"
+    },
+    "XLICONS.EXE": {
+      "filename": "XLICONS.EXE",
+      "windows_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\XLICONS.EXE",
+      "posix_path": "/mnt/c/Program Files/Microsoft Office/root/Office16/XLICONS.EXE"
+    }
+  },
+  "game_engines": {
+    "Unity Hub": {
+      "name": "Unity Hub",
+      "type": "Hub / Launcher",
+      "windows_path": "C:\\Program Files\\Unity Hub\\Unity Hub.exe",
+      "posix_path": "/mnt/c/Program Files/Unity Hub/Unity Hub.exe"
+    },
+    "Unity Editor (6000.6.0f1)": {
+      "name": "Unity Editor 6000.6.0f1",
+      "type": "Game Engine",
+      "version": "6000.6.0f1",
+      "windows_path": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.0f1\\Editor\\Unity.exe",
+      "posix_path": "/mnt/c/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Unity.exe"
+    },
+    "Unity Editor (Unity 2022.3.62f2)": {
+      "name": "Unity 2022.3.62f2",
+      "type": "Game Engine",
+      "version": "2022.3.62f2",
+      "windows_path": "C:\\Program Files\\Unity 2022.3.62f2\\Editor\\Unity.exe",
+      "posix_path": "/mnt/c/Program Files/Unity 2022.3.62f2/Editor/Unity.exe"
+    },
+    "Unreal Engine (UE_5.8)": {
+      "name": "Unreal Engine 5.8",
+      "type": "Game Engine",
+      "version": "5.8",
+      "windows_path": "C:\\Program Files\\Epic Games\\UE_5.8",
+      "posix_path": "/mnt/c/Program Files/Epic Games/UE_5.8"
+    },
+    "Unreal Engine Legacy (4.6.1)": {
+      "name": "Unreal Engine 4.6.1",
+      "type": "Game Engine",
+      "version": "4.6.1",
+      "windows_path": "C:\\Program Files (x86)\\Unreal Engine 4.6.1",
+      "posix_path": "/mnt/c/Program Files (x86)/Unreal Engine 4.6.1"
+    },
+    "Blender 5.2": {
+      "name": "Blender 5.2",
+      "type": "DCC / 3D Engine",
+      "windows_path": "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+      "posix_path": "/mnt/c/Program Files/Blender Foundation/Blender 5.2/blender.exe"
+    }
+  }
+}

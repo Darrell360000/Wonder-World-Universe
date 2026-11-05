@@ -1,0 +1,83 @@
+{
+  "folders": [
+    {
+      "name": "🌌 Wonder-World-Universe (Antigravity Core)",
+      "path": "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\Wonder-World-Universe"
+    },
+    {
+      "name": "🎮 UE5_PROJECTS (E: Drive)",
+      "path": "E:\\"
+    },
+    {
+      "name": "🏙️ Cities Skylines II Mod (DEV_SCRATCH D:)",
+      "path": "D:\\Games\\Cities - Skylines II"
+    },
+    {
+      "name": "🛠️ DEV_SCRATCH Root (D: Drive)",
+      "path": "D:\\"
+    },
+    {
+      "name": "💾 BACKUP_2 (L: Drive)",
+      "path": "L:\\"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": false,
+      "**/Intermediate": true,
+      "**/Saved": true
+    },
+    "python.defaultInterpreterPath": "C:\\Program Files\\Blender Foundation\\Blender 5.2\\5.2\\python\\bin\\python.exe",
+    "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
+    "terminal.integrated.profiles.windows": {
+      "Windows PowerShell": {
+        "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "args": ["-NoExit"]
+      },
+      "Cinema 4D Python (c4dpy)": {
+        "path": "C:\\Program Files\\Maxon Cinema 4D R26\\c4dpy.exe"
+      },
+      "Godot 4.7.2 Console": {
+        "path": "C:\\Users\\Admin\\Pictures\\Godot_v4.7.2-stable_win64.exe\\Godot_v4.7.2-stable_win64_console.exe"
+      },
+      "GitHub Copilot CLI Bridge": {
+        "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "env": {
+          "PATH": "${env:PATH};C:\\Users\\Admin\\AppData\\Local\\Programs\\GitHub Copilot;C:\\Users\\Admin\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\Admin\\AppData\\Local\\Programs\\VSCodium\\bin"
+        }
+      }
+    },
+    "antigravity.bridge.executables": {
+      "antigravity": "C:\\Users\\Admin\\AppData\\Local\\Programs\\antigravity\\Antigravity.exe",
+      "unrealEngine58": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64",
+      "epicLauncher": "C:\\Program Files\\Epic Games\\Launcher\\Portal\\Binaries\\Win64\\EpicGamesLauncher.exe",
+      "unityHub": "C:\\Program Files\\WindowsApps\\UnityTechnologies.UnityHub_3.22.5.65535_x64_2vrhnee42bhxm\\app\\Unity Hub.exe",
+      "unity7": "C:\\Program Files\\Unity\\Hub\\Editor",
+      "godot": "C:\\Users\\Admin\\Pictures\\Godot_v4.7.2-stable_win64.exe\\Godot_v4.7.2-stable_win64.exe",
+      "summerEngine": "C:\\Users\\Admin\\AppData\\Local\\SummerEngine\\current\\Summer.exe",
+      "blender52": "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+      "cinema4d": "C:\\Program Files\\Maxon Cinema 4D R26\\Cinema 4D.exe",
+      "cinema4dCmd": "C:\\Program Files\\Maxon Cinema 4D R26\\Commandline.exe",
+      "rtxRemix": "C:\\Program Files\\NVIDIA Corporation\\RTX Remix\\lightspeed.app.trex.bat",
+      "vscode": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+      "vscodium": "C:\\Users\\Admin\\AppData\\Local\\Programs\\VSCodium\\VSCodium.exe",
+      "visualStudio2022": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\devenv.exe",
+      "visualStudio2026": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\devenv.exe",
+      "githubCopilot": "C:\\Users\\Admin\\AppData\\Local\\Programs\\GitHub Copilot\\github.exe",
+      "gemini": "C:\\Users\\Admin\\AppData\\Local\\Google\\Gemini\\Gemini.exe",
+      "chatgpt": "C:\\Program Files\\ChatGPT\\ChatGPT.exe",
+      "studioOne7": "C:\\Program Files\\PreSonus\\Studio One 7\\Studio One.exe",
+      "studioPro8": "C:\\Program Files\\Fender\\Studio Pro 8\\Studio Pro.exe",
+      "studioProRemote": "C:\\Program Files\\Fender\\Studio Pro Remote\\Studio Pro Remote.exe",
+      "moises": "C:\\Users\\Admin\\AppData\\Local\\Programs\\moises-desktop\\Moises.exe",
+      "vlc": "C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe",
+      "livelyWallpaper": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Lively Wallpaper\\Lively.exe",
+      "acrobat": "C:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
+      "onenote": "C:\\Program Files\\Microsoft Office\\root\\Office16\\ONENOTE.EXE",
+      "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "firefox": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+      "aceBrowser": "C:\\Program Files\\Ace\\Ace\\Application\\ace.exe"
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "folders": [
+    {
+      "name": "WonderTowerTycoon (Unreal Engine 5 Project)",
+      "path": "C:/Users/Admin/Documents/Unreal Projects/WonderTowerTycoon"
+    },
+    {
+      "name": "WonderWorldUnity (Unity 6 / CS2 Project)",
+      "path": "C:/Users/Admin/Documents/Unreal Projects/WonderTowerTycoon/WonderWorldUnity"
+    },
+    {
+      "name": "Unreal Engine 5 (UE_5.8)",
+      "path": "C:/Program Files/Epic Games/UE_5.8"
+    },
+    {
+      "name": "Unity 6000.6.0f1",
+      "path": "C:/Program Files/Unity/Hub/Editor/6000.6.0f1"
+    },
+    {
+      "name": "Godot 4.7.2",
+      "path": "C:/Users/Admin/Pictures"
+    },
+    {
+      "name": "Blender 5.2",
+      "path": "C:/Program Files/Blender Foundation/Blender 5.2"
+    },
+    {
+      "name": "ProgramData Start Menu",
+      "path": "C:/ProgramData/Microsoft/Windows/Start Menu/Programs"
+    },
+    {
+      "name": "Antigravity App",
+      "path": "C:/Users/Admin/AppData/Local/Programs/antigravity"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/desktop.ini": true
+    },
+    "antigravity.bridge": {
+      "manifestPath": "C:/Users/Admin/Documents/Unreal Projects/WonderTowerTycoon/antigravity_programdata_manifest.json",
+      "pythonScript": "C:/Users/Admin/Documents/Unreal Projects/WonderTowerTycoon/Scripts/antigravity_programdata_bridge.py"
+    },
+    "antigravity.engines": {
+      "unrealEngine5": {
+        "name": "Unreal Engine 5.8",
+        "version": "5.8",
+        "rootPath": "C:/Program Files/Epic Games/UE_5.8",
+        "editorExecutable": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe",
+        "bound": true
+      },
+      "unity6": {
+        "name": "Unity 6000.6.0f1",
+        "version": "6000.6.0f1",
+        "rootPath": "C:/Program Files/Unity/Hub/Editor/6000.6.0f1",
+        "editorExecutable": "C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Unity.exe",
+        "hubExecutable": "C:/Program Files/Unity Hub/Unity Hub.exe",
+        "bound": true
+      },
+      "godot": {
+        "name": "Godot Engine 4.7.2 Stable",
+        "version": "4.7.2-stable",
+        "executable": "C:/Users/Admin/Pictures/Godot_v4.7.2-stable_win64.exe",
+        "desktopShortcut": "C:/Users/Admin/Desktop/Godot_v4.7.2-stable_win64.exe.lnk",
+        "bound": true
+      },
+      "blender": {
+        "name": "Blender 5.2",
+        "version": "5.2",
+        "executable": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe",
+        "bound": true
+      }
+    }
+  }
+}
