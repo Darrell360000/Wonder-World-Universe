@@ -41,6 +41,8 @@ namespace UnityEngine
 
     public struct Quaternion
     {
+        public static Quaternion Slerp(Quaternion a, Quaternion b, float t) => a;
+        public static Quaternion LookRotation(Vector3 forward) => identity;
         public float x;
         public float y;
         public float z;
@@ -114,6 +116,27 @@ namespace UnityEngine
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class NonSerializedAttribute : Attribute { }
 
+    public struct Ray
+    {
+        public Vector3 origin;
+        public Vector3 direction;
+        public Ray(Vector3 origin, Vector3 direction) { this.origin = origin; this.direction = direction; }
+    }
+
+    public struct RaycastHit
+    {
+        public Transform transform { get; set; }
+        public Vector3 point { get; set; }
+        public Vector3 normal { get; set; }
+    }
+
+    public static class Input
+    {
+        public static bool GetKeyDown(KeyCode key) => false;
+        public static bool GetButtonDown(string buttonName) => false;
+        public static float GetAxis(string axisName) => 0f;
+        public static Vector3 mousePosition => Vector3.zero;
+    }
     public class MonoBehaviour : Behaviour
     {
         public Coroutine StartCoroutine(IEnumerator routine) => new Coroutine();
@@ -126,12 +149,16 @@ namespace UnityEngine
 
     public class Object
     {
+        public static T Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T : class => original;
+        public static GameObject Instantiate(GameObject original, Vector3 position, Quaternion rotation) => original;
+        public static void DontDestroyOnLoad(Object target) { }
         public static void DestroyImmediate(Object obj) { }
         public static void Destroy(Object obj) { }
     }
 
     public class GameObject : Object
     {
+        public static GameObject FindGameObjectWithTag(string tag) => new GameObject();
         private readonly Dictionary<Type, Component> cachedComponents = new Dictionary<Type, Component>();
         private readonly List<Component> components = new List<Component>();
         private bool activeState = true;
@@ -241,10 +268,12 @@ namespace UnityEngine
     {
         public float depth { get; set; }
         public Rect rect { get; set; }
+        public Ray ScreenPointToRay(Vector3 pos) => new Ray(pos, Vector3.forward);
     }
 
     public static class Mathf
     {
+        public const float Infinity = float.PositiveInfinity;
         public const float PI = 3.141592653589793f;
 
         public static float Min(float a, float b) => a < b ? a : b;
@@ -268,6 +297,7 @@ namespace UnityEngine
     {
         public static Collider[] OverlapSphere(Vector3 center, float radius, LayerMask layerMask = default) => Array.Empty<Collider>();
         public static void SyncTransforms() { }
+        public static bool Raycast(Ray ray, out RaycastHit hit, float maxDistance = float.PositiveInfinity, int layerMask = ~0) { hit = new RaycastHit { transform = new GameObject().transform }; return true; }
     }
 
     public static class Time
@@ -356,6 +386,39 @@ namespace UnityEngine.Events
                 callback?.Invoke(arg0, arg1);
         }
     }
+}
+
+namespace UnityEngine.SceneManagement
+{
+    public static class SceneManager
+    {
+        public static void LoadScene(string sceneName) { }
+    }
+}
+
+namespace UnityEngine
+{
+    [AttributeUsage(AttributeTargets.Field)]
+    public class TooltipAttribute : Attribute
+    {
+        public string tooltip;
+        public TooltipAttribute(string tooltip) { this.tooltip = tooltip; }
+    }
+
+    public enum KeyCode
+    {
+        None = 0,
+        E = 101,
+        Tab = 9,
+        Mouse0 = 323,
+        Alpha1 = 49,
+        Alpha2 = 50,
+        Alpha3 = 51,
+        Alpha4 = 52,
+        Alpha5 = 53
+    }
+
+
 }
 
 namespace UnityEngine.TestTools
