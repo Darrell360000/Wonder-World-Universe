@@ -19,6 +19,15 @@
     {"id":"VIP_04","name":"Elena 'Iron-Weld' Sato","role":"Master Smelter & Repulsor Forge Lead","district":"Foundry Sector 4","facility":"Acoustic Alloy & Coil Refinery","commute":"85 BPM Hyper-Lane Express (0m Delay)","productivity_pct":180.0,"savings_usd":489700},
     {"id":"VIP_05","name":"Dr. Kaelen Moss","role":"Botanical Hydro-Purification Lead","district":"Emerald Canal Terrace","facility":"59,000-Gal Bio-Dome Floodgate Control","commute":"85 BPM Hyper-Lane Express (0m Delay)","productivity_pct":205.0,"savings_usd":554700}
   ],
+  "active_top_hatter_roster": [
+    {"role":"DarrellXGen","name":"Darrell X-Gen","signature_hat":"Equalizer X-Hat (SOUND MAGIC)","signature_weapon":"Dual Conductor Baton Wands","unlocked":true},
+    {"role":"MinimeTactical","name":"Minime Tophatter","signature_hat":"Micro Digital Equalizer Topper","signature_weapon":"Geometric Light Scanner","unlocked":true},
+    {"role":"SpiderPulse","name":"The Spider-Pulse Icon","signature_hat":"Theatrical Pink-Band Top Hat","signature_weapon":"Cybernetic Forearm Gauntlets & Web-Lines","unlocked":true},
+    {"role":"DivineHands","name":"The Divine Hands Top-Hatter","signature_hat":"God's Hands Gold Crown Hat","signature_weapon":"Ethereal Translucent Shaping Hands","unlocked":true},
+    {"role":"JaxsonThorne","name":"Jaxson 'Iron Riff' Thorne","signature_hat":"Anvil Crown (Hydraulics & Hazard Lights)","signature_weapon":"Pneumatic Sonic-Gauntlet Fists","unlocked":true},
+    {"role":"TaoXZen","name":"Tao X Zen","signature_hat":"The Wonder Hat (Taoist Sigils & Purple Portal)","signature_weapon":"Cosmic Chrono-Tears & Warp Duster","unlocked":true},
+    {"role":"MamaWonder","name":"Mama Wonder","signature_hat":"Empress Equalizer Crown Top Hat","signature_weapon":"Evon Hub Scepter & Conductor Baton","unlocked":true}
+  ],
   "tower_name": "Mama Wonder Tower",
   "hardware_profile": "RTX_5060_16GB_RAM",
   "evon_hub_permission_granted": true,
