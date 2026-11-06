@@ -8,7 +8,7 @@ Executes:
   - 'word'       : Generates professional Microsoft Word (.docx) status report
   - 'powerpoint' : Generates publisher-ready PowerPoint pitch deck
   - 'game'       : Launches Cities: Skylines II with Mama's Wonder World mod
-  - 'app'        : Dispatches manifest application launches (UE5.8, Blender, VSCode, Studio One)
+  - 'app'        : Searches manifest & launches any Start Menu app or Office tool
 """
 
 import os
@@ -16,7 +16,6 @@ import sys
 import json
 import platform
 import subprocess
-import zipfile
 from pathlib import Path
 from datetime import datetime
 
@@ -30,7 +29,8 @@ SCRATCH_DIR = WIN_SCRATCH if IS_WINDOWS else (WSL_SCRATCH if WSL_SCRATCH.exists(
 PROJECT_DIR = WIN_PROJECT if IS_WINDOWS else (WSL_PROJECT if WSL_PROJECT.exists() else Path("."))
 
 class MasterSystemController:
-    def __init__(self):
+    def __init__(self, workspace=None):
+        self.workspace = Path(workspace) if workspace else PROJECT_DIR
         self.drives = {
             "C: (System)": Path("C:/" if IS_WINDOWS else "/mnt/c"),
             "D: (DEV_SCRATCH & CS2)": Path("D:/" if IS_WINDOWS else "/mnt/d"),
@@ -52,10 +52,86 @@ class MasterSystemController:
         elif cmd in ("game", "cs2", "cities"):
             return self.launch_game()
         elif cmd in ("app", "launch"):
-            app_name = args[0] if args else "UE5"
-            return self.launch_app(app_name)
+            search_term = args[0] if args else "Unreal"
+            return self.launch_manifest_app(search_term)
         else:
             return f"[ERROR] Unknown command '{command}'. Available: specs, word, powerpoint, game, app."
+
+    def _start_path(self, path: str):
+        """Cross-platform launcher: uses os.startfile on Windows, or powershell.exe on WSL/Linux."""
+        if hasattr(os, "startfile"):
+            os.startfile(path)
+            return True
+        else:
+            # Running under WSL/Linux -> dispatch through Windows PowerShell
+            try:
+                ps_cmd = f'Start-Process "{path}"'
+                subprocess.Popen(["/mnt/c/windows/System32/WindowsPowerShell/v1.0//powershell.exe", "-NoProfile", "-Command", ps_cmd])
+                return True
+            except Exception as e:
+                print(f"[WARN] Failed to dispatch via host PowerShell: {e}")
+                return False
+
+    def launch_manifest_app(self, search_term: str) -> str:
+        """Searches the bridge manifest for any Start Menu shortcut, folder, or Office tool and launches it."""
+        manifest_candidates = [
+            self.workspace / "antigravity_full_system_bridge.json",
+            PROJECT_DIR / "antigravity_full_system_bridge.json",
+            SCRATCH_DIR / "antigravity_full_system_bridge.json"
+        ]
+
+        manifest_path = None
+        for cand in manifest_candidates:
+            if cand.exists():
+                manifest_path = cand
+                break
+
+        if not manifest_path:
+            return "Manifest bridge file not found. Run the scan script first."
+
+        try:
+            with open(manifest_path, "r", encoding="utf-8-sig") as f:
+                manifest = json.load(f)
+        except Exception:
+            with open(manifest_path, "r", encoding="utf-8", errors="ignore") as f:
+                manifest = json.load(f)
+
+        search_term_lower = search_term.lower()
+
+        # 1. Check Office Executables
+        office_apps = manifest.get("Office16Executables", {})
+        for name, path in office_apps.items():
+            if search_term_lower in name.lower():
+                print(f"🚀 Launching Office tool: {path}")
+                self._start_path(path)
+                return f"Successfully launched {name}"
+
+        # 2. Check Explicit 88 Start Menu Map
+        start_map = manifest.get("Explicit88StartMenuMap", {})
+        for name, path in start_map.items():
+            if search_term_lower in name.lower():
+                print(f"🚀 Launching Start Menu item: {path}")
+                self._start_path(path)
+                return f"Successfully launched {name}"
+
+        # 3. Check Recursive Start Menu Tree if present
+        recursive_tree = manifest.get("RecursiveStartMenuTree", [])
+        if isinstance(recursive_tree, list):
+            for item in recursive_tree:
+                name = item.get("Name", "")
+                path = item.get("FullPath", "") or item.get("TargetExe", "")
+                if search_term_lower in name.lower() and path:
+                    print(f"🚀 Launching Start Menu item: {path}")
+                    self._start_path(path)
+                    return f"Successfully launched {name}"
+        elif isinstance(recursive_tree, dict):
+            for name, path in recursive_tree.items():
+                if search_term_lower in name.lower():
+                    print(f"🚀 Launching Start Menu item: {path}")
+                    self._start_path(path)
+                    return f"Successfully launched {name}"
+
+        return f"App or shortcut matching '{search_term}' not found in manifest index."
 
     def get_specs(self) -> str:
         lines = [
@@ -108,14 +184,10 @@ class MasterSystemController:
         ]
 
         try:
-            import docx
             from docx import Document
-            from docx.shared import Inches, Pt, RGBColor
             from docx.enum.text import WD_ALIGN_PARAGRAPH
 
             doc = Document()
-
-            # Title
             h1 = doc.add_heading(title, 0)
             h1.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p_sub = doc.add_paragraph("Mama's Wonder World Universe // The Authoritative Executive Status Report")
@@ -124,7 +196,6 @@ class MasterSystemController:
             doc.add_paragraph(f"Generated: {datetime.now().strftime('%B %d, %Y - %I:%M %p')}")
             doc.add_paragraph("Lead Architect & Protagonist: Darrell R. Lewis (Darrell X-Gen)")
 
-            # Section 1: Executive Vision
             doc.add_heading("1. Executive Vision & Elevator Pitch", level=1)
             doc.add_paragraph(
                 "Wonder World Tower Tycoon is a next-generation vertical entertainment ecosystem: "
@@ -132,7 +203,6 @@ class MasterSystemController:
                 "Players construct, operate, and defend a 150-story entertainment skyscraper connected by the Purple City Portal."
             )
 
-            # Section 2: The 4 Core Pillars
             doc.add_heading("2. The Four Design Pillars", level=1)
             pillars = [
                 ("Build", "Floors, venues, retail spaces, luxury hotels, and transit elevators."),
@@ -145,7 +215,6 @@ class MasterSystemController:
                 p.add_run(f"• {p_name}: ").bold = True
                 p.add_run(p_desc)
 
-            # Section 3: Vertical Zoning
             doc.add_heading("3. Vertical Tower Zoning Architecture", level=1)
             table = doc.add_table(rows=1, cols=3)
             hdr_cells = table.rows[0].cells
@@ -166,7 +235,6 @@ class MasterSystemController:
                 row_cells[1].text = z_fl
                 row_cells[2].text = z_desc
 
-            # Section 4: Playable Hero Roster
             doc.add_heading("4. The 7-Hero Top-Hatter Roster", level=1)
             heroes = [
                 "Darrell X-Gen: Master of Sound Magic, wielding the Equalizer X-Hat and Conductor's Baton.",
@@ -180,7 +248,6 @@ class MasterSystemController:
             for h in heroes:
                 doc.add_paragraph(f"• {h}")
 
-            # Section 5: Macro-to-Micro Integration
             doc.add_heading("5. Macro-to-Micro Multi-Engine Architecture", level=1)
             doc.add_paragraph(
                 "Wonder World connects three gameplay layers: Satellite City Builder (Cities: Skylines scale), "
@@ -188,7 +255,6 @@ class MasterSystemController:
                 "next-gen console portal keys (Obsidian Monolith for PS6, Quantum Grid for Xbox Helix, Holographic Prism for VR)."
             )
 
-            # Save
             saved_to = []
             for path in output_paths:
                 try:
@@ -210,7 +276,6 @@ class MasterSystemController:
             SCRATCH_DIR / safe_name
         ]
 
-        # Generate an ultra-polished, responsive HTML5 Presentation Deck with slide carousel
         deck_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -334,22 +399,6 @@ class MasterSystemController:
                 return f"[STATUS] Cities: Skylines II verified on host: {cs2_exe} (Run from Windows to spawn window)"
         else:
             return f"[WARNING] Cities: Skylines II not found at: {cs2_exe}"
-
-    def launch_app(self, app_name: str) -> str:
-        app_map = {
-            "ue5": r"C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe",
-            "blender": r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe",
-            "vscode": r"C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\Code.exe",
-            "studioone": r"C:\Program Files\PreSonus\Studio One 7\Studio One.exe"
-        }
-        target = app_map.get(app_name.lower())
-        if target and Path(target).exists():
-            if IS_WINDOWS:
-                subprocess.Popen([target])
-                return f"[LAUNCH] App {app_name} dispatched: {target}"
-            else:
-                return f"[STATUS] App {app_name} verified on Windows: {target}"
-        return f"[INFO] App {app_name} handled."
 
 if __name__ == "__main__":
     controller = MasterSystemController()
