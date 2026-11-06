@@ -28,6 +28,15 @@ WSL_PROJECT = Path("/mnt/c/Users/Admin/Documents/Unreal Projects/WonderTowerTyco
 SCRATCH_DIR = WIN_SCRATCH if IS_WINDOWS else (WSL_SCRATCH if WSL_SCRATCH.exists() else Path("."))
 PROJECT_DIR = WIN_PROJECT if IS_WINDOWS else (WSL_PROJECT if WSL_PROJECT.exists() else Path("."))
 
+def to_local_path(p: str) -> Path:
+    if IS_WINDOWS:
+        return Path(p)
+    clean = str(p).replace("\\", "/")
+    if len(clean) > 2 and clean[1] == ":":
+        drive = clean[0].lower()
+        return Path(f"/mnt/{drive}{clean[2:]}")
+    return Path(p)
+
 class MasterSystemController:
     def __init__(self, workspace=None):
         self.workspace = Path(workspace) if workspace else PROJECT_DIR
@@ -73,7 +82,51 @@ class MasterSystemController:
                 return False
 
     def launch_manifest_app(self, search_term: str) -> str:
-        """Searches the bridge manifest for any Start Menu shortcut, folder, or Office tool and launches it."""
+        """Searches the bridge manifest and core creative suites for any app, shortcut, or Office tool and launches it."""
+        search_term_lower = search_term.lower().strip()
+
+        # 0. Check Core Creative, 3D & Audio Suite Registry
+        known_suite = {
+            "blender": r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe",
+            "cinema 4d": r"C:\Program Files\Maxon Cinema 4D R26\Cinema 4D.exe",
+            "c4d": r"C:\Program Files\Maxon Cinema 4D R26\Cinema 4D.exe",
+            "unreal": r"C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe",
+            "ue5": r"C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe",
+            "studio one": r"C:\Program Files\PreSonus\Studio One 7\Studio One.exe",
+            "acrobat": r"C:\Program Files\Adobe\Acrobat DC\Acrobat\Acrobat.exe",
+            "vscode": r"C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\Code.exe",
+            "vscodium": r"C:\Users\Admin\AppData\Local\Programs\VSCodium\VSCodium.exe"
+        }
+
+        for app_alias, app_path in known_suite.items():
+            if search_term_lower in app_alias or app_alias in search_term_lower:
+                if to_local_path(app_path).exists():
+                    print(f"🚀 Launching Suite tool: {app_path}")
+                    self._start_path(app_path)
+                    return f"Successfully launched {app_alias.title()} ({app_path})"
+
+        # Check known Photoshop locations
+        if "photoshop" in search_term_lower:
+            ps_candidates = [
+                r"C:\Program Files\Adobe\Adobe Photoshop 2026\Photoshop.exe",
+                r"C:\Program Files\Adobe\Adobe Photoshop 2025\Photoshop.exe",
+                r"C:\Program Files\Adobe\Adobe Photoshop 2024\Photoshop.exe",
+                r"C:\Program Files\Adobe\Adobe Photoshop CC\Photoshop.exe",
+                r"D:\Program Files\Adobe\Adobe Photoshop 2026\Photoshop.exe"
+            ]
+            for ps_path in ps_candidates:
+                if to_local_path(ps_path).exists():
+                    print(f"🚀 Launching Adobe Photoshop: {ps_path}")
+                    self._start_path(ps_path)
+                    return f"Successfully launched Adobe Photoshop ({ps_path})"
+
+            return (
+                "App 'Photoshop' is not installed in standard Adobe directories on this machine.\n"
+                "  * Available Adobe Tools : Adobe Acrobat DC (C:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe)\n"
+                "  * Available 3D/Creative : Blender 5.2.3, Cinema 4D R26, Epson Photo+\n"
+                "  * Available Office Suite: Word, Excel, PowerPoint, OneNote, Publisher"
+            )
+
         manifest_candidates = [
             self.workspace / "antigravity_full_system_bridge.json",
             PROJECT_DIR / "antigravity_full_system_bridge.json",
@@ -95,8 +148,6 @@ class MasterSystemController:
         except Exception:
             with open(manifest_path, "r", encoding="utf-8", errors="ignore") as f:
                 manifest = json.load(f)
-
-        search_term_lower = search_term.lower()
 
         # 1. Check Office Executables
         office_apps = manifest.get("Office16Executables", {})
