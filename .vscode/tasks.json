@@ -1,0 +1,78 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Antigravity: Run System Diagnostics",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-c",
+                "import antigravity_master_controller as m; print(m.MasterSystemController().execute_command('specs'))"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Antigravity: Generate Word Report",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-c",
+                "import antigravity_master_controller as m; print(m.MasterSystemController().execute_command('word', 'Wonder World Universe Project Status'))"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Antigravity: Generate PowerPoint Deck",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-c",
+                "import antigravity_master_controller as m; print(m.MasterSystemController().execute_command('powerpoint', 'Project Purple City Pitch'))"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Antigravity: Launch Cities Skylines II",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-c",
+                "import antigravity_master_controller as m; print(m.MasterSystemController().execute_command('game'))"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Antigravity: Execute PowerShell App Manifest Launch",
+            "type": "powershell",
+            "command": "param($AppName); & \"C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\Wonder-World-Universe\\antigravity_master_controller.py\"",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
